@@ -1,13 +1,16 @@
 import Sketch from 'react-p5';
 import p5Types from 'p5';
-import { DuoSynth } from 'tone';
+import * as Tone from 'tone';
 
 let x = 50;
 const y = 50;
 
-const duoSynth = new DuoSynth().toDestination();
+const duoSynth = new Tone.DuoSynth().toDestination();
 
-export const MySketch: React.FC = () => {
+export const MySketch = () => {
+  const yo = (p5: p5Types) => {
+    console.log('yo');
+  };
   const setup = (p5: p5Types, canvasParentRef: Element) => {
     p5.createCanvas(500, 500).parent(canvasParentRef);
 
@@ -19,6 +22,7 @@ export const MySketch: React.FC = () => {
     p5.background(0);
     p5.ellipse(x, y, 80, 70);
     x++;
+    yo(p5);
   };
 
   return <Sketch setup={setup} draw={draw} />;
