@@ -21,6 +21,8 @@ export const MySketch = () => {
   const draw = (p5: p5Types) => {
     p5.background(0);
     p5.ellipse(x, y, 80, 70);
+    p5.stroke(255);
+    p5.line(p5.pmouseX, p5.pmouseY, p5.mouseX, p5.mouseY);
     x++;
     yo(p5);
   };
