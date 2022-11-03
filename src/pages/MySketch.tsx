@@ -1,31 +1,18 @@
-import Sketch from 'react-p5';
-import p5Types from 'p5';
-import * as Tone from 'tone';
+import { ReactP5Wrapper, P5Instance } from 'react-p5-wrapper';
 
-let x = 50;
-const y = 50;
-
-const duoSynth = new Tone.DuoSynth().toDestination();
-
-export const MySketch = () => {
-  const yo = (p5: p5Types) => {
-    console.log('yo');
-  };
-  const setup = (p5: p5Types, canvasParentRef: Element) => {
-    p5.createCanvas(500, 500).parent(canvasParentRef);
-
-    const yoButton = p5.createButton('yo');
-    yoButton.mouseClicked(() => duoSynth.triggerAttackRelease('C4', '2n'));
+function sketch(p: P5Instance) {
+  p.setup = () => {
+    p.createCanvas(600, 400);
+    p.background(0);
   };
 
-  const draw = (p5: p5Types) => {
-    p5.background(0);
-    p5.ellipse(x, y, 80, 70);
-    p5.stroke(255);
-    p5.line(p5.pmouseX, p5.pmouseY, p5.mouseX, p5.mouseY);
-    x++;
-    yo(p5);
+  p.draw = () => {};
+  p.mouseDragged = () => {
+    p.stroke(255);
+    p.line(p.pmouseX, p.pmouseY, p.mouseX, p.mouseY);
   };
+}
 
-  return <Sketch setup={setup} draw={draw} />;
-};
+export function MySketch() {
+  return <ReactP5Wrapper sketch={sketch} />;
+}

@@ -26,5 +26,9 @@ module.exports = {
     'unused-imports/no-unused-imports': 'error',
     'import/prefer-default-export': 0,
     'no-plusplus': 0,
+    'no-param-reassign': [
+      'error',
+      { props: true, ignorePropertyModificationsFor: ['p'] },
+    ],
   },
 };
