@@ -20,7 +20,6 @@ let songCounter = 0;
 let xCoordinatesLine: number[] = [];
 let y: number[] = [];
 const bassNote = 1;
-const doodlerWidth = 600;
 const doodlerHeight = 400;
 let tranPoints: number[] = [];
 let noteTriggered: number;
@@ -168,7 +167,7 @@ function sketch(p: P5Instance) {
     const drive = new Tone.Distortion(0.3).connect(postFilter);
     leadSynth.connect(drive);
     const cnv = p.createCanvas(600, 400);
-    cnv.position(p.windowWidth / 1.9, p.windowHeight / 4);
+    // cnv.position(p.windowWidth / 1.9, p.windowHeight / 4);
     cnv.style('border: 3px solid #8bb6da;;');
     setBackground(p, gridOn, curColor);
     p.strokeWeight(2);
@@ -181,15 +180,7 @@ function sketch(p: P5Instance) {
 
     flutterAndWow(leadSynth, 9, 6, 1.6, 20);
   };
-  p.draw = () => {
-    p.normalMaterial();
-    p.push();
-    p.rotateZ(p.frameCount * 0.01);
-    p.rotateX(p.frameCount * 0.01);
-    p.rotateY(p.frameCount * 0.01);
-    p.plane(100);
-    p.pop();
-  };
+  p.draw = () => {};
 
   p.mousePressed = () => {
     xCoordinatesLine = [];
@@ -224,7 +215,7 @@ function sketch(p: P5Instance) {
       p.mouseY < p.height
     ) {
       p.stroke(0);
-      if (p.mouseX >= rightMostX && p.pmouseX >= rightMostX) {
+      if (p.mouseX >= rightMostX) {
         p.line(p.pmouseX, p.pmouseY, p.mouseX, p.mouseY);
         rightMostX = p.mouseX;
         xCoordinatesLine.push(p.mouseX);
@@ -234,7 +225,6 @@ function sketch(p: P5Instance) {
         }
       }
     }
-    console.log('yo', p.pmouseX);
   };
 
   p.mouseReleased = () => {
