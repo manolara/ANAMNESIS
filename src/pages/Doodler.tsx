@@ -9,11 +9,15 @@ import {
   lastCell,
   rootNotes,
   setBackground,
-} from '../utils/Doodler';
+  setupBassSynth,
+  setupLeadSynth,
+} from '../utils/Doodler_utils';
 
 const bpm = 80;
 const leadSynth = new Tone.MonoSynth();
+setupLeadSynth(leadSynth);
 const bassSynth = new Tone.MonoSynth().toDestination();
+setupBassSynth(bassSynth);
 const gridOn = false;
 let mouseoff = false;
 let songCounter = 0;

@@ -3,7 +3,7 @@ import { MySketch } from './pages/MySketch';
 import { Home } from './pages/Home';
 import NotFound from './pages/NotFound';
 import { Doodler } from './pages/Doodler';
-import { Multiplicity } from './pages/multiplicity';
+import { Multiplicity } from './pages/Multiplicity';
 
 export const App = () => {
   return (

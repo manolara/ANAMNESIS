@@ -78,21 +78,18 @@ export const setupBassSynth = (bassSynth: Tone.MonoSynth) => {
     oscillator: {
       type: 'sawtooth', //
     },
-
     envelope: {
       attack: 0.0098,
       decay: 10,
       sustain: 0.1,
       release: 2.49,
     },
-
     filter: {
       Q: 3,
       // frequency : 10,
       type: 'lowpass',
       rolloff: -12,
     },
-
     filterEnvelope: {
       attack: 0.0098,
       decay: 0.8,
