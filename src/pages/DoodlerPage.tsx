@@ -1,9 +1,8 @@
 import { Doodler } from './Doodler';
 
-export const Multiplicity = () => {
+export const DoodlerPage = () => {
   return (
     <div className="css-test">
-      <Doodler />;
       <Doodler />;
     </div>
   );

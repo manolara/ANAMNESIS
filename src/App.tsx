@@ -3,7 +3,7 @@ import { MySketch } from './pages/MySketch';
 import { Home } from './pages/Home';
 import NotFound from './pages/NotFound';
 import { Doodler } from './pages/Doodler';
-import { Multiplicity } from './pages/Multiplicity';
+import { DoodlerPage } from './pages/DoodlerPage';
 
 export const App = () => {
   return (
@@ -12,7 +12,7 @@ export const App = () => {
       <Route path="*" element={<NotFound />} />
       <Route path="/sketch" element={<MySketch />} />
       <Route path="/legacy" element={<Doodler />} />
-      <Route path="/multiplicity" element={<Multiplicity />} />
+      <Route path="/doodler_page" element={<DoodlerPage />} />
     </Routes>
   );
 };
