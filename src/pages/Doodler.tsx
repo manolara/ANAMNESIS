@@ -1,5 +1,6 @@
 import p5 from 'p5';
-import { ReactP5Wrapper, P5Instance } from 'react-p5-wrapper';
+import React from 'react';
+import { P5Instance, ReactP5Wrapper } from 'react-p5-wrapper';
 
 import * as Tone from 'tone';
 import {
@@ -37,6 +38,7 @@ let loopCounter = 1;
 let rightMostX: number;
 let curColor: p5.Color;
 let stepArray: number[] = [];
+let cnv: p5.Renderer;
 
 function redLine(p: P5Instance) {
   p.strokeWeight(3);
@@ -112,9 +114,11 @@ const cellToPitch = (beat: number) => {
 
 function sketch(p: P5Instance) {
   function song(time: number) {
+    console.log(xCoordinatesLine);
     if (mouseoff) {
       if (songCounter === firstCell(xCoordinatesLine)) {
         bassSynth.triggerAttackRelease(rootNotes[bassNote], '6');
+        console.log('yal');
       }
     }
     if (mouseoff) {
@@ -148,7 +152,6 @@ function sketch(p: P5Instance) {
       if (counter % 8 === 0) {
         j = 0;
         loopCounter++;
-        console.log(loopCounter);
       }
     }
     newLine = false;
@@ -170,9 +173,10 @@ function sketch(p: P5Instance) {
     const postFilter = new Tone.Filter(2200, 'lowpass').connect(gainLead);
     const drive = new Tone.Distortion(0.3).connect(postFilter);
     leadSynth.connect(drive);
-    const cnv = p.createCanvas(600, 400);
+    cnv = p.createCanvas(600, 400);
     // cnv.position(p.windowWidth / 1.9, p.windowHeight / 4);
     cnv.style('border: 3px solid #8bb6da;;');
+
     setBackground(p, gridOn, curColor);
     p.strokeWeight(2);
 
@@ -232,21 +236,21 @@ function sketch(p: P5Instance) {
   };
 
   p.mouseReleased = () => {
-    if (releaseNo >= 1) {
-      if (p.mouseX > 0 && p.mouseY > 0 && p.mouseY < p.height) {
-        mouseoff = true;
+    // if (releaseNo >= 1) {
+    if (p.mouseX > 0 && p.mouseY > 0 && p.mouseY < p.height) {
+      mouseoff = true;
 
-        tranPoints = findTranPoints(xCoordinatesLine);
+      tranPoints = findTranPoints(xCoordinatesLine);
 
-        songCounter = firstCell(xCoordinatesLine);
+      songCounter = firstCell(xCoordinatesLine);
 
-        newLine = true;
-      }
+      newLine = true;
     }
+
     releaseNo += 1;
   };
 }
-
-export function Doodler() {
+/* eslint-disable-next-line react/display-name */
+export const Doodler = React.memo(() => {
   return <ReactP5Wrapper sketch={sketch} />;
-}
+});

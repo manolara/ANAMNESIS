@@ -13,6 +13,6 @@ function sketch(p: P5Instance) {
   };
 }
 
-export function MySketch() {
+export const MySketch = () => {
   return <ReactP5Wrapper sketch={sketch} />;
-}
+};
