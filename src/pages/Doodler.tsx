@@ -14,6 +14,10 @@ import {
   setupLeadSynth,
 } from '../utils/Doodler_utils';
 
+interface DoodlerProps {
+  bassNoteProp: string;
+}
+
 const bpm = 80;
 const leadSynth = new Tone.MonoSynth();
 setupLeadSynth(leadSynth);
@@ -245,6 +249,13 @@ function sketch(p: P5Instance) {
 }
 
 /* eslint-disable-next-line react/display-name */
-export const Doodler = React.memo(() => {
-  return <ReactP5Wrapper sketch={sketch} />;
+export const Doodler = React.memo(({ bassNoteProp }: DoodlerProps) => {
+  /* eslint-disable-next-line no-param-reassign */
+  bassNoteProp += 'a';
+  return (
+    <>
+      <div>{bassNoteProp}</div>
+      <ReactP5Wrapper sketch={sketch} />;
+    </>
+  );
 });

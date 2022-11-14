@@ -9,7 +9,7 @@ export const DoodlerPage = () => {
   return (
     <div className="css-test">
       <Button onClick={() => {}}>Yello</Button>
-      <Doodler />
+      <Doodler bassNoteProp="C8" />
     </div>
   );
 };
