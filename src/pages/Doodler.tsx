@@ -28,7 +28,7 @@ const bassNote = 1;
 const doodlerHeight = 400;
 let tranPoints: number[] = [];
 let noteTriggered: number;
-let releaseNo = 0;
+const releaseNo = 0;
 let newLine = false;
 let counter = 0;
 let bcounter = 0;
@@ -114,11 +114,9 @@ const cellToPitch = (beat: number) => {
 
 function sketch(p: P5Instance) {
   function song(time: number) {
-    console.log(xCoordinatesLine);
     if (mouseoff) {
       if (songCounter === firstCell(xCoordinatesLine)) {
         bassSynth.triggerAttackRelease(rootNotes[bassNote], '6');
-        console.log('yal');
       }
     }
     if (mouseoff) {
@@ -191,14 +189,14 @@ function sketch(p: P5Instance) {
   p.draw = () => {};
 
   p.mousePressed = () => {
-    xCoordinatesLine = [];
-    y = [];
     if (
       p.mouseX > 0 &&
       p.mouseX < p.width &&
       p.mouseY > 0 &&
       p.mouseY < p.height
     ) {
+      xCoordinatesLine = [];
+      y = [];
       stepArray = [];
       tranPoints = [];
       j = 0;
@@ -234,22 +232,18 @@ function sketch(p: P5Instance) {
       }
     }
   };
-
   p.mouseReleased = () => {
-    // if (releaseNo >= 1) {
     if (p.mouseX > 0 && p.mouseY > 0 && p.mouseY < p.height) {
       mouseoff = true;
 
       tranPoints = findTranPoints(xCoordinatesLine);
 
       songCounter = firstCell(xCoordinatesLine);
-
       newLine = true;
     }
-
-    releaseNo += 1;
   };
 }
+
 /* eslint-disable-next-line react/display-name */
 export const Doodler = React.memo(() => {
   return <ReactP5Wrapper sketch={sketch} />;
