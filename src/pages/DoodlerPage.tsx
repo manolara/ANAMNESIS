@@ -1,15 +1,15 @@
-import { Button } from '@mui/material';
 import React, { useState } from 'react';
+import { BassnotesBar } from './BassnotesBar';
 import { Doodler } from './Doodler';
 
 export const DoodlerPage = () => {
   const [value, setValue] = useState(0);
-  console.log(value);
-
+  const [bassNote, setBassNote] = useState('C3');
+  console.log(bassNote);
   return (
-    <div className="css-test">
-      <Button onClick={() => {}}>Yello</Button>
-      <Doodler bassNoteProp="C8" />
-    </div>
+    <>
+      <Doodler bassNoteProp={bassNote} />
+      <BassnotesBar setBassNote={setBassNote} />
+    </>
   );
 };

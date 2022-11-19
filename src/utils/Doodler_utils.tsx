@@ -2,9 +2,11 @@ import p5 from 'p5';
 import { P5Instance } from 'react-p5-wrapper';
 
 import * as Tone from 'tone';
+// eslint-disable-next-line import/no-cycle
+import { DoodlerProps } from '../pages/Doodler';
 
 export const setBackground = (
-  p: P5Instance,
+  p: P5Instance<DoodlerProps>,
   gridOn: boolean,
   curColor: p5.Color
 ) => {
@@ -135,6 +137,43 @@ export const rootNotes = {
   6: 'A3',
 };
 
+export const converHeightToLeadNotes = (cellNumber: number) => {
+  if (cellNumber === 12) {
+    return 'C4';
+  }
+  if (cellNumber === 11) {
+    return 'D4';
+  }
+  if (cellNumber === 10) {
+    return 'E4';
+  }
+  if (cellNumber === 9) {
+    return 'G4';
+  }
+  if (cellNumber === 8) {
+    return 'A4';
+  }
+  if (cellNumber === 7) {
+    return 'B4';
+  }
+  if (cellNumber === 6) {
+    return 'C5';
+  }
+  if (cellNumber === 5) {
+    return 'D5';
+  }
+  if (cellNumber === 4) {
+    return 'E5';
+  }
+  if (cellNumber === 3) {
+    return 'G5';
+  }
+  if (cellNumber === 2) {
+    return 'A5';
+  }
+
+  return 'B5';
+};
 export const findTranPoints = (xCoordinatesLine: number[]) => {
   const newTranPoints: number[] = [];
   for (let i = 1; i < 9; i++) {

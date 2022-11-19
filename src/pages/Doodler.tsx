@@ -1,20 +1,20 @@
 import p5 from 'p5';
 import React from 'react';
-import { P5Instance, ReactP5Wrapper } from 'react-p5-wrapper';
+import { P5Instance, ReactP5Wrapper, SketchProps } from 'react-p5-wrapper';
 
 import * as Tone from 'tone';
 import {
+  converHeightToLeadNotes,
   findTranPoints,
   firstCell,
   flutterAndWow,
   lastCell,
-  rootNotes,
   setBackground,
   setupBassSynth,
   setupLeadSynth,
 } from '../utils/Doodler_utils';
 
-interface DoodlerProps {
+export interface DoodlerProps extends SketchProps {
   bassNoteProp: string;
 }
 
@@ -28,7 +28,7 @@ let mouseoff = false;
 let songCounter = 0;
 let xCoordinatesLine: number[] = [];
 let y: number[] = [];
-const bassNote = 1;
+let bassNote = 'C3';
 const doodlerHeight = 400;
 let tranPoints: number[] = [];
 let noteTriggered: number;
@@ -44,7 +44,7 @@ let curColor: p5.Color;
 let stepArray: number[] = [];
 let cnv: p5.Renderer;
 
-function redLine(p: P5Instance) {
+function redLine(p: P5Instance<DoodlerProps>) {
   p.strokeWeight(3);
   p.stroke(175, 154, 250);
 
@@ -54,7 +54,7 @@ function redLine(p: P5Instance) {
   }
 }
 
-const blackLine = (p: P5Instance) => {
+const blackLine = (p: P5Instance<DoodlerProps>) => {
   p.strokeWeight(3);
   p.stroke(0);
 
@@ -79,48 +79,18 @@ const cellToPitch = (beat: number) => {
     index1++;
   }
 
-  if (cellNumber === 12) {
-    return 'C4';
-  }
-  if (cellNumber === 11) {
-    return 'D4';
-  }
-  if (cellNumber === 10) {
-    return 'E4';
-  }
-  if (cellNumber === 9) {
-    return 'G4';
-  }
-  if (cellNumber === 8) {
-    return 'A4';
-  }
-  if (cellNumber === 7) {
-    return 'B4';
-  }
-  if (cellNumber === 6) {
-    return 'C5';
-  }
-  if (cellNumber === 5) {
-    return 'D5';
-  }
-  if (cellNumber === 4) {
-    return 'E5';
-  }
-  if (cellNumber === 3) {
-    return 'G5';
-  }
-  if (cellNumber === 2) {
-    return 'A5';
-  }
-
-  return 'B5';
+  return converHeightToLeadNotes(cellNumber);
 };
 
-function sketch(p: P5Instance) {
+function sketch(p: P5Instance<DoodlerProps>) {
+  p.updateWithProps = (props) => {
+    bassNote = props.bassNoteProp;
+  };
   function song(time: number) {
+    console.log(bassNote);
     if (mouseoff) {
       if (songCounter === firstCell(xCoordinatesLine)) {
-        bassSynth.triggerAttackRelease(rootNotes[bassNote], '6');
+        bassSynth.triggerAttackRelease(bassNote, '6');
       }
     }
     if (mouseoff) {
@@ -250,12 +220,9 @@ function sketch(p: P5Instance) {
 
 /* eslint-disable-next-line react/display-name */
 export const Doodler = React.memo(({ bassNoteProp }: DoodlerProps) => {
-  /* eslint-disable-next-line no-param-reassign */
-  bassNoteProp += 'a';
   return (
     <>
-      <div>{bassNoteProp}</div>
-      <ReactP5Wrapper sketch={sketch} />;
+      <ReactP5Wrapper sketch={sketch} bassNoteProp={bassNoteProp} />;
     </>
   );
 });
