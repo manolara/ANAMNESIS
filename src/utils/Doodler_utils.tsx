@@ -1,4 +1,3 @@
-import p5 from 'p5';
 import { P5Instance } from 'react-p5-wrapper';
 
 import * as Tone from 'tone';
@@ -8,7 +7,7 @@ import { DoodlerProps } from '../pages/Doodler';
 export const setBackground = (
   p: P5Instance<DoodlerProps>,
   gridOn: boolean,
-  curColor: p5.Color
+  curColor: string
 ) => {
   p.background(curColor);
   if (gridOn === true) {
@@ -190,4 +189,12 @@ export const findTranPoints = (xCoordinatesLine: number[]) => {
   newTranPoints.unshift(0);
   newTranPoints.push(xCoordinatesLine.length - 1);
   return newTranPoints;
+};
+
+export const bassNoteToColor = (bassNote: string) => {
+  if (bassNote === 'C3') return 'lightBlue';
+  if (bassNote === 'D3') return 'darkBlue';
+  if (bassNote === 'F3') return 'green';
+  if (bassNote === 'G3') return 'orange';
+  return 'purple';
 };

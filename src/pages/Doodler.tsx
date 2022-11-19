@@ -3,7 +3,9 @@ import React from 'react';
 import { P5Instance, ReactP5Wrapper, SketchProps } from 'react-p5-wrapper';
 
 import * as Tone from 'tone';
+// eslint-disable-next-line import/no-cycle
 import {
+  bassNoteToColor,
   converHeightToLeadNotes,
   findTranPoints,
   firstCell,
@@ -28,7 +30,7 @@ let mouseoff = false;
 let songCounter = 0;
 let xCoordinatesLine: number[] = [];
 let y: number[] = [];
-let bassNote = 'C3';
+let bassNote: string;
 const doodlerHeight = 400;
 let tranPoints: number[] = [];
 let noteTriggered: number;
@@ -40,10 +42,10 @@ let j = 0;
 let bj = 0;
 let loopCounter = 1;
 let rightMostX: number;
-let curColor: p5.Color;
+let curColor: string;
 let stepArray: number[] = [];
 let cnv: p5.Renderer;
-
+const propUpdateCounter = 0;
 function redLine(p: P5Instance<DoodlerProps>) {
   p.strokeWeight(3);
   p.stroke(175, 154, 250);
@@ -67,6 +69,13 @@ const blackLine = (p: P5Instance<DoodlerProps>) => {
     bj++;
   }
 };
+const doodlerPalette = {
+  lightBlue: '#bde0fe',
+  darkBlue: '#3297b6',
+  green: '#bee1e6',
+  orange: '#FEC89A',
+  purple: '#d5c6e0',
+};
 
 const cellToPitch = (beat: number) => {
   let cellHeight = 1;
@@ -83,9 +92,6 @@ const cellToPitch = (beat: number) => {
 };
 
 function sketch(p: P5Instance<DoodlerProps>) {
-  p.updateWithProps = (props) => {
-    bassNote = props.bassNoteProp;
-  };
   function song(time: number) {
     console.log(bassNote);
     if (mouseoff) {
@@ -129,17 +135,6 @@ function sketch(p: P5Instance<DoodlerProps>) {
     newLine = false;
   }
   p.setup = () => {
-    const startButton = p.createButton('  startTHESHITS  ');
-    startButton.mousePressed(() => {
-      Tone.start();
-    });
-    const doodlerPalette = {
-      lightBlue: p.color('#bde0fe'),
-      darkBlue: p.color('#3297b6'),
-      green: p.color('#bee1e6'),
-      orange: p.color(254, 200, 154),
-      purple: p.color('#d5c6e0'),
-    };
     curColor = doodlerPalette.lightBlue;
     const gainLead = new Tone.Gain(0.85).toDestination();
     const postFilter = new Tone.Filter(2200, 'lowpass').connect(gainLead);
@@ -159,6 +154,12 @@ function sketch(p: P5Instance<DoodlerProps>) {
     loopBeat.start(0);
 
     flutterAndWow(leadSynth, 9, 6, 1.6, 20);
+  };
+  p.updateWithProps = (props) => {
+    if (bassNote !== undefined) {
+      bassNote = props.bassNoteProp;
+      setBackground(p, gridOn, doodlerPalette[bassNoteToColor(bassNote)]);
+    } else bassNote = 'C3';
   };
   p.draw = () => {};
 
@@ -184,7 +185,7 @@ function sketch(p: P5Instance<DoodlerProps>) {
       bcounter = 0;
       loopCounter = 1;
 
-      setBackground(p, gridOn, curColor);
+      setBackground(p, gridOn, doodlerPalette[bassNoteToColor(bassNote)]);
     }
   };
   p.mouseDragged = () => {
@@ -220,9 +221,5 @@ function sketch(p: P5Instance<DoodlerProps>) {
 
 /* eslint-disable-next-line react/display-name */
 export const Doodler = React.memo(({ bassNoteProp }: DoodlerProps) => {
-  return (
-    <>
-      <ReactP5Wrapper sketch={sketch} bassNoteProp={bassNoteProp} />;
-    </>
-  );
+  return <ReactP5Wrapper sketch={sketch} bassNoteProp={bassNoteProp} />;
 });
