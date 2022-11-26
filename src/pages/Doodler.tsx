@@ -34,18 +34,15 @@ let bassNote: string;
 const doodlerHeight = 400;
 let tranPoints: number[] = [];
 let noteTriggered: number;
-const releaseNo = 0;
 let newLine = false;
 let counter = 0;
 let bcounter = 0;
 let j = 0;
 let bj = 0;
-let loopCounter = 1;
 let rightMostX: number;
 let curColor: string;
 let stepArray: number[] = [];
 let cnv: p5.Renderer;
-const propUpdateCounter = 0;
 function redLine(p: P5Instance<DoodlerProps>) {
   p.strokeWeight(3);
   p.stroke(175, 154, 250);
@@ -129,7 +126,6 @@ function sketch(p: P5Instance<DoodlerProps>) {
       // j++;
       if (counter % 8 === 0) {
         j = 0;
-        loopCounter++;
       }
     }
     newLine = false;
@@ -183,7 +179,6 @@ function sketch(p: P5Instance<DoodlerProps>) {
 
       rightMostX = p.mouseX;
       bcounter = 0;
-      loopCounter = 1;
 
       setBackground(p, gridOn, doodlerPalette[bassNoteToColor(bassNote)]);
     }

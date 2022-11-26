@@ -11,14 +11,14 @@ import {
 export const AButton = styled(ButtonBase)(
   sx({
     color: 'black',
-    backgroundColor: 'inherit',
+    backgroundColor: '#ffb8b8',
     fontFamily: 'futura',
     fontSize: '20px',
     px: 2,
     py: 1,
     borderRadius: 1,
     '&:hover': {
-      boxShadow: 'inset 6.2rem 0 0 0 #f8abab',
+      boxShadow: 'inset 100rem 0 0 0 #f8abab',
     },
   })
 );
