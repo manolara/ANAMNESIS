@@ -7,6 +7,7 @@ import { MySketchPage } from './pages/MySketchPage';
 import { Playground } from './PLAYGROUND/Playground';
 import { customTheme } from './theme';
 import { Theremin } from './pages/Theremin';
+import { PGPage } from './PLAYGROUND/PGPage';
 
 export const App = () => {
   return (
@@ -18,6 +19,7 @@ export const App = () => {
       <Route path="/doodler_page" element={<DoodlerPage />} />
       <Route path="/playground" element={<Playground />} />
       <Route path="theremin_page" element={<Theremin />} />
+      <Route path="PGPage" element={<PGPage />} />
     </Routes>
   );
 };
