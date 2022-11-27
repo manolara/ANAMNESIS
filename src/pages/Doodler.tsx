@@ -77,12 +77,10 @@ const doodlerPalette = {
 const cellToPitch = (beat: number) => {
   let cellHeight = 1;
   let cellNumber = 0;
-  let index1 = 1;
 
   while (cellHeight <= y[tranPoints[beat]]) {
     cellHeight += doodlerHeight / 12;
     cellNumber++;
-    index1++;
   }
 
   return converHeightToLeadNotes(cellNumber);
@@ -90,7 +88,6 @@ const cellToPitch = (beat: number) => {
 
 function sketch(p: P5Instance<DoodlerProps>) {
   function song(time: number) {
-    console.log(bassNote);
     if (mouseoff) {
       if (songCounter === firstCell(xCoordinatesLine)) {
         bassSynth.triggerAttackRelease(bassNote, '6');

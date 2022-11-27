@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable no-return-assign */
-import { Stack } from '@mui/system';
+import { Stack } from '@mui/material';
 import p5 from 'p5';
 import { useState } from 'react';
 import { P5CanvasInstance, ReactP5Wrapper } from 'react-p5-wrapper';
@@ -24,8 +24,11 @@ let wowFreq = 3;
 let wow: Tone.LFO;
 const wowRange = 20;
 let cnv: p5.Renderer;
+let glow2ndgrad = 1;
+let glow = 0.2 * glow2ndgrad;
+let stroke = 2.2;
 
-export function Theremin() {
+export const Theremin = () => {
   const [oct, setOct] = useState(4);
   const notes = [
     `G${oct - 1}`,
@@ -45,11 +48,16 @@ export function Theremin() {
     p.setup = () => {
       cnv = p.createCanvas(canvasWidth, canvasHeight);
       cnv.mousePressed(canvasPressed);
+      cnv.mouseMoved(canvasDragged);
       cnv.mouseOut(releaseNote);
       cnv.mouseReleased(releaseNote);
-      p.background('#bdd0c4');
       wow = new Tone.LFO(wowFreq, -wowRange, wowRange);
       wow.connect(synth.detune).start();
+      drawBackground();
+    };
+
+    const drawBackground = () => {
+      p.background('#bdd0c4');
       notes.forEach((note, i) => {
         p.line(
           ((i + 1) * p.width) / notes.length,
@@ -61,18 +69,34 @@ export function Theremin() {
     };
 
     p.draw = () => {
+      drawBackground();
+      glow2ndgrad = p.map(p.mouseY, 0, p.height, 15, 3);
+      const size = p.map(p.mouseY, 0, p.height, 50, 20);
+      if (stroke > 12 || stroke < 2) {
+        glow = -glow;
+      }
+
+      stroke += glow * glow2ndgrad;
+      console.log(stroke);
+
+      p.push();
+
+      p.stroke('#ffb8b8');
+      p.strokeWeight(stroke);
+      p.fill('#ffb8b8');
+      p.circle(p.mouseX, p.mouseY, size);
+      p.pop();
+    };
+
+    const canvasDragged = () => {
       // volume
       vol = p.map(p.mouseY, 0, p.height, 1, 0.2);
-      if (p.mouseY > p.height) {
-        vol = 0;
-      }
       volKnob.gain.value = vol;
 
       // pitch
-
       prevCell = cellNum ?? 0;
       cellNum = Math.floor((notes.length * p.mouseX) / p.width);
-      if (cellNum !== prevCell && cellNum >= 0 && cellNum < notes.length) {
+      if (cellNum !== prevCell) {
         pitch = notes[cellNum];
 
         synth.frequency.rampTo(pitch, 0.3);
@@ -82,17 +106,13 @@ export function Theremin() {
       wowFreq = p.map(p.mouseY, 0, p.height, 7, 3);
       wow.frequency.value = wowFreq;
     };
-
     const canvasPressed = () => {
       synth.triggerAttack(pitch);
     };
     const releaseNote = () => {
-      console.log('mouseout');
       synth.triggerRelease();
     };
   };
-
-  // const myp5 = new p5(sketch);
 
   return (
     <>
@@ -115,4 +135,4 @@ export function Theremin() {
       </Stack>
     </>
   );
-}
+};
