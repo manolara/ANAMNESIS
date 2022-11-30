@@ -7,7 +7,8 @@ import { MySketchPage } from './pages/MySketchPage';
 import { Playground } from './PLAYGROUND/Playground';
 import { customTheme } from './theme';
 import { Theremin } from './pages/Theremin';
-
+import { PGPage } from './PLAYGROUND/PGPage';
+import * as Tone from 'tone';
 export const App = () => {
   return (
     <Routes>
@@ -18,11 +19,16 @@ export const App = () => {
       <Route path="/doodler_page" element={<DoodlerPage />} />
       <Route path="/playground" element={<Playground />} />
       <Route path="theremin_page" element={<Theremin />} />
+      <Route path="PGPage" element={<PGPage />} />
     </Routes>
   );
 };
 
 export function WrappedApp() {
+  Tone.Transport.bpm.value = 80;
+  Tone.Transport.stop();
+  // Tone.Transport.loop = true;
+  // Tone.Transport.loopEnd = '8m';
   return (
     <ThemeProvider theme={customTheme}>
       <BrowserRouter>

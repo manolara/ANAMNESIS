@@ -3,6 +3,7 @@ import React from 'react';
 import { P5Instance, ReactP5Wrapper, SketchProps } from 'react-p5-wrapper';
 
 import * as Tone from 'tone';
+import { Loop } from 'tone';
 // eslint-disable-next-line import/no-cycle
 import {
   bassNoteToColor,
@@ -15,12 +16,12 @@ import {
   setupBassSynth,
   setupLeadSynth,
 } from '../utils/Doodler_utils';
+import { startLoop } from '../utils/utils';
 
 export interface DoodlerProps extends SketchProps {
   bassNoteProp: string;
 }
 
-const bpm = 80;
 const leadSynth = new Tone.MonoSynth();
 setupLeadSynth(leadSynth);
 const bassSynth = new Tone.MonoSynth().toDestination();
@@ -43,6 +44,7 @@ let rightMostX: number;
 let curColor: string;
 let stepArray: number[] = [];
 let cnv: p5.Renderer;
+let isPlayback = false;
 function redLine(p: P5Instance<DoodlerProps>) {
   p.strokeWeight(3);
   p.stroke(175, 154, 250);
@@ -87,6 +89,7 @@ const cellToPitch = (beat: number) => {
 };
 
 function sketch(p: P5Instance<DoodlerProps>) {
+  const loopBeat = new Tone.Loop(song, '4n');
   function song(time: number) {
     if (mouseoff) {
       if (songCounter === firstCell(xCoordinatesLine)) {
@@ -140,11 +143,11 @@ function sketch(p: P5Instance<DoodlerProps>) {
     setBackground(p, gridOn, curColor);
     p.strokeWeight(2);
 
-    const loopBeat = new Tone.Loop(song, '4n');
     // loopBeat= new Tone.Loop(visuals, '4n');
-    Tone.Transport.bpm.value = bpm;
-    Tone.Transport.start();
-    loopBeat.start(0);
+
+    //Tone.Transport.start();
+    if (mouseoff) {
+    }
 
     flutterAndWow(leadSynth, 9, 6, 1.6, 20);
   };
@@ -157,6 +160,7 @@ function sketch(p: P5Instance<DoodlerProps>) {
   p.draw = () => {};
 
   p.mousePressed = () => {
+    Tone.start();
     if (
       p.mouseX > 0 &&
       p.mouseX < p.width &&
@@ -207,6 +211,7 @@ function sketch(p: P5Instance<DoodlerProps>) {
 
       songCounter = firstCell(xCoordinatesLine);
       newLine = true;
+      startLoop(loopBeat);
     }
   };
 }

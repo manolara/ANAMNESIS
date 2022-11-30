@@ -23,9 +23,10 @@ module.exports = {
     'react/react-in-jsx-scope': 0,
     'react/function-component-definition': 0,
     'no-unused-vars': 'off', // or "@typescript-eslint/no-unused-vars": "off",
-    'unused-imports/no-unused-imports': 'error',
+    'unused-imports/no-unused-imports': 'warning',
     'import/prefer-default-export': 0,
     'no-plusplus': 0,
+    'prefer-const': 0,
     'no-param-reassign': [
       'error',
       { props: true, ignorePropertyModificationsFor: ['p'] },
