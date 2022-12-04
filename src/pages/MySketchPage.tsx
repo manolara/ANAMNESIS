@@ -10,7 +10,6 @@ export const MySketchPage = () => {
       <Button onClick={() => setStrokeWeight((prev) => prev + 10)}>
         Increase Weight
       </Button>
-      ;
       <MySketch strokeWeight={strokeWeight} />
     </div>
   );
