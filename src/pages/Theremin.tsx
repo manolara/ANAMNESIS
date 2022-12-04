@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { P5CanvasInstance, ReactP5Wrapper } from 'react-p5-wrapper';
 import * as Tone from 'tone';
 import { AButton } from '../theme';
+import { startLoop } from '../utils/utils';
 
 const canvasHeight = 500;
 const canvasWidth = 700;
@@ -13,6 +14,7 @@ let vol = 0.2;
 let pitch: string;
 let cellNum: number;
 let prevCell;
+let mouseIsPressing: boolean;
 
 let wowFreq = 3;
 let wow: Tone.LFO;
@@ -86,39 +88,42 @@ export const Theremin = () => {
         );
       });
     };
-    const showOrb = () => {
-      glow2ndgrad = p.map(p.mouseY, 0, p.height, 15, 3);
-      const size = p.map(p.mouseY, 0, p.height, 50, 20);
+    const showOrb = (x: number, y: number) => {
+      glow2ndgrad = p.map(y, 0, p.height, 15, 3);
+      const size = p.map(y, 0, p.height, 50, 20);
       if (stroke > 12 || stroke < 2) {
         glow = -glow;
       }
-
       stroke += glow * glow2ndgrad;
 
       p.push();
-
       p.stroke('#ffb8b8');
       p.strokeWeight(stroke);
       p.fill('#ffb8b8');
-      p.circle(p.mouseX, p.mouseY, size);
+      p.circle(x, y, size);
       p.pop();
     };
+
     p.draw = () => {
-      console.log(isPlayback);
       drawBackground();
-      showOrb();
+      if (!isPlayback) {
+        showOrb(p.mouseX, p.mouseY);
+      }
+      if (mouseIsPressing) {
+        sequence.x = [...sequence.x, p.mouseX];
+        sequence.y = [...sequence.y, p.mouseY];
+        playTheremin(p.mouseX, p.mouseY);
+      }
       if (isPlayback) {
         playTheremin(sequence.x[sequenceCounter], sequence.y[sequenceCounter]);
+        showOrb(sequence.x[sequenceCounter], sequence.y[sequenceCounter]);
       }
       sequenceCounter = (sequenceCounter + 1) % sequence.x.length;
     };
 
-    const canvasDragged = () => {
+    const canvasDragged = (cnv: p5.Renderer) => {
       // record sequence coordinates
       if (p.mouseIsPressed) {
-        sequence.x = [...sequence.x, p.mouseX];
-        sequence.y = [...sequence.y, p.mouseY];
-        playTheremin(p.mouseX, p.mouseY);
       }
     };
     const canvasPressed = () => {
@@ -126,13 +131,16 @@ export const Theremin = () => {
         synth.triggerRelease();
         sequence.x = [];
         sequence.y = [];
+        console.log('faldjfa;jfl;');
       }
       isPlayback = false;
       synth.triggerAttack(pitch);
-      console.log({ pitch });
       playTheremin(p.mouseX, p.mouseY);
+      startLoop(thereminLoop);
+      mouseIsPressing = true;
     };
     const releaseNote = () => {
+      mouseIsPressing = false;
       isPlayback = true;
       sequenceCounter = 0;
       synth.triggerRelease();
@@ -145,18 +153,21 @@ export const Theremin = () => {
       vol = p.map(y, 0, p.height, 1, 0.2);
       volKnob.gain.value = vol;
       // pitch
-      prevCell = cellNum ?? 0;
+      prevCell = cellNum;
       cellNum = Math.floor((notes.length * x) / p.width);
       if (cellNum !== prevCell) {
         pitch = notes[cellNum];
         synth.frequency.rampTo(pitch, 0.3);
       }
+      if (!prevCell) {
+        pitch = notes[cellNum];
+        synth.frequency.value = pitch;
+      }
       // wow
       wowFreq = p.map(y, 0, p.height, 7, 3);
       wow.frequency.value = wowFreq;
-      console.log({ cellNum });
     };
-    const ThereminLoop = new Tone.Loop(song, '4n');
+    const thereminLoop = new Tone.Loop(song, '4n');
   };
 
   return (
