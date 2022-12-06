@@ -9,6 +9,8 @@ import { customTheme } from './theme';
 import { Theremin } from './pages/Theremin';
 import { PGPage } from './PLAYGROUND/PGPage';
 import * as Tone from 'tone';
+import { ChatGPT } from './PLAYGROUND/ChatGPT';
+
 export const App = () => {
   return (
     <Routes>
@@ -20,6 +22,7 @@ export const App = () => {
       <Route path="/playground" element={<Playground />} />
       <Route path="theremin_page" element={<Theremin />} />
       <Route path="PGPage" element={<PGPage />} />
+      <Route path="GPT" element={<ChatGPT />} />
     </Routes>
   );
 };

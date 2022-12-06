@@ -1,5 +1,6 @@
 import { P5CanvasInstance, ReactP5Wrapper } from 'react-p5-wrapper';
 import * as Tone from 'tone';
+import { setBackground } from '../utils/Doodler_utils';
 import { startLoop } from '../utils/utils';
 const metronome = new Tone.MetalSynth().toDestination();
 const metronome2 = new Tone.MetalSynth().toDestination();
@@ -9,6 +10,9 @@ const sketch = (p: P5CanvasInstance) => {
     metronome.triggerAttackRelease('c2', '8n', time, 0.08);
     // MERCYYY.autostart = true;
     console.log(Tone.Transport.position);
+    Tone.Draw.schedule(() => {
+      p.background(p.random(100));
+    }, 100);
   };
   const song2 = (time: number) => {
     metronome2.triggerAttackRelease('c2', '8n', time, 0.2);
@@ -28,6 +32,8 @@ const sketch = (p: P5CanvasInstance) => {
     syncButton.mouseClicked(() => {
       startLoop(loopSync);
     });
+
+    //use the time argument to schedule a callback with Tone.Draw
   };
 
   p.draw = () => {};

@@ -16,13 +16,14 @@ import {
   setupBassSynth,
   setupLeadSynth,
 } from '../utils/Doodler_utils';
-import { startLoop } from '../utils/utils';
+import { getCurrentBeat, startLoop } from '../utils/utils';
 
 export interface DoodlerProps extends SketchProps {
   bassNoteProp: string;
 }
 
 const leadSynth = new Tone.MonoSynth();
+let loopLengthBars = 2;
 setupLeadSynth(leadSynth);
 const bassSynth = new Tone.MonoSynth().toDestination();
 setupBassSynth(bassSynth);
@@ -44,7 +45,7 @@ let rightMostX: number;
 let curColor: string;
 let stepArray: number[] = [];
 let cnv: p5.Renderer;
-let isPlayback = false;
+let currentBar: number;
 function redLine(p: P5Instance<DoodlerProps>) {
   p.strokeWeight(3);
   p.stroke(175, 154, 250);
@@ -90,6 +91,8 @@ const cellToPitch = (beat: number) => {
 
 function sketch(p: P5Instance<DoodlerProps>) {
   const loopBeat = new Tone.Loop(song, '4n');
+  let currentBeat = +getCurrentBeat() + currentBar;
+
   function song(time: number) {
     if (mouseoff) {
       if (songCounter === firstCell(xCoordinatesLine)) {
@@ -107,8 +110,6 @@ function sketch(p: P5Instance<DoodlerProps>) {
           time
         );
 
-        // }
-
         noteTriggered += 1;
         if (songCounter === lastCell(xCoordinatesLine)) {
           noteTriggered = 0;
@@ -118,17 +119,19 @@ function sketch(p: P5Instance<DoodlerProps>) {
       blackLine(p);
       redLine(p);
 
-      counter = (counter + 1) % 8;
+      currentBar = Math.floor(songCounter / 4);
+      counter = (counter + 1) % (4 * loopLengthBars);
       if (newLine === false) {
-        bcounter = (bcounter + 1) % 8;
+        bcounter = (bcounter + 1) % (4 * loopLengthBars);
       }
-      songCounter = (songCounter + 1) % 8;
-      // j++;
+      songCounter = (songCounter + 1) % (4 * loopLengthBars);
       if (counter % 8 === 0) {
         j = 0;
       }
     }
     newLine = false;
+
+    console.log(currentBar);
   }
   p.setup = () => {
     curColor = doodlerPalette.lightBlue;

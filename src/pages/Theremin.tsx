@@ -6,7 +6,11 @@ import { useState } from 'react';
 import { P5CanvasInstance, ReactP5Wrapper } from 'react-p5-wrapper';
 import * as Tone from 'tone';
 import { AButton } from '../theme';
-import { startLoop } from '../utils/utils';
+import {
+  barVisualizerSpeed,
+  loopLengthSeconds,
+  startLoop,
+} from '../utils/utils';
 
 const canvasHeight = 500;
 const canvasWidth = 700;
@@ -33,6 +37,9 @@ let sequence: SequenceType = {
 };
 let isPlayback = false;
 let sequenceCounter: number;
+
+let loopLengthBars = 1;
+let barVisualizerPosition: number = 0;
 
 /// TONE.js///////
 const volKnob = new Tone.Gain(vol).toDestination();
@@ -75,6 +82,7 @@ export const Theremin = () => {
       wow = new Tone.LFO(wowFreq, -wowRange, wowRange);
       wow.connect(synth.detune).start();
       drawBackground();
+      p.frameRate(30);
     };
 
     const drawBackground = () => {
@@ -105,6 +113,8 @@ export const Theremin = () => {
     };
 
     p.draw = () => {
+      let loopLengthSecs = loopLengthSeconds(loopLengthBars);
+
       drawBackground();
       if (!isPlayback) {
         showOrb(p.mouseX, p.mouseY);
@@ -117,6 +127,11 @@ export const Theremin = () => {
       if (isPlayback) {
         playTheremin(sequence.x[sequenceCounter], sequence.y[sequenceCounter]);
         showOrb(sequence.x[sequenceCounter], sequence.y[sequenceCounter]);
+        p.ellipse(barVisualizerPosition, p.height / 10, 40, 40);
+        barVisualizerPosition =
+          (barVisualizerPosition +
+            barVisualizerSpeed(loopLengthBars, p.width)) %
+          p.width;
       }
       sequenceCounter = (sequenceCounter + 1) % sequence.x.length;
     };
@@ -131,7 +146,6 @@ export const Theremin = () => {
         synth.triggerRelease();
         sequence.x = [];
         sequence.y = [];
-        console.log('faldjfa;jfl;');
       }
       isPlayback = false;
       synth.triggerAttack(pitch);
