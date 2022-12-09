@@ -17,5 +17,9 @@ export const barVisualizerSpeed = (barLength: number, width: number) => {
 };
 
 export const getCurrentBeat = () => {
-  return Tone.Transport.position.toString().split(':')[1];
+  return +Tone.Transport.position.toString().split(':')[1];
+};
+
+export const getCurrentBar = () => {
+  return +Tone.Transport.position.toString().split(':')[0];
 };

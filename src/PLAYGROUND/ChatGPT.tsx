@@ -27,24 +27,19 @@ export const ChatGPT = () => {
     }, [bpm]);
 
     // handle the input change to update the bpm state
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setBpm(parseInt(event.target.value));
-    };
-
-    // render the input to control the bpm
-    return (
-      <div>
-        <label>BPM:</label>
-        <input type="number" value={bpm} onChange={handleChange} />
-      </div>
-    );
   };
-
-  // render the p5 sketch inside the react-p5-wrapper component
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setBpm(parseInt(event.target.value));
+  };
+  // render the input to control the bpm
   return (
     <>
       <ReactP5Wrapper sketch={sketch} />
-      <div>yoo</div>
+      <div>
+        <label>BPM:</label>
+        <div>yoo</div>
+        <input type="number" value={bpm} onChange={handleChange} />
+      </div>
     </>
   );
 };

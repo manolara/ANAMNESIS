@@ -142,13 +142,10 @@ function sketch(p: P5Instance<DoodlerProps>) {
     cnv = p.createCanvas(600, 400);
     // cnv.position(p.windowWidth / 1.9, p.windowHeight / 4);
     cnv.style('border: 3px solid #8bb6da;;');
-
+    console.log('setup');
     setBackground(p, gridOn, curColor);
     p.strokeWeight(2);
 
-    // loopBeat= new Tone.Loop(visuals, '4n');
-
-    //Tone.Transport.start();
     if (mouseoff) {
     }
 
@@ -220,6 +217,6 @@ function sketch(p: P5Instance<DoodlerProps>) {
 }
 
 /* eslint-disable-next-line react/display-name */
-export const Doodler = React.memo(({ bassNoteProp }: DoodlerProps) => {
+export const Doodler = ({ bassNoteProp }: DoodlerProps) => {
   return <ReactP5Wrapper sketch={sketch} bassNoteProp={bassNoteProp} />;
-});
+};

@@ -10,6 +10,8 @@ import { Theremin } from './pages/Theremin';
 import { PGPage } from './PLAYGROUND/PGPage';
 import * as Tone from 'tone';
 import { ChatGPT } from './PLAYGROUND/ChatGPT';
+import { Fatter } from './PLAYGROUND/Fatter';
+import { ThereminReassess } from './PLAYGROUND/ThereminReassess';
 
 export const App = () => {
   return (
@@ -23,6 +25,8 @@ export const App = () => {
       <Route path="theremin_page" element={<Theremin />} />
       <Route path="PGPage" element={<PGPage />} />
       <Route path="GPT" element={<ChatGPT />} />
+      <Route path="fatter" element={<Fatter />} />
+      <Route path="reassess" element={<ThereminReassess />} />
     </Routes>
   );
 };

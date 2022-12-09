@@ -19,26 +19,20 @@ const sketch: Sketch = (p) => {
       metronome.triggerAttackRelease('G2', '8n', time, 0.15);
     } else metronome.triggerAttackRelease('c2', '16n', time, 0.08);
   }, '4n').start(0);
+  metronomeLoop.stop();
   p.setup = () => {
     cnv = p.createCanvas(60, 35);
     cnv.mouseClicked(metronomeClicked);
     cnv.mouseOver(() => p.cursor(p.HAND));
     p.background(curColor);
     cnv.class('metronome');
-    metronomeLoop.stop();
 
     p.noStroke();
     p.circle(p.width / 3 - 3, p.height / 2, 10);
     p.circle((2 * p.width) / 3 + 3, p.height / 2, 10);
     Tone.Transport.scheduleRepeat((time) => {
       Tone.Draw.schedule(() => {
-        p.background(curColor);
-        let currentBeat = p.split(Tone.Transport.position.toString(), ':')[1];
-        if (+currentBeat % 2 === 0) {
-          p.circle((2 * p.width) / 3 + 3, p.height / 2, 10);
-        } else {
-          p.circle(p.width / 3 - 3, p.height / 2, 10);
-        }
+        handleAnimation(p);
       }, time);
     }, '4n');
   };
@@ -58,3 +52,12 @@ const sketch: Sketch = (p) => {
 export const Metronome = () => {
   return <ReactP5Wrapper sketch={sketch} />;
 };
+function handleAnimation(p: p5) {
+  p.background(curColor);
+  let currentBeat = p.split(Tone.Transport.position.toString(), ':')[1];
+  if (+currentBeat % 2 === 0) {
+    p.circle((2 * p.width) / 3 + 3, p.height / 2, 10);
+  } else {
+    p.circle(p.width / 3 - 3, p.height / 2, 10);
+  }
+}

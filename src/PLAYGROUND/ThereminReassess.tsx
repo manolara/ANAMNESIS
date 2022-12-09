@@ -3,17 +3,12 @@
 import { Icon, Stack } from '@mui/material';
 import p5 from 'p5';
 import { useState } from 'react';
-import {
-  P5CanvasInstance,
-  ReactP5Wrapper,
-  SketchProps,
-} from 'react-p5-wrapper';
+import { P5CanvasInstance, ReactP5Wrapper } from 'react-p5-wrapper';
 import * as Tone from 'tone';
 import { AButton } from '../theme';
 import {
   barVisualizerSpeed,
   getCurrentBar,
-  getCurrentBeat,
   loopLengthSeconds,
   startLoop,
 } from '../utils/utils';
@@ -58,26 +53,9 @@ const synth = new Tone.MonoSynth({
   },
 }).connect(volKnob);
 
-interface ThereminState {
-  IS_PLAYBACK: string;
-  IS_RECORDING: string;
-  IS_IDLE: string;
-}
-
-interface ThereminProps extends SketchProps {
-  thereminState: string;
-}
-
-const THEREMIN_STATES: ThereminState = {
-  IS_PLAYBACK: 'IS_PLAYBACK',
-  IS_RECORDING: 'IS_RECORDING',
-  IS_IDLE: 'IS_IDLE',
-};
-
-export const Theremin = () => {
-  // const [oct, setOct] = useState(4);
-  let oct = 4;
-  const [thereminState, setThereminState] = useState(THEREMIN_STATES.IS_IDLE);
+export const ThereminReassess = () => {
+  const [oct, setOct] = useState(4);
+  const [isRecording, setIsRecording] = useState(false);
   const notes = [
     `G${oct - 1}`,
     `A${oct - 1}`,
@@ -92,22 +70,19 @@ export const Theremin = () => {
     `C${oct + 1}`,
   ];
 
-  const sketch = (p: P5CanvasInstance<ThereminProps>) => {
-    let thState = THEREMIN_STATES.IS_IDLE;
+  const sketch = (p: P5CanvasInstance) => {
     const song = () => {
       let loopLengthSecs = loopLengthSeconds(loopLengthBars);
 
-      drawBackground(thState);
-      if (thState == THEREMIN_STATES.IS_IDLE) {
+      drawBackground();
+      if (!isPlayback) {
         showOrb(p.mouseX, p.mouseY);
-        playTheremin(p.mouseX, p.mouseY);
       }
-      if (thState === THEREMIN_STATES.IS_RECORDING) {
+      if (mouseIsPressing) {
         recordTheremin(p, playTheremin);
       }
-      if (thState === THEREMIN_STATES.IS_PLAYBACK) {
-        //playbackTheremin(playTheremin, showOrb, p);
-        console.log(sequence.x);
+      if (isPlayback) {
+        playbackTheremin(playTheremin, showOrb, p);
       }
       sequenceCounter = (sequenceCounter + 1) % sequence.x.length;
     };
@@ -125,16 +100,12 @@ export const Theremin = () => {
       cnv.mouseReleased(releaseNote);
       wow = new Tone.LFO(wowFreq, -wowRange, wowRange);
       wow.connect(synth.detune).start();
-      drawBackground(thState);
-      // p.frameRate(30);
-      console.log('yo setup');
-      startLoop(thereminLoop);
+      drawBackground();
+      p.frameRate(30);
     };
 
-    const drawBackground = (thereminState: string) => {
-      p.background(
-        thereminState === THEREMIN_STATES.IS_RECORDING ? '#a89db9' : '#bdd0c4'
-      );
+    const drawBackground = () => {
+      //p.background('#bdd0c4');
       notes.forEach((note, i) => {
         p.line(
           ((i + 1) * p.width) / notes.length,
@@ -160,15 +131,28 @@ export const Theremin = () => {
       p.pop();
     };
 
-    p.updateWithProps = (props) => {
-      console.log('updateWithProps');
-      if (props.thereminState) {
-        thState = props.thereminState;
-        console.log('thereminState', thState);
-      }
+    p.draw = () => {
+      // let loopLengthSecs = loopLengthSeconds(loopLengthBars);
+      // drawBackground();
+      // if (!isPlayback) {
+      //   showOrb(p.mouseX, p.mouseY);
+      // }
+      // if (mouseIsPressing) {
+      //   sequence.x = [...sequence.x, p.mouseX];
+      //   sequence.y = [...sequence.y, p.mouseY];
+      //   playTheremin(p.mouseX, p.mouseY);
+      // }
+      // if (isPlayback) {
+      //   playTheremin(sequence.x[sequenceCounter], sequence.y[sequenceCounter]);
+      //   showOrb(sequence.x[sequenceCounter], sequence.y[sequenceCounter]);
+      //   p.ellipse(barVisualizerPosition, p.height / 10, 40, 40);
+      //   barVisualizerPosition =
+      //     (barVisualizerPosition +
+      //       barVisualizerSpeed(loopLengthBars, p.width)) %
+      //     p.width;
+      // }
+      // sequenceCounter = (sequenceCounter + 1) % sequence.x.length;
     };
-
-    p.draw = () => {};
 
     const canvasDragged = (cnv: p5.Renderer) => {
       // record sequence coordinates
@@ -176,12 +160,12 @@ export const Theremin = () => {
       }
     };
     const canvasPressed = () => {
-      // if (isPlayback) {
-      //   synth.triggerRelease();
-      //   sequence.x = [];
-      //   sequence.y = [];
-      // }
-
+      if (isPlayback) {
+        synth.triggerRelease();
+        sequence.x = [];
+        sequence.y = [];
+      }
+      isPlayback = false;
       synth.triggerAttack(pitch);
       playTheremin(p.mouseX, p.mouseY);
       startLoop(thereminLoop);
@@ -189,22 +173,17 @@ export const Theremin = () => {
       loopBarStart = getCurrentBar();
     };
 
-    //if w is pressed
-    p.keyPressed = () => {
-      if (p.key === 'w') {
-        synth.triggerRelease();
-        sequence.x = [];
-        sequence.y = [];
-      }
-    };
-
     const releaseNote = () => {
       mouseIsPressing = false;
+      isPlayback = true;
       sequenceCounter = 0;
       synth.triggerRelease();
-
+      setTimeout(() => {
+        synth.triggerAttack(pitch);
+      }, 300);
       loopBarEnd = getCurrentBar();
       loopLengthBars = loopBarEnd - loopBarStart + 1;
+      `z`;
     };
     const playTheremin = (x: number, y: number) => {
       // volume
@@ -226,78 +205,58 @@ export const Theremin = () => {
       wow.frequency.value = wowFreq;
     };
     const thereminLoop = new Tone.Loop(song, 1 / 30);
-
-    const playbackTheremin = (
-      playTheremin: (x: number, y: number) => void,
-      showOrb: (x: number, y: number) => void,
-      p: p5
-    ) => {
-      playTheremin(sequence.x[sequenceCounter], sequence.y[sequenceCounter]);
-      showOrb(sequence.x[sequenceCounter], sequence.y[sequenceCounter]);
-      p.ellipse(barVisualizerPosition, p.height / 10, 40, 40);
-      barVisualizerPosition =
-        (barVisualizerPosition + barVisualizerSpeed(loopLengthBars, p.width)) %
-        p.width;
-    };
-    const recordTheremin = (
-      p: p5,
-      playTheremin: (x: number, y: number) => void
-    ) => {
-      sequence.x = [...sequence.x, p.mouseX];
-      sequence.y = [...sequence.y, p.mouseY];
-      playTheremin(p.mouseX, p.mouseY);
-      showOrb(p.mouseX, p.mouseY);
-    };
+    startLoop(thereminLoop);
   };
 
   return (
     <>
-      <ReactP5Wrapper
-        sketch={sketch}
-        // octave={oct}
-        thereminState={thereminState}
-      />
+      <ReactP5Wrapper sketch={sketch} />
       <Stack direction="row" spacing={2}>
         <AButton
           onClick={() => {
-            //setOct((prev) => prev - 1);
+            setOct((prev) => prev - 1);
           }}
         >
           oct --1
         </AButton>
         <AButton
           onClick={() => {
-            //setOct((prev) => prev + 1);
+            setOct((prev) => prev + 1);
           }}
         >
           oct +1
         </AButton>
         <AButton
           onClick={() => {
-            if (Tone.Transport.state === 'stopped') {
-              Tone.Transport.start();
-            }
-
-            Tone.Transport.schedule(() => {
-              console.log('recording');
-              setThereminState(THEREMIN_STATES.IS_RECORDING);
-            }, Tone.Transport.nextSubdivision('1m'));
-            Tone.Transport.schedule(() => {
-              setThereminState(THEREMIN_STATES.IS_PLAYBACK);
-              console.log({ thereminState });
-            }, Tone.Transport.nextSubdivision('2m'));
+            setIsRecording(true);
           }}
         >
           <Icon>
-            <FiberManualRecord
-              sx={{
-                fill:
-                  thereminState === THEREMIN_STATES.IS_RECORDING ? 'red' : '',
-              }}
-            />
+            <FiberManualRecord sx={{ fill: 'green' }} />
           </Icon>
         </AButton>
       </Stack>
     </>
   );
+};
+const recordTheremin = (
+  p: p5,
+  playTheremin: (x: number, y: number) => void
+) => {
+  sequence.x = [...sequence.x, p.mouseX];
+  sequence.y = [...sequence.y, p.mouseY];
+  playTheremin(p.mouseX, p.mouseY);
+};
+
+const playbackTheremin = (
+  playTheremin: (x: number, y: number) => void,
+  showOrb: (x: number, y: number) => void,
+  p: p5
+) => {
+  playTheremin(sequence.x[sequenceCounter], sequence.y[sequenceCounter]);
+  showOrb(sequence.x[sequenceCounter], sequence.y[sequenceCounter]);
+  p.ellipse(barVisualizerPosition, p.height / 10, 40, 40);
+  barVisualizerPosition =
+    (barVisualizerPosition + barVisualizerSpeed(loopLengthBars, p.width)) %
+    p.width;
 };
