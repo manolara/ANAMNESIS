@@ -24,7 +24,21 @@ export const AButton = styled(ButtonBase)(
 );
 
 export const customTheme = createTheme({
+  typography: {
+    fontFamily: `"Futura","Roboto", "Helvetica", "Arial", sans-serif`,
+    fontSize: 14,
+    fontWeightLight: 300,
+    fontWeightRegular: 400,
+    fontWeightMedium: 500,
+  },
   components: {
+    MuiAutocomplete: {
+      styleOverrides: {
+        root: {
+          borderRadius: 100,
+        },
+      },
+    },
     MuiButtonBase: {
       defaultProps: {
         disableRipple: true,
@@ -32,3 +46,8 @@ export const customTheme = createTheme({
     },
   },
 });
+
+export const APalette = {
+  pink: '#ffb8b8',
+  purple: '#a89db9',
+};

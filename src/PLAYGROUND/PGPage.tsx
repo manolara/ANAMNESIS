@@ -7,6 +7,7 @@ import { ThereminPage } from '../pages/ThereminPage';
 import { PlayButton } from '../playbackCtrl/PlayButton';
 import { StopButton } from '../playbackCtrl/StopButton';
 import { Playground } from './Playground';
+import { ThereminWithoutState } from './ThereminWithoutState';
 
 export const PGPage = () => {
   return (
@@ -16,7 +17,7 @@ export const PGPage = () => {
       <Metronome />
       <StopButton />
       <PlayButton />
-      <Theremin />
+      <ThereminWithoutState />
     </>
   );
 };

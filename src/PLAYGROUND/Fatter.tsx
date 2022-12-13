@@ -11,9 +11,10 @@ const styles = {
 };
 let circleY = 40;
 let circleX = 0;
-let fatness = 30;
 
 export const Fatter = () => {
+  let fatness = 30;
+  let fatnessArray = [fatness, 0];
   function sketch(p: P5CanvasInstance) {
     p.setup = () => {
       p.createCanvas(600, 400);
@@ -23,14 +24,14 @@ export const Fatter = () => {
     p.draw = () => {
       p.background(0);
 
-      p.circle(circleX, circleY, fatness);
+      p.circle(circleX, circleY, fatnessArray[0]);
       circleX++;
     };
   }
   return (
     <>
       <Button>yo</Button>
-      <Button onClick={() => (fatness += 30)}>FATTER</Button>
+      <Button onClick={() => (fatnessArray[0] += 30)}>FATTER</Button>
       <ReactP5Wrapper sketch={sketch} />
     </>
   );
