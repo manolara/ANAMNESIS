@@ -6,7 +6,7 @@ export const Page2 = () => {
   return (
     <div>
       <Stack height="100%" alignItems="center" justifyContent="center">
-        ma boi
+        go TO PAGE 1
       </Stack>
     </div>
   );
