@@ -21,6 +21,8 @@ import { Theremin } from '../pages/Theremin';
 import { AButton, APalette } from '../theme';
 import {
   barVisualizerSpeed,
+  getCurrentBar,
+  getCurrentBeat,
   loopLengthSeconds,
   startLoop,
 } from '../utils/utils';
@@ -92,6 +94,9 @@ interface ThereminProps extends SketchProps {
 const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   let oct = 4;
   let thereminState = 'idle';
+  let barsLooped = 0;
+  let prevBeat = -1;
+  let prevBarsLooped = -1;
   const song = () => {
     drawBackground();
     if (thereminState === 'idle') {
@@ -103,9 +108,19 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     }
     if (thereminState === 'playback') {
       playbackTheremin(playTheremin, showOrb, p);
-      console.log(sequence.x);
+
       sequenceCounter = (sequenceCounter + 1) % sequence.x.length;
+      if (getCurrentBeat() === 0 && prevBeat === 3) {
+        barsLooped = (barsLooped + 1) % loopLengthBars;
+        console.log('yo', barsLooped);
+      }
+      if (barsLooped === 0 && prevBarsLooped === loopLengthBars - 1) {
+        sequenceCounter = 0;
+        console.log('reset that shit');
+      }
     }
+    prevBeat = getCurrentBeat();
+    prevBarsLooped = barsLooped;
   };
 
   const playbackTheremin = (
@@ -134,7 +149,6 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     cnv = p.createCanvas(canvasWidth, canvasHeight);
     cnv.mousePressed(canvasPressed);
 
-    console.log('setup');
     setNotes(oct);
     cnv.mouseOut(() => {
       if (p.mouseIsPressed) {
@@ -268,7 +282,6 @@ export const ThereminWithoutState = () => {
               if (value) {
                 setRecordingLength(+value);
               }
-              console.log(recordingLength);
             }}
             sx={{
               px: 3,
@@ -295,18 +308,19 @@ export const ThereminWithoutState = () => {
               Tone.Transport.start();
             }
 
-            let start = Tone.Transport.nextSubdivision('1m');
-            let end = Tone.Time(`${recordingLength}m`).toSeconds();
-            end += start;
-            console.log(start, end);
+            let start = getCurrentBar() + 1;
+            let end = start + recordingLength;
 
             Tone.Transport.schedule(() => {
               setThereminState('recording');
-            }, start);
+              let newSynth = new Tone.Synth()
+                .toDestination()
+                .triggerAttackRelease('C4', '8n');
+            }, `${start}:0:0`);
 
             Tone.Transport.schedule(() => {
               setThereminState('playback');
-            }, end);
+            }, `${end}:0:0`);
           }}
         >
           <Icon>

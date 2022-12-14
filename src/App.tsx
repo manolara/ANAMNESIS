@@ -14,6 +14,8 @@ import { Fatter } from './PLAYGROUND/Fatter';
 import { ThereminReassess } from './PLAYGROUND/ThereminReassess';
 import { ThereminWithoutState } from './PLAYGROUND/ThereminWithoutState';
 
+import { Horizontal } from './PLAYGROUND/horizontal_scrolling/Horizontal';
+
 export const App = () => {
   return (
     <Routes>
@@ -29,6 +31,7 @@ export const App = () => {
       <Route path="fatter" element={<Fatter />} />
       <Route path="reassess" element={<ThereminReassess />} />
       <Route path="reassess2" element={<ThereminWithoutState />} />
+      <Route path="horizontal" element={<Horizontal />} />
     </Routes>
   );
 };
