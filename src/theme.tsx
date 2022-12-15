@@ -50,4 +50,5 @@ export const customTheme = createTheme({
 export const APalette = {
   pink: '#ffb8b8',
   purple: '#a89db9',
+  orange: '#FFDCB8',
 };

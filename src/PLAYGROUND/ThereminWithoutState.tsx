@@ -208,6 +208,9 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
       synth.triggerAttack(pitch);
     }
     if (thereminState === 'idle') {
+      thereminLoop.stop();
+      mainLoop.stop();
+      synth.triggerRelease();
       sequence.x = [];
       sequence.y = [];
     }
@@ -305,6 +308,14 @@ export const ThereminWithoutState = () => {
               />
             )}
           />
+          <AButton
+            onClick={() => {
+              setThereminState('idle');
+            }}
+            sx={{ fontSize: 15, backgroundColor: '#b8b9ff' }}
+          >
+            clear
+          </AButton>
         </Stack>
 
         <AButton
