@@ -34,7 +34,7 @@ let pitch: string;
 let cellNum: number;
 let prevCell;
 let mouseIsPressing: boolean;
-
+let hasloopStarted = false;
 let wowFreq = 3;
 let wow: Tone.LFO;
 const wowRange = 20;
@@ -111,6 +111,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     }
   }, 1 / 30);
   const song = () => {
+    hasloopStarted = true;
     sequenceCounter = 0;
     mainLoop.stop();
     mainLoop.start();
@@ -183,13 +184,20 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     p.pop();
   };
 
-  p.draw = () => {};
+  p.draw = () => {
+    if (hasloopStarted === false) {
+      drawBackground();
+      showOrb(p.mouseX, p.mouseY);
+      console.log('yo');
+    }
+  };
   p.updateWithProps = (props: ThereminProps) => {
     if (props.octave) {
       oct = props.octave;
     }
     if (props.recordingLength) {
       recordingLength = props.recordingLength;
+      thereminLoop.interval = `${recordingLength}m`;
     }
     if (props.thereminState) {
       thereminState = props.thereminState;
