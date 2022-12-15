@@ -92,15 +92,14 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   let oct = 4;
   let recordingLength = 1;
   let thereminState = 'idle';
-  let barsLooped = 0;
-  let prevBeat = -1;
-  let prevBarsLooped = -1;
 
   let mainLoop = new Tone.Loop((time) => {
     drawBackground();
-
+    if (thereminState === 'idle') {
+      showOrb(p.mouseX, p.mouseY);
+      playTheremin(p.mouseX, p.mouseY);
+    }
     if (thereminState === 'recording') {
-      drawBackground();
       recordTheremin(p, playTheremin);
     }
     if (thereminState === 'playback') {
@@ -109,7 +108,6 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     }
   }, 1 / 30);
   const song = () => {
-    console.log('started');
     sequenceCounter = 0;
     mainLoop.stop();
     mainLoop.start();
@@ -182,13 +180,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     p.pop();
   };
 
-  p.draw = () => {
-    if (thereminState === 'idle') {
-      drawBackground();
-      showOrb(p.mouseX, p.mouseY);
-      playTheremin(p.mouseX, p.mouseY);
-    }
-  };
+  p.draw = () => {};
   p.updateWithProps = (props: ThereminProps) => {
     if (props.octave) {
       oct = props.octave;
@@ -198,10 +190,6 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     }
     if (props.thereminState) {
       thereminState = props.thereminState;
-      thereminLoop.interval = `${recordingLength}m`;
-    }
-    if (thereminState === 'recording') {
-      thereminLoop.start();
     }
     if (thereminState === 'playback') {
       synth.triggerRelease();
@@ -218,6 +206,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     playTheremin(p.mouseX, p.mouseY);
 
     mouseIsPressing = true;
+    startLoop(thereminLoop);
   };
 
   const releaseNote = () => {
