@@ -211,7 +211,7 @@ function sketch(p: P5Instance<DoodlerProps>) {
 
       songCounter = firstCell(xCoordinatesLine);
       newLine = true;
-      startLoop(loopBeat);
+      startLoop(loopBeat, '1m');
     }
   };
 }

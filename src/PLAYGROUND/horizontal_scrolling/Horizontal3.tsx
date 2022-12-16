@@ -1,10 +1,18 @@
+import * as Tone from 'tone';
+
 import { RefObject, useRef } from 'react';
 
-import { Page2 } from './Page2';
-import { Link } from 'react-scroll';
 import { Box, Button, Icon, Stack, Typography } from '@mui/material';
 import EastIcon from '@mui/icons-material/East';
 import WestIcon from '@mui/icons-material/West';
+import { Reverb, ReverbFX } from '../../FX/Reverb';
+import { AButton } from '../../theme';
+
+const testSynth = new Tone.Synth({
+  oscillator: {
+    type: 'sine',
+  },
+}).connect(ReverbFX);
 
 export const Horizontal3 = () => {
   const page1Ref = useRef<HTMLDivElement>(null);
@@ -39,22 +47,46 @@ export const Horizontal3 = () => {
           </Icon>
         </Box>
       </Stack>
-
+      {/* page 2 */}
       <Stack
-        justifyContent={'center'}
-        alignItems="start"
+        direction="row"
         minWidth="100vw"
         height="100vh"
         id="page2"
         ref={page2Ref}
         sx={{ position: 'relative', scrollSnapAlign: 'start' }}
-        //overflow="hidden"
       >
-        <Box ml={3}>
-          <Icon onClick={() => handleScroll(page1Ref)}>
-            <WestIcon />
-          </Icon>
-        </Box>
+        <Stack height="100%" width="100%" direction="row">
+          {/* arrow */}
+          <Stack
+            height="100%"
+            justifyContent={'center'}
+            alignItems="start"
+            ml={3}
+          >
+            <Icon onClick={() => handleScroll(page1Ref)}>
+              <WestIcon />
+            </Icon>
+          </Stack>
+          {/* FX */}
+          <Reverb />
+          <AButton
+            onClick={() => {
+              testSynth.triggerAttack('C4', Tone.now(), 0.2);
+            }}
+            sx={{ maxHeight: '10%' }}
+          >
+            Attack
+          </AButton>
+          <AButton
+            onClick={() => {
+              testSynth.triggerRelease();
+            }}
+            sx={{ maxHeight: '10%' }}
+          >
+            Release
+          </AButton>
+        </Stack>
       </Stack>
     </Stack>
   );
