@@ -4,12 +4,14 @@ import { APalette } from '../theme';
 import { Knob } from './Knob';
 import { KnobSVG } from './KnobSVG';
 import * as Tone from 'tone';
+import { KnobTest } from './KnobTest';
 
 export const ReverbFX = new Tone.Reverb({ decay: 5, wet: 1 }).toDestination();
 
 export const Reverb = () => {
   const theme = useTheme();
   const [decay, setDecay] = React.useState(5);
+  ReverbFX.set({ decay: decay });
   return (
     <>
       <Stack
@@ -21,9 +23,15 @@ export const Reverb = () => {
           Reverb
         </Typography>
         <Stack className="unselectable" direction="row" spacing={3}>
-          <Knob defaultValue={decay} color={APalette.reverb} title={'Decay'} />
+          <Knob
+            defaultValue={decay}
+            color={APalette.reverb}
+            setParentValue={setDecay}
+            title={'Decay'}
+          />
           <Knob color={APalette.reverb} title={'Mix'} />
           <Knob color={APalette.reverb} title={'HPF'} />
+          <Typography>Decay: {decay}</Typography>
         </Stack>
       </Stack>
     </>
