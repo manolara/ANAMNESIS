@@ -31,6 +31,13 @@ export const Reverb = () => {
           />
           <Knob color={APalette.reverb} title={'Mix'} />
           <Knob color={APalette.reverb} title={'HPF'} />
+          <KnobTest
+            min={0}
+            max={100}
+            color={APalette.reverb}
+            title={'HPF'}
+            hasDecimalsProp={false}
+          />
           <Typography>Decay: {decay}</Typography>
         </Stack>
       </Stack>
