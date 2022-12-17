@@ -1,42 +1,36 @@
 import { Stack, Typography } from '@mui/material';
+import p5 from 'p5';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import {
   P5CanvasInstance,
   ReactP5Wrapper,
   SketchProps,
 } from 'react-p5-wrapper';
-import { mapLog, mapLogInv } from '../utils/utils';
-import p5 from 'p5';
+import { mapLog } from '../utils/utils';
 
 interface KnobProps extends SketchProps {
   color: string;
   title?: string;
   setParentValue?: Dispatch<SetStateAction<number>>;
-  isExp?: boolean;
-  min?: number;
-  max?: number;
-  hasDecimals?: boolean;
-  defaultValue?: number;
 }
 
 interface KnobComponentProps {
   color: string;
   title?: string;
-  defaultValue?: number;
+  defaultValueProp?: number;
   setParentValue?: Dispatch<SetStateAction<number>>;
-  isExp?: boolean;
   min?: number;
   max?: number;
-  hasDecimals?: boolean;
+  hasDecimalsProp?: boolean;
 }
 
-let sketchColorDefault = '#b8b9ff';
-let sketchTitleDefault = 'Knob';
-let minDefault = 0;
-let maxDefault = 100;
-let hasDecimalsDefault = false;
-let isExpDefault = false;
-
+let sketchColor = '#b8b9ff';
+let sketchTitle = 'Knob';
+let p5min: number;
+let p5max: number;
+let hasDecimals = false;
+let isExp = true;
+let defaultValue: number;
 const sketch = (p: P5CanvasInstance<KnobProps>) => {
   const r = 45;
   const canvasWidth = r + 4;
@@ -44,17 +38,13 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
   const x = canvasWidth / 2;
   const y = canvasHeight / 2 - 8;
   let cnv: p5.Renderer;
-  let sketchColor = sketchColorDefault;
-  let min = minDefault;
-  let max = maxDefault;
-  let hasDecimals = hasDecimalsDefault;
-  let isExp = isExpDefault;
-  let value = (minDefault + maxDefault) / 2;
+  let value = defaultValue ? defaultValue : (p5min + p5max) / 2;
   let isDragging = false;
   let prevY = -1;
+
   let endX = 0;
   let endY = 0;
-  let scrollFactor = (max - min) / (100 * 4);
+  let scrollFactor = (p5max - p5min) / (100 * 4);
 
   let setParentValueSketch: Dispatch<SetStateAction<number>>;
   p.angleMode(p.DEGREES);
@@ -63,38 +53,19 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
     if (props.setParentValue) {
       setParentValueSketch = props.setParentValue;
     }
-    if (props.color) {
-      sketchColor = props.color;
-    }
-    if (props.isExp) {
-      isExp = props.isExp;
-    }
-    if (props.min) {
-      min = props.min;
-    }
-    if (props.max) {
-      max = props.max;
-    }
-    if (props.hasDecimals) {
-      hasDecimals = props.hasDecimals;
-    }
-    if (props.defaultValue) {
-      value = props.defaultValue;
-    }
-    scrollFactor = (max - min) / (100 * 4);
+    console.log('something');
   };
 
   p.setup = () => {
     cnv = p.createCanvas(canvasWidth, canvasHeight);
     p.textAlign(p.CENTER, p.CENTER);
-    p.frameRate(30);
   };
 
   p.draw = () => {
-    let angle = p.map(value, min, max, 225, -45);
+    let angle = p.map(value, p5min, p5max, 225, -45);
     endY = (p.sin(angle) * r) / 2;
     endX = (p.cos(angle) * r) / 2;
-
+    console.log({ value });
     p.background(sketchColor);
     p.push();
     p.translate(x, y);
@@ -106,17 +77,16 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
         let change = hasDecimals
           ? (p.mouseY - prevY) * scrollFactor
           : Math.floor((p.mouseY - prevY) * scrollFactor);
-        console.log(scrollFactor);
 
-        if (change < 0 && value < max) {
-          if (value - change > max) {
-            value = max;
+        if (change < 0 && value < p5max) {
+          if (value - change > p5max) {
+            value = p5max;
           } else {
             value = value - change;
           }
         } else if (change > 0 && value > 0) {
           if (value - change < 0) {
-            value = min;
+            value = p5min;
           } else {
             value = value - change;
           }
@@ -124,8 +94,9 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
       }
 
       prevY = p.mouseY;
+      console.log('value2', value);
     }
-    let outValue = isExp ? mapLog(value, min, max, min, max) : value;
+    let outValue = isExp ? mapLog(value, p5min, p5max, p5min, p5max) : value;
     outValue = hasDecimals
       ? Math.floor(outValue * 100) / 100
       : Math.floor(outValue);
@@ -137,47 +108,53 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
   p.mousePressed = () => {
     if (p.dist(p.mouseX, p.mouseY, p.width / 2, p.height / 2) < r) {
       isDragging = true;
+      console.log(isDragging);
       prevY = -1;
     }
   };
   p.mouseReleased = () => {
     isDragging = false;
+    console.log(isDragging);
   };
 };
 
 export const Knob = ({
-  color = sketchColorDefault,
-  title = sketchTitleDefault,
-  defaultValue,
+  color,
+  title,
+  defaultValueProp,
   setParentValue,
-  min = minDefault,
-  max = maxDefault,
-  hasDecimals = hasDecimalsDefault,
-  isExp = isExpDefault,
+  min = 0,
+  max = 100,
+  hasDecimalsProp,
 }: KnobComponentProps) => {
-  if (!defaultValue) {
-    defaultValue = (min + max) / 2;
+  sketchColor = color;
+  if (title) {
+    sketchTitle = title;
+  }
+  if (hasDecimalsProp) {
+    hasDecimals = hasDecimalsProp;
+  }
+
+  useEffect(() => {
+    p5min = min;
+    console.log({ min }, min);
+    p5max = max;
+    console.log('p5max', p5max);
+  }, []);
+
+  if (defaultValueProp) {
+    defaultValue = defaultValueProp;
   }
   return (
     <Stack justifyContent="center" alignItems="center">
-      <Typography variant="subtitle2">{title}</Typography>
-      <ReactP5Wrapper
-        sketch={sketch}
-        setParentValue={setParentValue}
-        color={color}
-        min={min}
-        max={max}
-        defaultValue={defaultValue}
-        hasDecimals={hasDecimals}
-        isExp={isExp}
-      />
+      <Typography variant="subtitle2">{sketchTitle}</Typography>
+      <ReactP5Wrapper sketch={sketch} setParentValue={setParentValue} />
     </Stack>
   );
 };
 
 /*  
-1. detect whe
-n knob is clicked
+1. detect when knob is clicked
 2. find wether the dragging is up or down
 3. change the value of the knob
 

@@ -1,6 +1,6 @@
 import * as Tone from 'tone';
 
-import { RefObject, useRef } from 'react';
+import { RefObject, useEffect, useRef } from 'react';
 
 import { Box, Button, Icon, Stack, Typography } from '@mui/material';
 import EastIcon from '@mui/icons-material/East';
@@ -15,6 +15,10 @@ const testSynth = new Tone.Synth({
 }).connect(ReverbFX);
 
 export const Horizontal3 = () => {
+  useEffect(() => {
+    testSynth.connect(ReverbFX);
+  }, [ReverbFX]);
+
   const page1Ref = useRef<HTMLDivElement>(null);
   const page2Ref = useRef<HTMLDivElement>(null);
   const handleScroll = (ref: RefObject<HTMLDivElement>) => {
