@@ -5,12 +5,15 @@ import { Knob } from './Knob';
 import { KnobSVG } from './KnobSVG';
 import * as Tone from 'tone';
 import { KnobTest } from './KnobTest';
+import { KnobExp } from './KnobExp';
 
 export const ReverbFX = new Tone.Reverb({ decay: 5, wet: 1 }).toDestination();
 
 export const Reverb = () => {
   const theme = useTheme();
   const [decay, setDecay] = React.useState(5);
+  const testDecayDefault = 0.2;
+  const [testDecay, setTestDecay] = React.useState(testDecayDefault);
   ReverbFX.set({ decay: decay });
   return (
     <>
@@ -38,7 +41,16 @@ export const Reverb = () => {
             title={'HPF'}
             hasDecimalsProp={false}
           />
-          <Typography>Decay: {decay}</Typography>
+          <KnobExp
+            min={0.2}
+            max={70}
+            color={APalette.reverb}
+            title={'HPF'}
+            hasDecimalsProp={true}
+            defaultValueProp={testDecayDefault}
+            setParentValue={setTestDecay}
+          />
+          <Typography>Test: {testDecay}</Typography>
         </Stack>
       </Stack>
     </>

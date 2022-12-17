@@ -61,7 +61,7 @@ export const mapLog = (
   maxp: number,
   minv: number,
   maxv: number
-) => {
+): number => {
   // position will be between 0 and 100
   if (minv == 0) {
     minv = 0.2;
@@ -74,4 +74,25 @@ export const mapLog = (
   var scale = (maxv - minv) / (maxp - minp);
 
   return Math.exp(minv + scale * (value - minp));
+};
+
+export const mapLogInv = (
+  value: number,
+  minp: number,
+  maxp: number,
+  minv: number,
+  maxv: number
+) => {
+  // position will be between 0 and 100
+  if (minv == 0) {
+    minv = 0.2;
+  }
+  // The result should be between 100 an 10000000
+  var minv = Math.log(minv);
+  var maxv = Math.log(maxv);
+
+  // calculate adjustment factor
+  var scale = (maxv - minv) / (maxp - minp);
+
+  return (Math.log(value) - minv) / scale + minp;
 };
