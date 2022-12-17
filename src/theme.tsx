@@ -52,4 +52,5 @@ export const APalette = {
   purple: '#a89db9',
   orange: '#FFDCB8',
   reverb: '#b8b9ff',
+  delay: '#fffeb8',
 };

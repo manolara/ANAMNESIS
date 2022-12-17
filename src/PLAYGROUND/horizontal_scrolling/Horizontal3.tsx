@@ -7,6 +7,7 @@ import EastIcon from '@mui/icons-material/East';
 import WestIcon from '@mui/icons-material/West';
 import { Reverb, ReverbFX } from '../../FX/Reverb';
 import { AButton } from '../../theme';
+import { Delay } from '../../FX/Delay';
 
 const testSynth = new Tone.Synth({
   oscillator: {
@@ -73,7 +74,10 @@ export const Horizontal3 = () => {
             </Icon>
           </Stack>
           {/* FX */}
-          <Reverb />
+          <Stack>
+            <Reverb />
+            <Delay />
+          </Stack>
           <AButton
             onClick={() => {
               testSynth.triggerAttack('C4', Tone.now(), 0.2);

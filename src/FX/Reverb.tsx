@@ -6,19 +6,19 @@ import { KnobSVG } from './KnobSVG';
 import * as Tone from 'tone';
 import { KnobTest } from './KnobTest';
 import { Knob } from './Knob';
+import { DelayFX } from './Delay';
 
-export const ReverbFX = new Tone.Reverb().toDestination();
+export const ReverbFX = new Tone.Reverb().connect(DelayFX);
 
 export const Reverb = () => {
   const theme = useTheme();
-  const testDecayDefault = 0.2;
+  const decayDefault = 0.2;
   const mixDefault = 50;
-  const [decay, setDecay] = React.useState(5);
   const [mix, setMix] = React.useState(mixDefault);
-  const [testDecay, setTestDecay] = React.useState(testDecayDefault);
+  const [decay, setDecay] = React.useState(decayDefault);
   console.log({ mix });
   ReverbFX.set({ decay: decay, wet: mix / 100 });
-  console.log('wetness', ReverbFX.get().wet);
+  console.log('decay', ReverbFX.get().decay);
   return (
     <>
       <Stack
@@ -37,8 +37,8 @@ export const Reverb = () => {
             title={'Decay'}
             isExp={true}
             hasDecimals={true}
-            defaultValue={testDecayDefault}
-            setParentValue={setTestDecay}
+            defaultValue={decayDefault}
+            setParentValue={setDecay}
           />
           <Knob
             color={APalette.reverb}
@@ -54,7 +54,6 @@ export const Reverb = () => {
             min={20}
             max={2000}
           />
-          <Typography>Test: {testDecay}</Typography>
         </Stack>
       </Stack>
     </>
