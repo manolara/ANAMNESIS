@@ -38,6 +38,8 @@ export const Compressor = () => {
             title={'Threshold'}
             defaultValue={thresholdDefault}
             setParentValue={setThreshold}
+            min={-60}
+            max={-10}
           />
           <Knob
             color={APalette.orange}

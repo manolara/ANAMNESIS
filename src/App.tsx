@@ -5,7 +5,7 @@ import NotFound from './pages/NotFound';
 import { DoodlerPage } from './pages/DoodlerPage';
 import { MySketchPage } from './pages/MySketchPage';
 import { Playground } from './PLAYGROUND/Playground';
-import { customTheme } from './theme';
+import { APalette, customTheme } from './theme';
 import { Theremin } from './pages/Theremin';
 import { PGPage } from './PLAYGROUND/PGPage';
 import * as Tone from 'tone';
@@ -15,6 +15,7 @@ import { ThereminReassess } from './PLAYGROUND/ThereminReassess';
 import { ThereminWithoutState } from './PLAYGROUND/ThereminWithoutState';
 
 import { Horizontal3 } from './PLAYGROUND/horizontal_scrolling/Horizontal3';
+import { Knob } from './FX/Knob';
 
 export const App = () => {
   return (
@@ -31,6 +32,18 @@ export const App = () => {
       <Route path="fatter" element={<Fatter />} />
       <Route path="reassess" element={<ThereminReassess />} />
       <Route path="reassess2" element={<ThereminWithoutState />} />
+      <Route
+        path="knob"
+        element={
+          <Knob
+            color={APalette.pink}
+            defaultValue={60}
+            isExp
+            min={10}
+            max={1000}
+          />
+        }
+      />
 
       <Route path="horizontal3" element={<Horizontal3 />} />
     </Routes>

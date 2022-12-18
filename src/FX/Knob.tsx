@@ -54,7 +54,7 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
   let prevY = -1;
   let endX = 0;
   let endY = 0;
-  let scrollFactor = (max - min) / (100 * 4);
+  let scrollFactor = 1 / (100 * 4);
 
   let setParentValueSketch: Dispatch<SetStateAction<number>>;
   p.angleMode(p.DEGREES);
@@ -79,9 +79,12 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
       hasDecimals = props.hasDecimals;
     }
     if (props.defaultValue) {
-      value = props.defaultValue;
+      value = isExp
+        ? Math.floor(mapLogInv(props.defaultValue, 0, 100, min, max))
+        : props.defaultValue;
+      console.log('hasDecimals', hasDecimals);
     }
-    scrollFactor = (max - min) / (100 * 4);
+    scrollFactor = 1 / 4;
   };
 
   p.setup = () => {
@@ -91,7 +94,7 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
   };
 
   p.draw = () => {
-    let angle = p.map(value, min, max, 225, -45);
+    let angle = p.map(value, 0, 100, 225, -45);
     endY = (p.sin(angle) * r) / 2;
     endX = (p.cos(angle) * r) / 2;
 
@@ -102,30 +105,43 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
     p.line(0, 0, endX, -endY);
     p.pop();
     if (isDragging) {
+      console.log({ value });
       if (prevY !== -1) {
         let change = hasDecimals
           ? (p.mouseY - prevY) * scrollFactor
           : Math.floor((p.mouseY - prevY) * scrollFactor);
         console.log(scrollFactor);
 
-        if (change < 0 && value < max) {
-          if (value - change > max) {
-            value = max;
+        if (change < 0 && value < 100) {
+          if (value - change > 100) {
+            value = 100;
           } else {
             value = value - change;
           }
         } else if (change > 0 && value > 0) {
           if (value - change < 0) {
-            value = min;
+            value = 0;
           } else {
             value = value - change;
           }
         }
       }
+      console.log({ value });
 
       prevY = p.mouseY;
     }
-    let outValue = isExp ? mapLog(value, min, max, min, max) : value;
+    let outValue = isExp ? mapLog(value, 0, 100, min, max) : value;
+
+    //making sure the value quantization looks good
+    let half = (max - min + min) / 2;
+    if (outValue > max - max * 0.1) {
+      outValue = max;
+    } else if (outValue < min) {
+      outValue = min;
+    } else if (outValue < half + half * 0.01 && outValue > half - half * 0.01) {
+      outValue = half;
+    }
+
     outValue = hasDecimals
       ? Math.floor(outValue * 100) / 100
       : Math.floor(outValue);
