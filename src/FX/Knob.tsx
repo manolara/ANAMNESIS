@@ -81,7 +81,7 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
     if (props.defaultValue) {
       value = isExp
         ? Math.floor(mapLogInv(props.defaultValue, 0, 100, min, max))
-        : props.defaultValue;
+        : p.map(props.defaultValue, min, max, 0, 100);
       console.log('hasDecimals', hasDecimals);
     }
     scrollFactor = 1 / 4;
@@ -130,7 +130,9 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
 
       prevY = p.mouseY;
     }
-    let outValue = isExp ? mapLog(value, 0, 100, min, max) : value;
+    let outValue = isExp
+      ? mapLog(value, 0, 100, min, max)
+      : p.map(value, 0, 100, min, max);
 
     //making sure the value quantization looks good
     let half = (max - min + min) / 2;
