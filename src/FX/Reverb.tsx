@@ -16,9 +16,7 @@ export const Reverb = () => {
   const mixDefault = 50;
   const [mix, setMix] = React.useState(mixDefault);
   const [decay, setDecay] = React.useState(decayDefault);
-  console.log({ mix });
   ReverbFX.set({ decay: decay, wet: mix / 100 });
-  console.log('decay', ReverbFX.get().decay);
   return (
     <>
       <Stack

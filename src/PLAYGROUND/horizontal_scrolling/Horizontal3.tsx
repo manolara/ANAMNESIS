@@ -8,6 +8,7 @@ import WestIcon from '@mui/icons-material/West';
 import { Reverb, ReverbFX } from '../../FX/Reverb';
 import { AButton } from '../../theme';
 import { Delay } from '../../FX/Delay';
+import { Compressor } from '../../FX/Compressor';
 
 const testSynth = new Tone.Synth({
   oscillator: {
@@ -16,10 +17,6 @@ const testSynth = new Tone.Synth({
 }).connect(ReverbFX);
 
 export const Horizontal3 = () => {
-  useEffect(() => {
-    testSynth.connect(ReverbFX);
-  }, [ReverbFX]);
-
   const page1Ref = useRef<HTMLDivElement>(null);
   const page2Ref = useRef<HTMLDivElement>(null);
   const handleScroll = (ref: RefObject<HTMLDivElement>) => {
@@ -77,6 +74,7 @@ export const Horizontal3 = () => {
           <Stack>
             <Reverb />
             <Delay />
+            <Compressor />
           </Stack>
           <AButton
             onClick={() => {
