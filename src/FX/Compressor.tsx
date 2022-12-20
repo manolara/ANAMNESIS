@@ -5,18 +5,24 @@ import { APalette } from '../theme';
 import * as Tone from 'tone';
 import { Knob } from './Knob';
 
+interface CompressorProps {
+  input: Tone.ToneAudioNode;
+  color: string;
+}
 const thresholdDefault = -24;
 const ratioDefault = 4;
 
-export const CompressorFX = new Tone.Compressor({
+export const CompressorOut = new Tone.Signal();
+
+const CompressorFX = new Tone.Compressor({
   threshold: thresholdDefault,
   ratio: ratioDefault,
   attack: 0.3,
   release: 0.1,
 }).toDestination();
 
-export const Compressor = () => {
-  const theme = useTheme();
+export const Compressor = ({ color, input }: CompressorProps) => {
+  input.chain(CompressorFX, CompressorOut);
 
   const [threshold, setThreshold] = useState(thresholdDefault);
   const [ratio, setRatio] = useState(ratioDefault);
@@ -27,22 +33,22 @@ export const Compressor = () => {
       <Stack
         // width="30%"
         height="fit-content"
-        sx={{ p: 1, backgroundColor: APalette.orange, minWidth: 'fit-content' }}
+        sx={{ p: 1, backgroundColor: color, minWidth: 'fit-content' }}
       >
         <Typography width="100%" className="unselectable" mb={1}>
           Compressor
         </Typography>
         <Stack className="unselectable" direction="row" spacing={3}>
           <Knob
-            color={APalette.orange}
+            color={color}
             title={'Threshold'}
             defaultValue={thresholdDefault}
             setParentValue={setThreshold}
             min={-60}
-            max={-10}
+            max={0}
           />
           <Knob
-            color={APalette.orange}
+            color={color}
             min={2}
             max={20}
             hasDecimals={false}
@@ -50,13 +56,7 @@ export const Compressor = () => {
             defaultValue={ratioDefault}
             setParentValue={setRatio}
           />
-          <Knob
-            color={APalette.orange}
-            title={'Out'}
-            isExp
-            min={20}
-            max={2000}
-          />
+          <Knob color={color} title={'Out'} isExp min={20} max={2000} />
         </Stack>
       </Stack>
     </>

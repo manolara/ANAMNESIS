@@ -60,6 +60,7 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
   p.angleMode(p.DEGREES);
 
   p.updateWithProps = (props: KnobProps) => {
+    console.log('yello');
     if (props.setParentValue) {
       setParentValueSketch = props.setParentValue;
     }
@@ -72,22 +73,22 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
     if (props.min) {
       min = props.min;
     }
-    if (props.max) {
+    if (props.max || props.max === 0) {
       max = props.max;
     }
     if (props.hasDecimals) {
       hasDecimals = props.hasDecimals;
     }
-    if (props.defaultValue) {
+    if (props.defaultValue || props.defaultValue === 0) {
       value = isExp
         ? Math.floor(mapLogInv(props.defaultValue, 0, 100, min, max))
         : p.map(props.defaultValue, min, max, 0, 100);
-      console.log('hasDecimals', hasDecimals);
     }
     scrollFactor = 1 / 4;
   };
 
   p.setup = () => {
+    console.log('setup');
     cnv = p.createCanvas(canvasWidth, canvasHeight);
     p.textAlign(p.CENTER, p.CENTER);
     p.frameRate(30);
@@ -136,7 +137,7 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
 
     //making sure the value quantization looks good
     let half = (max - min + min) / 2;
-    if (outValue > max - max * 0.1) {
+    if (outValue > max - max * 0.01) {
       outValue = max;
     } else if (outValue < min) {
       outValue = min;
@@ -173,9 +174,11 @@ export const Knob = ({
   hasDecimals = hasDecimalsDefault,
   isExp = isExpDefault,
 }: KnobComponentProps) => {
-  if (!defaultValue) {
+  if (!defaultValue && defaultValue !== 0) {
     defaultValue = (min + max) / 2;
+    console.log('yooo');
   }
+
   return (
     <Stack justifyContent="center" alignItems="center">
       <Typography variant="subtitle2">{title}</Typography>

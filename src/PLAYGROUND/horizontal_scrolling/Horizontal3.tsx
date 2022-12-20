@@ -1,22 +1,24 @@
 import * as Tone from 'tone';
 
-import { RefObject, useEffect, useRef } from 'react';
+import { RefObject, useRef } from 'react';
 
-import { Box, Button, Icon, Stack, Typography } from '@mui/material';
+import { Box, Icon, Stack, Typography } from '@mui/material';
 import EastIcon from '@mui/icons-material/East';
 import WestIcon from '@mui/icons-material/West';
-import { Reverb, ReverbFX } from '../../FX/Reverb';
-import { AButton } from '../../theme';
-import { Delay } from '../../FX/Delay';
-import { Compressor } from '../../FX/Compressor';
+import { Reverb, ReverbOut } from '../../FX/Reverb';
+import { AButton, APalette } from '../../theme';
+import { Delay, DelayOut } from '../../FX/Delay';
+import { Compressor, CompressorOut } from '../../FX/Compressor';
+import { Lofi, LofiOut } from '../../FX/Lofi';
 
 const testSynth = new Tone.Synth({
   oscillator: {
     type: 'sine',
   },
-}).connect(ReverbFX);
+});
 
 export const Horizontal3 = () => {
+  LofiOut.toDestination();
   const page1Ref = useRef<HTMLDivElement>(null);
   const page2Ref = useRef<HTMLDivElement>(null);
   const handleScroll = (ref: RefObject<HTMLDivElement>) => {
@@ -72,9 +74,11 @@ export const Horizontal3 = () => {
           </Stack>
           {/* FX */}
           <Stack>
-            <Reverb />
-            <Delay />
-            <Compressor />
+            <Reverb input={testSynth} color={APalette.reverb} />
+            <Delay input={ReverbOut} color={APalette.delay} />
+            <Compressor input={DelayOut} color={APalette.orange} />
+
+            <Lofi input={CompressorOut} color={APalette.lofi} />
           </Stack>
           <AButton
             onClick={() => {

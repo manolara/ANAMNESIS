@@ -35,13 +35,7 @@ export const App = () => {
       <Route
         path="knob"
         element={
-          <Knob
-            color={APalette.pink}
-            defaultValue={60}
-            isExp
-            min={10}
-            max={1000}
-          />
+          <Knob color={APalette.pink} defaultValue={0} min={0} max={100} />
         }
       />
 
