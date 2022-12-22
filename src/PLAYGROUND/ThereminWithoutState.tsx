@@ -1,14 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable no-return-assign */
 import { FiberManualRecord } from '@mui/icons-material';
-import {
-  Autocomplete,
-  Button,
-  ButtonGroup,
-  Icon,
-  Stack,
-  TextField,
-} from '@mui/material';
+import { Autocomplete, Icon, Stack, TextField } from '@mui/material';
 import p5 from 'p5';
 import { useState } from 'react';
 import {
@@ -17,23 +10,16 @@ import {
   SketchProps,
 } from 'react-p5-wrapper';
 import * as Tone from 'tone';
-import { Theremin } from '../pages/Theremin';
 import { AButton, APalette } from '../theme';
-import {
-  barVisualizerSpeed,
-  getCurrentBar,
-  getCurrentBeat,
-  loopLengthSeconds,
-  startLoop,
-} from '../utils/utils';
+import { barVisualizerSpeed, getCurrentBar } from '../utils/utils';
 
 const canvasHeight = 500;
 const canvasWidth = 700;
-let vol = 0.2;
+let outVol = 0.5;
+let vol = -60;
 let pitch: string;
 let cellNum: number;
 let prevCell;
-let mouseIsPressing: boolean;
 
 let wowFreq = 3;
 let wow: Tone.LFO;
@@ -45,24 +31,29 @@ let stroke = 2.2;
 interface SequenceType {
   x: number[];
   y: number[];
+  mouseOn: boolean[];
 }
 let sequence: SequenceType = {
   x: [],
   y: [],
+  mouseOn: [],
 };
-let isPlayback = false;
 let sequenceCounter: number;
 
 let loopLengthBars = 1;
 let barVisualizerPosition: number = 0;
 
 /// TONE.js///////
-const volKnob = new Tone.Gain(vol).toDestination();
+const volKnob = new Tone.Gain();
 const synth = new Tone.MonoSynth({
   oscillator: {
     type: 'triangle',
   },
 }).connect(volKnob);
+
+const thereminOut = new Tone.Gain(outVol).toDestination();
+
+volKnob.connect(thereminOut);
 
 let notes: string[] = [];
 
@@ -92,9 +83,6 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   let oct = 4;
   let recordingLength = 1;
   let thereminState = 'idle';
-  let barsLooped = 0;
-  let prevBeat = -1;
-  let prevBarsLooped = -1;
 
   let mainLoop = new Tone.Loop((time) => {
     drawBackground();
@@ -122,6 +110,14 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   ) => {
     playTheremin(sequence.x[sequenceCounter], sequence.y[sequenceCounter]);
     showOrb(sequence.x[sequenceCounter], sequence.y[sequenceCounter]);
+    let prev =
+      sequenceCounter !== 0 ? sequenceCounter - 1 : sequence.mouseOn.length - 1;
+    if (sequence.mouseOn[sequenceCounter] && !sequence.mouseOn[prev]) {
+      synth.triggerAttack(pitch);
+    }
+    if (!sequence.mouseOn[sequenceCounter] && sequence.mouseOn[prev]) {
+      synth.triggerRelease();
+    }
     p.ellipse(barVisualizerPosition, p.height / 10, 40, 40);
     barVisualizerPosition =
       (barVisualizerPosition + barVisualizerSpeed(loopLengthBars, p.width)) %
@@ -133,6 +129,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   ) => {
     sequence.x = [...sequence.x, p.mouseX];
     sequence.y = [...sequence.y, p.mouseY];
+    sequence.mouseOn = [...sequence.mouseOn, p.mouseIsPressed];
     playTheremin(p.mouseX, p.mouseY);
     showOrb(p.mouseX, p.mouseY);
   };
@@ -153,6 +150,8 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     wow.connect(synth.detune).start();
     drawBackground();
     p.frameRate(30);
+    // const mouseOnPrint = p.createButton('Check MouseON');
+    // mouseOnPrint.mouseClicked(() => console.log(sequence.mouseOn));
   };
 
   const drawBackground = () => {
@@ -203,9 +202,8 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     if (thereminState === 'recording') {
       thereminLoop.start();
     }
-    if (thereminState === 'playback') {
-      synth.triggerRelease();
-      synth.triggerAttack(pitch);
+    if (thereminState === 'playback' && !(props.thereminState === 'playback')) {
+      sequenceCounter = 0;
     }
     if (thereminState === 'idle') {
       thereminLoop.stop();
@@ -213,21 +211,17 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
       synth.triggerRelease();
       sequence.x = [];
       sequence.y = [];
+      sequence.mouseOn = [];
     }
   };
 
   const canvasPressed = () => {
     synth.triggerAttack(pitch);
     playTheremin(p.mouseX, p.mouseY);
-
-    mouseIsPressing = true;
   };
 
   const releaseNote = () => {
-    mouseIsPressing = false;
-    isPlayback = true;
-    sequenceCounter = 0;
-    synth.triggerRelease();
+    if (thereminState !== 'playback') synth.triggerRelease();
   };
   const playTheremin = (x: number, y: number) => {
     // volume
@@ -349,3 +343,10 @@ export const ThereminWithoutState = () => {
     </Stack>
   );
 };
+
+/*
+1. idle fuck around attack and release based on click
+2. record: record mouse state @end-> if still pressed dont do anything, if released -> dont do anything (already released and will trigger when the mouseOn array says so)
+2.5 try to check wether syncing to the tick instead of 1/30 would be better.
+3. make a synth class to that both triggers the attack and holds the state of the attack.
+*/

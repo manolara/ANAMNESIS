@@ -62,11 +62,10 @@ export const mapLog = (
   minv: number,
   maxv: number
 ): number => {
-  // position will be between 0 and 100
   if (minv == 0) {
     minv = 0.2;
   }
-  // The result should be between 100 an 10000000
+
   var minv = Math.log(minv);
   var maxv = Math.log(maxv);
 

@@ -25,7 +25,7 @@ export interface DoodlerProps extends SketchProps {
 const leadSynth = new Tone.MonoSynth();
 let loopLengthBars = 2;
 setupLeadSynth(leadSynth);
-const bassSynth = new Tone.MonoSynth().toDestination();
+const bassSynth = new Tone.MonoSynth({ volume: -3 }).toDestination();
 setupBassSynth(bassSynth);
 const gridOn = false;
 let mouseoff = false;
@@ -135,7 +135,7 @@ function sketch(p: P5Instance<DoodlerProps>) {
   }
   p.setup = () => {
     curColor = doodlerPalette.lightBlue;
-    const gainLead = new Tone.Gain(0.85).toDestination();
+    const gainLead = new Tone.Gain(0.6).toDestination();
     const postFilter = new Tone.Filter(2200, 'lowpass').connect(gainLead);
     const drive = new Tone.Distortion(0.3).connect(postFilter);
     leadSynth.connect(drive);

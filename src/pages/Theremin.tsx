@@ -13,7 +13,6 @@ import { AButton } from '../theme';
 import {
   barVisualizerSpeed,
   getCurrentBar,
-  getCurrentBeat,
   loopLengthSeconds,
   startLoop,
 } from '../utils/utils';
@@ -115,13 +114,11 @@ export const Theremin = () => {
       cnv = p.createCanvas(canvasWidth, canvasHeight);
       cnv.mousePressed(canvasPressed);
       cnv.mouseMoved(canvasDragged);
-
       cnv.mouseOut(() => {
         if (p.mouseIsPressed) {
           releaseNote();
         }
       });
-
       cnv.mouseReleased(releaseNote);
       wow = new Tone.LFO(wowFreq, -wowRange, wowRange);
       wow.connect(synth.detune).start();
