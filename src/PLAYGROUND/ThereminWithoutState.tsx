@@ -10,8 +10,9 @@ import {
   SketchProps,
 } from 'react-p5-wrapper';
 import * as Tone from 'tone';
+import { Abs } from 'tone';
 import { AButton, APalette } from '../theme';
-import { barVisualizerSpeed, getCurrentBar } from '../utils/utils';
+import { getCurrentBar } from '../utils/utils';
 
 const canvasHeight = 500;
 const canvasWidth = 700;
@@ -97,7 +98,6 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     }
   }, 1 / 30);
   const song = () => {
-    console.log('started');
     sequenceCounter = 0;
     mainLoop.stop();
     mainLoop.start();
@@ -118,10 +118,10 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     if (!sequence.mouseOn[sequenceCounter] && sequence.mouseOn[prev]) {
       synth.triggerRelease();
     }
-    p.ellipse(barVisualizerPosition, p.height / 10, 40, 40);
-    barVisualizerPosition =
-      (barVisualizerPosition + barVisualizerSpeed(loopLengthBars, p.width)) %
-      p.width;
+    // p.ellipse(barVisualizerPosition, p.height / 10, 40, 40);
+    // barVisualizerPosition =
+    //   (barVisualizerPosition + barVisualizerSpeed(loopLengthBars, p.width)) %
+    //   p.width;
   };
   const recordTheremin = (
     p: p5,
@@ -150,8 +150,6 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     wow.connect(synth.detune).start();
     drawBackground();
     p.frameRate(30);
-    // const mouseOnPrint = p.createButton('Check MouseON');
-    // mouseOnPrint.mouseClicked(() => console.log(sequence.mouseOn));
   };
 
   const drawBackground = () => {
@@ -168,8 +166,10 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   const showOrb = (x: number, y: number) => {
     glow2ndgrad = p.map(y, 0, p.height, 15, 3);
     const size = p.map(y, 0, p.height, 50, 20);
-    if (stroke > 12 || stroke < 2) {
-      glow = -glow;
+    if (stroke > 12) {
+      glow = -Math.abs(glow);
+    } else if (stroke < 2) {
+      glow = Math.abs(glow);
     }
     stroke += glow * glow2ndgrad * 1.7;
 
@@ -191,6 +191,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   p.updateWithProps = (props: ThereminProps) => {
     if (props.octave) {
       oct = props.octave;
+      setNotes(oct);
     }
     if (props.recordingLength) {
       recordingLength = props.recordingLength;
@@ -271,7 +272,6 @@ export const ThereminWithoutState = () => {
           <AButton
             onClick={() => {
               setOctave(octave + 1);
-              setNotes(octave);
             }}
           >
             oct +1

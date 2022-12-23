@@ -115,10 +115,9 @@ export const firstCell = (xCoordinatesLine: number[]) => {
   }
   return -1;
 };
+
 export const lastCell = (xCoordinatesLine: number[]) => {
   if (xCoordinatesLine.length !== 0) {
-    //  console.log(x[x.length - 1]);
-
     let index = 1;
     while (index * 75 < xCoordinatesLine[xCoordinatesLine.length - 1]) {
       index++;
@@ -136,7 +135,7 @@ export const rootNotes = {
   6: 'A3',
 };
 
-export const converHeightToLeadNotes = (cellNumber: number) => {
+export const convertHeightToLeadNotes = (cellNumber: number) => {
   if (cellNumber === 12) {
     return 'C4';
   }

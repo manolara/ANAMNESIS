@@ -22,7 +22,6 @@ const sketch = (p: P5CanvasInstance) => {
   };
 
   p.setup = () => {
-    p.createCanvas(600, 400);
     metronome.envelope.decay = 0.1;
     const audioStartBtn = p.createButton('click Me ');
     const syncButton = p.createButton('sync  Me ');

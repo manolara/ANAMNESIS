@@ -28,7 +28,7 @@ setupLeadSynth(leadSynth);
 const bassSynth = new Tone.MonoSynth({ volume: -3 }).toDestination();
 setupBassSynth(bassSynth);
 const gridOn = false;
-let mouseoff = false;
+let mouseoff = true;
 let songCounter = 0;
 let xCoordinatesLine: number[] = [];
 let y: number[] = [];
@@ -91,7 +91,6 @@ const cellToPitch = (beat: number) => {
 
 function sketch(p: P5Instance<DoodlerProps>) {
   const loopBeat = new Tone.Loop(song, '4n');
-  let currentBeat = +getCurrentBeat() + currentBar;
 
   function song(time: number) {
     if (mouseoff) {
@@ -145,9 +144,7 @@ function sketch(p: P5Instance<DoodlerProps>) {
     console.log('setup');
     setBackground(p, gridOn, curColor);
     p.strokeWeight(2);
-
-    if (mouseoff) {
-    }
+    cnv.mousePressed(doodlerPressed);
 
     flutterAndWow(leadSynth, 9, 6, 1.6, 20);
   };
@@ -159,31 +156,44 @@ function sketch(p: P5Instance<DoodlerProps>) {
   };
   p.draw = () => {};
 
-  p.mousePressed = () => {
+  const doodlerPressed = () => {
     Tone.start();
+
+    xCoordinatesLine = [];
+    y = [];
+    stepArray = [];
+    tranPoints = [];
+    j = 0;
+    bj = 0;
+    counter = 0;
+    noteTriggered = 0;
+
+    mouseoff = false;
+
+    rightMostX = p.mouseX;
+    bcounter = 0;
+
+    setBackground(p, gridOn, doodlerPalette[bassNoteToColor(bassNote)]);
+  };
+
+  p.mouseReleased = () => {
     if (
       p.mouseX > 0 &&
-      p.mouseX < p.width &&
       p.mouseY > 0 &&
-      p.mouseY < p.height
+      p.mouseY < p.height &&
+      mouseoff === false
     ) {
-      xCoordinatesLine = [];
-      y = [];
-      stepArray = [];
-      tranPoints = [];
-      j = 0;
-      bj = 0;
-      counter = 0;
-      noteTriggered = 0;
+      mouseoff = true;
 
-      mouseoff = false;
+      tranPoints = findTranPoints(xCoordinatesLine);
 
-      rightMostX = p.mouseX;
-      bcounter = 0;
-
-      setBackground(p, gridOn, doodlerPalette[bassNoteToColor(bassNote)]);
+      songCounter = firstCell(xCoordinatesLine);
+      newLine = true;
+      console.log(loopBeat.state, 'loopBeat.state');
+      startLoop(loopBeat, '1m');
     }
   };
+
   p.mouseDragged = () => {
     if (
       p.pmouseX > 0 &&
@@ -201,17 +211,6 @@ function sketch(p: P5Instance<DoodlerProps>) {
           stepArray.push(p.mouseX);
         }
       }
-    }
-  };
-  p.mouseReleased = () => {
-    if (p.mouseX > 0 && p.mouseY > 0 && p.mouseY < p.height) {
-      mouseoff = true;
-
-      tranPoints = findTranPoints(xCoordinatesLine);
-
-      songCounter = firstCell(xCoordinatesLine);
-      newLine = true;
-      startLoop(loopBeat, '1m');
     }
   };
 }

@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { Doodler } from '../pages/Doodler';
 import { DoodlerPage } from '../pages/DoodlerPage';
 import { Metronome } from '../pages/Metronome';
