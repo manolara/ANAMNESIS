@@ -7,7 +7,7 @@ import { Loop } from 'tone';
 // eslint-disable-next-line import/no-cycle
 import {
   bassNoteToColor,
-  converHeightToLeadNotes,
+  convertHeightToLeadNotes,
   findTranPoints,
   firstCell,
   flutterAndWow,
@@ -86,7 +86,7 @@ const cellToPitch = (beat: number) => {
     cellNumber++;
   }
 
-  return converHeightToLeadNotes(cellNumber);
+  return convertHeightToLeadNotes(cellNumber);
 };
 
 function sketch(p: P5Instance<DoodlerProps>) {

@@ -40,7 +40,7 @@ const sketch: Sketch = (p) => {
   p.draw = () => {};
   const metronomeClicked = () => {
     if (metronomeLoop.state === 'stopped') {
-      startLoop(metronomeLoop, '4n');
+      startLoop(metronomeLoop, 'n');
       curColor = metronomeColor.on;
     } else {
       metronomeLoop.stop();
@@ -52,12 +52,12 @@ const sketch: Sketch = (p) => {
 export const Metronome = () => {
   return <ReactP5Wrapper sketch={sketch} />;
 };
-function handleAnimation(p: p5) {
+const handleAnimation = (p: p5) => {
   p.background(curColor);
-  let currentBeat = p.split(Tone.Transport.position.toString(), ':')[1];
-  if (+currentBeat % 2 === 0) {
+  let currentBeat = getCurrentBeat();
+  if (currentBeat % 2 === 0) {
     p.circle((2 * p.width) / 3 + 3, p.height / 2, 10);
   } else {
     p.circle(p.width / 3 - 3, p.height / 2, 10);
   }
-}
+};

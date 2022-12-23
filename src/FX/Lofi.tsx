@@ -65,7 +65,6 @@ export const Lofi = ({ color, input }: LofiProps) => {
         </Typography>
         <Stack className="unselectable" direction="row" spacing={3}>
           <Knob
-            color={color}
             title={'Noise'}
             defaultValue={noiseLevelDefault}
             setParentValue={setNoiseLevel}
@@ -73,7 +72,6 @@ export const Lofi = ({ color, input }: LofiProps) => {
             max={100}
           />
           <Knob
-            color={color}
             min={0}
             max={100}
             title={'Balance'}
@@ -81,7 +79,6 @@ export const Lofi = ({ color, input }: LofiProps) => {
             setParentValue={setWowDepth}
           />
           <Knob
-            color={color}
             min={1}
             max={16}
             title={'Broken'}

@@ -18,7 +18,7 @@ export const Delay = ({ color, input }: DelayProps) => {
   const mixDefault = 50;
   const [feedback, setFeedback] = React.useState(feedbackDefault);
   const [mix, setMix] = React.useState(mixDefault);
-  console.log({ mix });
+
   DelayFX.set({ feedback: feedback / 100, wet: mix / 100 });
   console.log('wetness', DelayFX.get().wet);
   return (
@@ -33,19 +33,17 @@ export const Delay = ({ color, input }: DelayProps) => {
         </Typography>
         <Stack className="unselectable" direction="row" spacing={3}>
           <Knob
-            color={color}
             title={'Feedback'}
             defaultValue={feedbackDefault}
             setParentValue={setFeedback}
           />
           <Knob
-            color={color}
             title={'Mix'}
             isExp={false}
             defaultValue={mixDefault}
             setParentValue={setMix}
           />
-          <Knob color={color} title={'Filter'} isExp min={20} max={2000} />
+          <Knob title={'Filter'} isExp min={20} max={2000} />
         </Stack>
       </Stack>
     </>

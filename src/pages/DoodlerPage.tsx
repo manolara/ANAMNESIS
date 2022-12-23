@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { BassnotesBar } from './BassnotesBar';
-import { Doodler } from './Doodler';
+import { BassnotesBar } from '../Instruments/BassnotesBar';
+import { Doodler } from '../Instruments/Doodler';
 
 export const DoodlerPage = () => {
   const [bassNote, setBassNote] = useState('C3');

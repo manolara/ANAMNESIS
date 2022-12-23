@@ -1,14 +1,14 @@
 import { vi } from 'vitest';
-import { Doodler } from '../pages/Doodler';
+import { Doodler } from '../Instruments/Doodler';
 import { DoodlerPage } from '../pages/DoodlerPage';
 import { Metronome } from '../pages/Metronome';
 import { Theremin } from '../pages/Theremin';
 
-import { ThereminPage } from '../pages/ThereminPage';
+import { ThereminPage } from './ThereminPage';
 import { PlayButton } from '../playbackCtrl/PlayButton';
 import { StopButton } from '../playbackCtrl/StopButton';
 import { Playground } from './Playground';
-import { ThereminWithoutState } from './ThereminWithoutState';
+import { ThereminWithoutState } from '../Instruments/ThereminWithoutState';
 
 export const PGPage = () => {
   return (

@@ -10,6 +10,7 @@ import { AButton, APalette } from '../../theme';
 import { Delay, DelayOut } from '../../FX/Delay';
 import { Compressor, CompressorOut } from '../../FX/Compressor';
 import { Lofi, LofiOut } from '../../FX/Lofi';
+import { Synthesizer } from '../../Instruments/Synthesizer';
 
 const testSynth = new Tone.Synth({
   oscillator: {

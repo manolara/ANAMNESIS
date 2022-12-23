@@ -6,16 +6,17 @@ import { DoodlerPage } from './pages/DoodlerPage';
 import { MySketchPage } from './pages/MySketchPage';
 import { Playground } from './PLAYGROUND/Playground';
 import { APalette, customTheme } from './theme';
-import { Theremin } from './pages/Theremin';
+
 import { PGPage } from './PLAYGROUND/PGPage';
 import * as Tone from 'tone';
 import { ChatGPT } from './PLAYGROUND/ChatGPT';
 import { Fatter } from './PLAYGROUND/Fatter';
-import { ThereminReassess } from './PLAYGROUND/ThereminReassess';
-import { ThereminWithoutState } from './PLAYGROUND/ThereminWithoutState';
+
+import { ThereminWithoutState } from './Instruments/ThereminWithoutState';
 
 import { Horizontal3 } from './PLAYGROUND/horizontal_scrolling/Horizontal3';
 import { Knob } from './FX/Knob';
+import { Synthesizer } from './Instruments/Synthesizer';
 
 export const App = () => {
   return (
@@ -26,20 +27,16 @@ export const App = () => {
       {/* <Route path="/legacy" element={<Doodler />} /> */}
       <Route path="/doodler_page" element={<DoodlerPage />} />
       <Route path="/playground" element={<Playground />} />
-      <Route path="theremin_page" element={<Theremin />} />
       <Route path="PGPage" element={<PGPage />} />
       <Route path="GPT" element={<ChatGPT />} />
       <Route path="fatter" element={<Fatter />} />
-      <Route path="reassess" element={<ThereminReassess />} />
       <Route path="reassess2" element={<ThereminWithoutState />} />
       <Route
         path="knob"
-        element={
-          <Knob color={APalette.pink} defaultValue={0} min={0} max={100} />
-        }
+        element={<Knob defaultValue={0} min={0} max={100} />}
       />
-
       <Route path="horizontal3" element={<Horizontal3 />} />
+      <Route path="synth" element={<Synthesizer />} />
     </Routes>
   );
 };

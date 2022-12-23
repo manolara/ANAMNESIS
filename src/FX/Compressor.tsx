@@ -40,7 +40,6 @@ export const Compressor = ({ color, input }: CompressorProps) => {
         </Typography>
         <Stack className="unselectable" direction="row" spacing={3}>
           <Knob
-            color={color}
             title={'Threshold'}
             defaultValue={thresholdDefault}
             setParentValue={setThreshold}
@@ -48,7 +47,6 @@ export const Compressor = ({ color, input }: CompressorProps) => {
             max={0}
           />
           <Knob
-            color={color}
             min={2}
             max={20}
             hasDecimals={false}
@@ -56,7 +54,7 @@ export const Compressor = ({ color, input }: CompressorProps) => {
             defaultValue={ratioDefault}
             setParentValue={setRatio}
           />
-          <Knob color={color} title={'Out'} isExp min={20} max={2000} />
+          <Knob title={'Out'} isExp min={20} max={2000} />
         </Stack>
       </Stack>
     </>

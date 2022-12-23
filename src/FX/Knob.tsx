@@ -9,7 +9,6 @@ import { mapLog, mapLogInv } from '../utils/utils';
 import p5 from 'p5';
 
 interface KnobProps extends SketchProps {
-  color: string;
   title?: string;
   setParentValue?: Dispatch<SetStateAction<number>>;
   isExp?: boolean;
@@ -20,7 +19,6 @@ interface KnobProps extends SketchProps {
 }
 
 interface KnobComponentProps {
-  color: string;
   title?: string;
   defaultValue?: number;
   setParentValue?: Dispatch<SetStateAction<number>>;
@@ -30,7 +28,6 @@ interface KnobComponentProps {
   hasDecimals?: boolean;
 }
 
-let sketchColorDefault = '#b8b9ff';
 let sketchTitleDefault = 'Knob';
 let minDefault = 0;
 let maxDefault = 100;
@@ -44,7 +41,6 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
   const x = canvasWidth / 2;
   const y = canvasHeight / 2 - 8;
   let cnv: p5.Renderer;
-  let sketchColor = sketchColorDefault;
   let min = minDefault;
   let max = maxDefault;
   let hasDecimals = hasDecimalsDefault;
@@ -63,9 +59,6 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
     console.log('yello');
     if (props.setParentValue) {
       setParentValueSketch = props.setParentValue;
-    }
-    if (props.color) {
-      sketchColor = props.color;
     }
     if (props.isExp) {
       isExp = props.isExp;
@@ -99,7 +92,7 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
     endY = (p.sin(angle) * r) / 2;
     endX = (p.cos(angle) * r) / 2;
 
-    p.background(sketchColor);
+    p.clear(0, 0, 0, 0);
     p.push();
     p.translate(x, y);
     p.circle(0, 0, r);
@@ -165,7 +158,6 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
 };
 
 export const Knob = ({
-  color = sketchColorDefault,
   title = sketchTitleDefault,
   defaultValue,
   setParentValue,
@@ -185,7 +177,6 @@ export const Knob = ({
       <ReactP5Wrapper
         sketch={sketch}
         setParentValue={setParentValue}
-        color={color}
         min={min}
         max={max}
         defaultValue={defaultValue}

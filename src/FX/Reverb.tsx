@@ -35,7 +35,6 @@ export const Reverb = ({ color, input }: ReverbProps) => {
           <Knob
             min={0.2}
             max={60}
-            color={color}
             title={'Decay'}
             isExp={true}
             hasDecimals={true}
@@ -43,13 +42,12 @@ export const Reverb = ({ color, input }: ReverbProps) => {
             setParentValue={setDecay}
           />
           <Knob
-            color={color}
             title={'Mix'}
             isExp={false}
             defaultValue={mixDefault}
             setParentValue={setMix}
           />
-          <Knob color={color} title={'HPF'} isExp min={20} max={2000} />
+          <Knob title={'HPF'} isExp min={20} max={2000} />
         </Stack>
       </Stack>
     </>
