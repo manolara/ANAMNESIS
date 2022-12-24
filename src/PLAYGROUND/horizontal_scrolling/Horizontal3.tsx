@@ -75,11 +75,11 @@ export const Horizontal3 = () => {
           </Stack>
           {/* FX */}
           <Stack>
-            <Reverb input={testSynth} color={APalette.reverb} />
+            {/* <Reverb input={testSynth} color={APalette.reverb} /> */}
             <Delay input={ReverbOut} color={APalette.delay} />
-            <Compressor input={DelayOut} color={APalette.orange} />
+            {/* <Compressor input={DelayOut} color={APalette.orange} />
 
-            <Lofi input={CompressorOut} color={APalette.lofi} />
+            <Lofi input={CompressorOut} color={APalette.lofi} /> */}
           </Stack>
           <AButton
             onClick={() => {

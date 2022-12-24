@@ -20,7 +20,7 @@ export const Delay = ({ color, input }: DelayProps) => {
   const [mix, setMix] = useState(mixDefault);
 
   DelayFX.set({ feedback: feedback / 100, wet: mix / 100 });
-  console.log('wetness', DelayFX.get().wet);
+  console.log('rerendering');
   return (
     <>
       <Stack
@@ -35,13 +35,13 @@ export const Delay = ({ color, input }: DelayProps) => {
           <Knob
             title={'Feedback'}
             defaultValue={feedbackDefault}
-            setParentValue={setFeedback}
+            onValueChange={(value) => setFeedback(value)}
           />
           <Knob
             title={'Mix'}
             isExp={false}
             defaultValue={mixDefault}
-            setParentValue={setMix}
+            onValueChange={(value) => console.log('hello', 'mix')}
           />
           <Knob title={'Filter'} isExp min={20} max={2000} />
         </Stack>

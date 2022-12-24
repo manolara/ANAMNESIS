@@ -10,7 +10,7 @@ import p5 from 'p5';
 
 interface KnobProps extends SketchProps {
   title?: string;
-  setParentValue?: Dispatch<SetStateAction<number>>;
+  onValueChange?: (value: number) => void;
   isExp?: boolean;
   min?: number;
   max?: number;
@@ -21,7 +21,7 @@ interface KnobProps extends SketchProps {
 interface KnobComponentProps {
   title?: string;
   defaultValue?: number;
-  setParentValue?: Dispatch<SetStateAction<number>>;
+  onValueChange?: (value: number) => void;
   isExp?: boolean;
   min?: number;
   max?: number;
@@ -51,13 +51,15 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
   let endX = 0;
   let endY = 0;
   let scrollFactor = 1 / (100 * 4);
+  let prevOut = -100000000;
 
-  let setParentValueSketch: Dispatch<SetStateAction<number>>;
+  let onValueChange: (value: number) => void = () => {};
   p.angleMode(p.DEGREES);
 
   p.updateWithProps = (props: KnobProps) => {
-    if (props.setParentValue) {
-      setParentValueSketch = props.setParentValue;
+    if (props.onValueChange) {
+      onValueChange = props.onValueChange;
+      console.log('onValueChange set');
     }
     if (props.isExp) {
       isExp = props.isExp;
@@ -137,9 +139,13 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
       ? Math.floor(outValue * 100) / 100
       : Math.floor(outValue);
 
-    setParentValueSketch ? setParentValueSketch(outValue) : null;
+    if (prevOut !== outValue) {
+      console.log('change');
+      onValueChange(outValue);
+    }
 
     p.text(outValue, x, y + 35);
+    prevOut = outValue;
   };
   p.mousePressed = () => {
     if (p.dist(p.mouseX, p.mouseY, p.width / 2, p.height / 2) < r) {
@@ -155,7 +161,7 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
 export const Knob = ({
   title = sketchTitleDefault,
   defaultValue,
-  setParentValue,
+  onValueChange,
   min = minDefault,
   max = maxDefault,
   hasDecimals = hasDecimalsDefault,
@@ -170,7 +176,7 @@ export const Knob = ({
       <Typography variant="subtitle2">{title}</Typography>
       <ReactP5Wrapper
         sketch={sketch}
-        setParentValue={setParentValue}
+        onValueChange={onValueChange}
         min={min}
         max={max}
         defaultValue={defaultValue}
