@@ -1,5 +1,5 @@
 import { Stack, Typography } from '@mui/material';
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect } from 'react';
 import {
   P5CanvasInstance,
   ReactP5Wrapper,
@@ -176,7 +176,9 @@ export const Knob = ({
       <Typography variant="subtitle2">{title}</Typography>
       <ReactP5Wrapper
         sketch={sketch}
-        onValueChange={onValueChange}
+        onValueChange={
+          onValueChange ? useCallback(onValueChange, []) : undefined
+        }
         min={min}
         max={max}
         defaultValue={defaultValue}

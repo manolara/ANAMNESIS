@@ -1,5 +1,5 @@
 import { Stack, Typography, useTheme } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { APalette } from '../theme';
 
 import * as Tone from 'tone';
@@ -41,7 +41,7 @@ export const Delay = ({ color, input }: DelayProps) => {
             title={'Mix'}
             isExp={false}
             defaultValue={mixDefault}
-            onValueChange={(value) => console.log('hello', 'mix')}
+            onValueChange={(value) => setMix(value)}
           />
           <Knob title={'Filter'} isExp min={20} max={2000} />
         </Stack>

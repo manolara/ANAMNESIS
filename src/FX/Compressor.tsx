@@ -42,7 +42,7 @@ export const Compressor = ({ color, input }: CompressorProps) => {
           <Knob
             title={'Threshold'}
             defaultValue={thresholdDefault}
-            setParentValue={setThreshold}
+            onValueChange={(value) => setThreshold(value)}
             min={-60}
             max={0}
           />
@@ -52,7 +52,7 @@ export const Compressor = ({ color, input }: CompressorProps) => {
             hasDecimals={false}
             title={'Ratio'}
             defaultValue={ratioDefault}
-            setParentValue={setRatio}
+            onValueChange={(value) => setRatio(value)}
           />
           <Knob title={'Out'} isExp min={20} max={2000} />
         </Stack>

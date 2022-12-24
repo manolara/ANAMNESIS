@@ -67,7 +67,7 @@ export const Lofi = ({ color, input }: LofiProps) => {
           <Knob
             title={'Noise'}
             defaultValue={noiseLevelDefault}
-            setParentValue={setNoiseLevel}
+            onValueChange={(value) => setNoiseLevel(value)}
             min={0}
             max={100}
           />
@@ -76,14 +76,14 @@ export const Lofi = ({ color, input }: LofiProps) => {
             max={100}
             title={'Balance'}
             defaultValue={wowDepthDefault}
-            setParentValue={setWowDepth}
+            onValueChange={(value) => setWowDepth(value)}
           />
           <Knob
             min={1}
             max={16}
             title={'Broken'}
             defaultValue={brokenDefault}
-            setParentValue={setBroken}
+            onValueChange={(value) => setBroken(value)}
           />
         </Stack>
       </Stack>
