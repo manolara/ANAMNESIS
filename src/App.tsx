@@ -17,6 +17,7 @@ import { ThereminWithoutState } from './Instruments/ThereminWithoutState';
 import { Horizontal3 } from './PLAYGROUND/horizontal_scrolling/Horizontal3';
 import { Knob } from './FX/Knob';
 import { Synthesizer } from './Instruments/Synthesizer';
+import { SynthesizerPage } from './pages/SynthesizerPage';
 
 export const App = () => {
   return (
@@ -36,7 +37,7 @@ export const App = () => {
         element={<Knob defaultValue={0} min={0} max={100} />}
       />
       <Route path="horizontal3" element={<Horizontal3 />} />
-      <Route path="synth" element={<Synthesizer />} />
+      <Route path="synth" element={<SynthesizerPage />} />
     </Routes>
   );
 };

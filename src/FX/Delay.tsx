@@ -1,5 +1,5 @@
 import { Stack, Typography, useTheme } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import { APalette } from '../theme';
 
 import * as Tone from 'tone';
@@ -16,8 +16,8 @@ export const Delay = ({ color, input }: DelayProps) => {
   input.chain(DelayFX, DelayOut);
   const feedbackDefault = 20;
   const mixDefault = 50;
-  const [feedback, setFeedback] = React.useState(feedbackDefault);
-  const [mix, setMix] = React.useState(mixDefault);
+  const [feedback, setFeedback] = useState(feedbackDefault);
+  const [mix, setMix] = useState(mixDefault);
 
   DelayFX.set({ feedback: feedback / 100, wet: mix / 100 });
   console.log('wetness', DelayFX.get().wet);

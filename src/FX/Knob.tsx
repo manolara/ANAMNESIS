@@ -56,7 +56,6 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
   p.angleMode(p.DEGREES);
 
   p.updateWithProps = (props: KnobProps) => {
-    console.log('yello');
     if (props.setParentValue) {
       setParentValueSketch = props.setParentValue;
     }
@@ -81,7 +80,6 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
   };
 
   p.setup = () => {
-    console.log('setup');
     cnv = p.createCanvas(canvasWidth, canvasHeight);
     p.textAlign(p.CENTER, p.CENTER);
     p.frameRate(30);
@@ -99,12 +97,10 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
     p.line(0, 0, endX, -endY);
     p.pop();
     if (isDragging) {
-      console.log({ value });
       if (prevY !== -1) {
         let change = hasDecimals
           ? (p.mouseY - prevY) * scrollFactor
           : Math.floor((p.mouseY - prevY) * scrollFactor);
-        console.log(scrollFactor);
 
         if (change < 0 && value < 100) {
           if (value - change > 100) {
@@ -120,7 +116,6 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
           }
         }
       }
-      console.log({ value });
 
       prevY = p.mouseY;
     }
@@ -168,7 +163,6 @@ export const Knob = ({
 }: KnobComponentProps) => {
   if (!defaultValue && defaultValue !== 0) {
     defaultValue = (min + max) / 2;
-    console.log('yooo');
   }
 
   return (
