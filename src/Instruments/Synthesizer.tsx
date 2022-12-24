@@ -33,17 +33,20 @@ const defaultSynthOptions: RecursivePartial<
 
 export const Synthesizer = () => {
   const outLevelRef = useRef(new Tone.Gain().toDestination());
+  const HPFRef = useRef(new Tone.Filter(20, 'highpass'));
   const polyRef = useRef(
     new Tone.PolySynth(Tone.MonoSynth, defaultSynthOptions)
   );
-
   const [level, setLevel] = useState(50);
+  const [HPFLevel, setHPFLevel] = useState(20);
   const [synthOptions, setSynthOptions] = useImmer(defaultSynthOptions);
   const outLevel = outLevelRef.current;
   const poly = polyRef.current;
-  poly.connect(outLevel);
+  const HPF = HPFRef.current;
   outLevel.set({ gain: level / 100 });
+  HPF.set({ frequency: HPFLevel });
   poly.set(synthOptions);
+  poly.chain(HPF, outLevel);
 
   return (
     <>
@@ -58,7 +61,14 @@ export const Synthesizer = () => {
       >
         <Stack spacing={3} direction="row">
           <Knob title="LFO" />
-          <Knob title="HPF" />
+          <Knob
+            title="HPF"
+            min={20}
+            max={20000}
+            defaultValue={20}
+            isExp
+            onValueChange={(value) => setHPFLevel(value)}
+          />
           <Knob
             title="Cut-off"
             defaultValue={301}
@@ -93,7 +103,7 @@ export const Synthesizer = () => {
             isExp
             hasDecimals={3}
             min={0.1}
-            defaultValue={1.0001}
+            defaultValue={0.401}
             max={10}
             onValueChange={(value) =>
               setSynthOptions((draft) => {
