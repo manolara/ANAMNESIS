@@ -51,7 +51,7 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
   let endX = 0;
   let endY = 0;
   let scrollFactor = 1 / (100 * 4);
-  let prevOut = -100000000;
+  let prevOut: number | undefined = undefined;
 
   let onValueChange: (value: number) => void = () => {};
   p.angleMode(p.DEGREES);
@@ -75,7 +75,7 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
     }
     if (props.defaultValue || props.defaultValue === 0) {
       value = isExp
-        ? Math.floor(mapLogInv(props.defaultValue, 0, 100, min, max))
+        ? mapLogInv(props.defaultValue, 0, 100, min, max)
         : p.map(props.defaultValue, min, max, 0, 100);
     }
     scrollFactor = 1 / 4;
@@ -100,9 +100,7 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
     p.pop();
     if (isDragging) {
       if (prevY !== -1) {
-        let change = hasDecimals
-          ? (p.mouseY - prevY) * scrollFactor
-          : Math.floor((p.mouseY - prevY) * scrollFactor);
+        let change = (p.mouseY - prevY) * scrollFactor;
 
         if (change < 0 && value < 100) {
           if (value - change > 100) {
