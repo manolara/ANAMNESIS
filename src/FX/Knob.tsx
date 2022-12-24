@@ -14,7 +14,7 @@ interface KnobProps extends SketchProps {
   isExp?: boolean;
   min?: number;
   max?: number;
-  hasDecimals?: boolean;
+  hasDecimals?: boolean | number;
   defaultValue?: number;
 }
 
@@ -25,13 +25,13 @@ interface KnobComponentProps {
   isExp?: boolean;
   min?: number;
   max?: number;
-  hasDecimals?: boolean;
+  hasDecimals?: boolean | number;
 }
 
 let sketchTitleDefault = 'Knob';
 let minDefault = 0;
 let maxDefault = 100;
-let hasDecimalsDefault = false;
+let hasDecimalsDefault: boolean | number = false;
 let isExpDefault = false;
 
 const sketch = (p: P5CanvasInstance<KnobProps>) => {
@@ -52,6 +52,8 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
   let endY = 0;
   let scrollFactor = 1 / (100 * 4);
   let prevOut: number | undefined = undefined;
+  let numDecimals = 2;
+  let decimator = Math.pow(10, numDecimals);
 
   let onValueChange: (value: number) => void = () => {};
   p.angleMode(p.DEGREES);
@@ -72,6 +74,12 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
     }
     if (props.hasDecimals) {
       hasDecimals = props.hasDecimals;
+      if (typeof hasDecimals === 'number') {
+        if (hasDecimals > 0 && hasDecimals % 1 === 0) {
+          numDecimals = hasDecimals;
+        } else console.warn('hasDecimals must be an integer >= 0 goofy');
+        decimator = Math.pow(10, numDecimals);
+      }
     }
     if (props.defaultValue || props.defaultValue === 0) {
       value = isExp
@@ -134,7 +142,7 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
     }
 
     outValue = hasDecimals
-      ? Math.floor(outValue * 100) / 100
+      ? Math.floor(outValue * decimator) / decimator
       : Math.floor(outValue);
 
     if (prevOut !== outValue) {
