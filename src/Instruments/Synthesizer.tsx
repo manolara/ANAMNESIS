@@ -1,19 +1,31 @@
-import { Stack } from '@mui/material';
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+} from '@mui/material';
 import { Knob } from '../FX/Knob';
 import { AButton, APalette } from '../theme';
 import * as Tone from 'tone';
 import { useRef, useState } from 'react';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
-import { useImmer } from 'use-immer';
+import { Icon } from '@iconify/react';
+import waveSine from '@iconify/icons-ph/wave-sine';
+import waveSquare from '@iconify/icons-ph/wave-square';
+import waveTriangle from '@iconify/icons-ph/wave-triangle';
+import waveSawtooth from '@iconify/icons-ph/wave-sawtooth';
+import { ToneOscillatorType } from 'tone';
+import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
+import { fontSize } from '@mui/system';
 
-interface SynthesizerProps {}
 type OmitMonophonicOptions<T> = Omit<T, 'context' | 'onsilence'>;
 
 const defaultSynthOptions: RecursivePartial<
-  OmitMonophonicOptions<Tone.MonoSynthOptions>
+  OmitMonophonicOptions<Tone.SynthOptions>
 > = {
   oscillator: {
-    type: 'square',
+    type: 'sawtooth',
   },
   envelope: {
     attack: 0.001,
@@ -21,36 +33,50 @@ const defaultSynthOptions: RecursivePartial<
     sustain: 0.5,
     release: 1,
   },
-  filterEnvelope: {
+};
+
+const defaultFrequencyEnvelopeOptions: Partial<Tone.FrequencyEnvelopeOptions> =
+  {
     attack: 0.001,
     decay: 0.7,
     sustain: 0.5,
     release: 1,
-    baseFrequency: 300,
-    octaves: 4,
-  },
-};
+    octaves: 2,
+  };
 
 export const Synthesizer = () => {
-  const outLevelRef = useRef(new Tone.Gain().toDestination());
-  const HPFRef = useRef(new Tone.Filter(20, 'highpass'));
-  const polyRef = useRef(
-    new Tone.PolySynth(Tone.MonoSynth, defaultSynthOptions)
-  );
-  const [level, setLevel] = useState(50);
-  const [HPFLevel, setHPFLevel] = useState(20);
-  const [synthOptions, setSynthOptions] = useImmer(defaultSynthOptions);
-  const outLevel = outLevelRef.current;
-  const poly = polyRef.current;
-  const HPF = HPFRef.current;
-  outLevel.set({ gain: level / 100 });
-  HPF.set({ frequency: HPFLevel });
-  poly.set(synthOptions);
-  poly.chain(HPF, outLevel);
+  //setup audio nodes, refs are used to avoid re-rendering
+  const outLevel = useRef(new Tone.Gain().toDestination()).current;
+  const HPF = useRef(new Tone.Filter(20, 'highpass')).current;
+  const LPF = useRef(new Tone.Filter(100, 'lowpass')).current;
+  const LPFEnvelope = useRef(
+    new Tone.FrequencyEnvelope(defaultFrequencyEnvelopeOptions)
+  ).current.connect(LPF.frequency);
+  const poly = useRef(
+    new Tone.PolySynth(Tone.Synth, defaultSynthOptions)
+  ).current;
+
+  //setup stuff
+  poly.maxPolyphony = 8;
+  const LFO = useRef(
+    new Tone.LFO(
+      3,
+      +LPFEnvelope.baseFrequency,
+      +LPFEnvelope.baseFrequency * Math.pow(2, 8)
+    )
+  ).current;
+  ///LFO.start();
+  LFO.connect(LPF.frequency);
+  poly.chain(HPF, LPF, outLevel);
 
   return (
     <>
-      <AButton onClick={() => poly.triggerAttackRelease('C4', '8n')}></AButton>
+      <AButton
+        onClick={() => {
+          poly.triggerAttackRelease('C4', '8n'),
+            LPFEnvelope.triggerAttackRelease('8n');
+        }}
+      ></AButton>
       <Stack
         className="unselectable"
         sx={{
@@ -67,7 +93,7 @@ export const Synthesizer = () => {
             max={20000}
             defaultValue={20}
             isExp
-            onValueChange={(value) => setHPFLevel(value)}
+            onValueChange={(value) => HPF.set({ frequency: value })}
           />
           <Knob
             title="Cut-off"
@@ -75,13 +101,20 @@ export const Synthesizer = () => {
             min={20}
             max={20000}
             isExp
-            onValueChange={(value) =>
-              setSynthOptions((draft) => {
-                draft.filterEnvelope!.baseFrequency = value;
-              })
-            }
+            onValueChange={(value) => {
+              LPFEnvelope.baseFrequency = value;
+              LPF.frequency.value = value;
+              LFO.set({
+                min: value,
+                // add to value 3 octaves worth of frequency
+                max: value + Math.pow(2, 8) * value,
+              });
+            }}
           />
-          <Knob title="Level" onValueChange={(value) => setLevel(value)} />
+          <Knob
+            title="Level"
+            onValueChange={(value) => outLevel.set({ gain: value / 100 })}
+          />
         </Stack>
         <Stack spacing={3} direction="row">
           <Knob
@@ -91,12 +124,12 @@ export const Synthesizer = () => {
             min={0.001}
             defaultValue={0.001}
             max={10}
-            onValueChange={(value) =>
-              setSynthOptions((draft) => {
-                draft.filterEnvelope!.attack = value;
-                draft.envelope!.attack = value;
-              })
-            }
+            onValueChange={(value) => {
+              poly.set({
+                envelope: { attack: value },
+              });
+              LPFEnvelope.attack = value;
+            }}
           />
           <Knob
             title="Decay"
@@ -105,21 +138,21 @@ export const Synthesizer = () => {
             min={0.1}
             defaultValue={0.401}
             max={10}
-            onValueChange={(value) =>
-              setSynthOptions((draft) => {
-                draft.filterEnvelope!.decay = value;
-                draft.envelope!.decay = value;
-              })
-            }
+            onValueChange={(value) => {
+              poly.set({
+                envelope: { decay: value },
+              });
+              LPFEnvelope.decay = value;
+            }}
           />
           <Knob
             title="Sustain"
-            onValueChange={(value) =>
-              setSynthOptions((draft) => {
-                draft.filterEnvelope!.sustain = value / 100;
-                draft.envelope!.sustain = value / 100;
-              })
-            }
+            onValueChange={(value) => {
+              poly.set({
+                envelope: { sustain: value / 100 },
+              });
+              LPFEnvelope.set({ sustain: value / 100 });
+            }}
           />
           <Knob
             title="Release"
@@ -129,13 +162,88 @@ export const Synthesizer = () => {
             defaultValue={1.0001}
             max={20}
             onValueChange={(value) => {
-              setSynthOptions((draft) => {
-                draft.filterEnvelope!.release = value;
-                draft.envelope!.release = value;
+              poly.set({
+                envelope: { release: value },
               });
-              console.log(value);
+              LPFEnvelope.release = value;
             }}
           />
+        </Stack>
+        <Stack
+          pt={1.5}
+          justifyContent="space-between"
+          alignItems="center"
+          direction={'row'}
+        >
+          <FormControl size="small">
+            <InputLabel sx={{ fontSize: '0.8rem' }}>OSC</InputLabel>
+            <Select
+              sx={{ maxHeight: '2rem' }}
+              label="OSC"
+              defaultValue={'sawtooth'}
+              onChange={(e) =>
+                poly.set({
+                  oscillator: {
+                    type: e.target.value as NonCustomOscillatorType,
+                  },
+                })
+              }
+            >
+              <MenuItem value={'sine'}>
+                <Icon icon={waveSine} />
+              </MenuItem>
+
+              <MenuItem value={'triangle'}>
+                <Icon icon={waveTriangle} />
+              </MenuItem>
+              <MenuItem value={'sawtooth'}>
+                <Icon icon={waveSawtooth} />
+              </MenuItem>
+              <MenuItem value={'square'}>
+                <Icon icon={waveSquare} />
+              </MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl size="small">
+            {/* make input label smaller when not on focus */}
+            <InputLabel
+              sx={{
+                fontSize: '0.7rem',
+              }}
+            >
+              LFO
+            </InputLabel>
+            <Select
+              sx={{
+                minWidth: 80,
+                fontSize: '0.7rem',
+                maxHeight: '2rem',
+                '& .MuiSelect-input': { fontSize: '0.7rem' },
+              }}
+              autoWidth
+              label="LFO"
+              // onChange={(e) => {
+              //   if (e.target.value === 'level') {
+              //
+              //     console.log('happened');
+              //   }
+              // }}
+            >
+              <MenuItem sx={{ fontSize: '0.8rem' }} value={'pitch'}>
+                Cut-Off
+              </MenuItem>
+
+              <MenuItem sx={{ fontSize: '0.8rem' }} value={'level'}>
+                Level
+              </MenuItem>
+              <MenuItem sx={{ fontSize: '0.8rem' }} value={'sawtooth'}>
+                Pitch
+              </MenuItem>
+              <MenuItem sx={{ fontSize: '0.8rem' }} value={'square'}>
+                HPF
+              </MenuItem>
+            </Select>
+          </FormControl>
         </Stack>
       </Stack>
     </>
