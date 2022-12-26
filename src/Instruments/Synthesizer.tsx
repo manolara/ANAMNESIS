@@ -41,14 +41,14 @@ const defaultFrequencyEnvelopeOptions: Partial<Tone.FrequencyEnvelopeOptions> =
     decay: 0.7,
     sustain: 0.5,
     release: 1,
-    octaves: 2,
+    octaves: 3,
   };
 
 export const Synthesizer = () => {
   //setup audio nodes, refs are used to avoid re-rendering
   const outLevel = useRef(new Tone.Gain().toDestination()).current;
   const HPF = useRef(new Tone.Filter(20, 'highpass')).current;
-  const LPF = useRef(new Tone.Filter(100, 'lowpass')).current;
+  const LPF = useRef(new Tone.Filter(3000, 'lowpass')).current;
   const LPFEnvelope = useRef(
     new Tone.FrequencyEnvelope(defaultFrequencyEnvelopeOptions)
   ).current.connect(LPF.frequency);
@@ -62,19 +62,18 @@ export const Synthesizer = () => {
     new Tone.LFO(
       3,
       +LPFEnvelope.baseFrequency,
-      +LPFEnvelope.baseFrequency * Math.pow(2, 8)
+      +LPFEnvelope.baseFrequency * Math.pow(2, 3)
     )
   ).current;
-  ///LFO.start();
+  LFO.start();
   LFO.connect(LPF.frequency);
   poly.chain(HPF, LPF, outLevel);
-
   return (
     <>
       <AButton
         onClick={() => {
-          poly.triggerAttackRelease('C4', '8n'),
-            LPFEnvelope.triggerAttackRelease('8n');
+          poly.triggerAttackRelease('C4', '8n');
+          LPFEnvelope.triggerAttackRelease('8n');
         }}
       ></AButton>
       <Stack
@@ -103,11 +102,11 @@ export const Synthesizer = () => {
             isExp
             onValueChange={(value) => {
               LPFEnvelope.baseFrequency = value;
-              LPF.frequency.value = value;
+
               LFO.set({
                 min: value,
-                // add to value 3 octaves worth of frequency
-                max: value + Math.pow(2, 8) * value,
+
+                max: Math.pow(2, 3) * value,
               });
             }}
           />
