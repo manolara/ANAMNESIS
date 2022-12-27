@@ -14,12 +14,14 @@ export class synthLFO {
   lfo: Tone.LFO;
   assignedTo: Tone.InputNode | 'NONE';
   LPFEnvelope: Tone.FrequencyEnvelope | null;
+  HPFEvelope: Tone.FrequencyEnvelope | null;
 
   constructor() {
     this.value = 0;
     this.assignedTo = 'NONE';
     this.lfo = new Tone.LFO(3, 0, 1);
     this.LPFEnvelope = null;
+    this.HPFEvelope = null;
   }
 
   updateLFO = (value?: number) => {
@@ -42,15 +44,18 @@ export class synthLFO {
       ///HPF
     } else if (
       this.assignedTo instanceof Tone.Filter &&
-      this.assignedTo.type === 'highpass'
+      this.assignedTo.type === 'highpass' &&
+      this.HPFEvelope
     ) {
       const knobToOctave = map_range(this.value, 0, 100, 0, 4);
-      const center = +this.assignedTo.frequency.value;
+      const center = +this.HPFEvelope?.baseFrequency;
+      console.log('center', center);
       const min = center * Math.pow(2, -knobToOctave);
       const max = center * Math.pow(2, knobToOctave);
+      console.log('min', min, 'max', max);
       this.lfo.set({
-        min: min,
-        max: max,
+        min: min < 20 ? 20 : min,
+        max: max > 20000 ? 200000 : max,
       });
       ///LEVEL
     } else if (this.assignedTo instanceof Tone.Gain) {
@@ -70,19 +75,21 @@ export class synthLFO {
 
   assignTo = (node: Tone.InputNode, envelope?: Tone.FrequencyEnvelope) => {
     this.assignedTo = node;
-
+    console.log(this.lfo);
     this.lfo.disconnect();
     if (node instanceof Tone.Filter) {
-      const incomingValue = node.gain.value;
+      const incomingValue = node.frequency.value;
       this.lfo.connect(node.frequency);
       node.frequency.value = incomingValue;
+      console.log('LFO connected to: ', node);
     } else if (node instanceof Tone.Gain) {
       const incomingValue = node.gain.value;
       this.lfo.connect(node.gain);
       node.gain.value = incomingValue;
     }
-    if (envelope) {
-      this.LPFEnvelope = envelope;
+    if (envelope && node instanceof Tone.Filter) {
+      if (node.type === 'lowpass') this.LPFEnvelope = envelope;
+      else if (node.type === 'highpass') this.HPFEvelope = envelope;
     }
     this.updateLFO();
   };
@@ -91,7 +98,7 @@ export class synthLFO {
     this.updateLFO(0);
     this.lfo.disconnect();
     if (this.assignedTo instanceof Tone.Filter) {
-      this.assignedTo.gain.cancelScheduledValues(0);
+      this.assignedTo.frequency.cancelScheduledValues(0);
     } else if (this.assignedTo instanceof Tone.Gain) {
       this.assignedTo.gain.cancelScheduledValues(0);
     }

@@ -19,6 +19,7 @@ import { ToneOscillatorType } from 'tone';
 import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import { fontSize } from '@mui/system';
 import { mapLog, map_range } from '../utils/utils';
+import { synthLFO } from './SynthLFO';
 
 type OmitMonophonicOptions<T> = Omit<T, 'context' | 'onsilence'>;
 
@@ -42,10 +43,16 @@ const defaultFrequencyEnvelopeOptions: Partial<Tone.FrequencyEnvelopeOptions> =
     decay: 0.7,
     sustain: 0.5,
     release: 1,
-    octaves: 3,
+    octaves: 4,
   };
 
-// const handleLFOChange = (value: number) => {
+const HPF_ENVELOPE: Partial<Tone.FrequencyEnvelopeOptions> = {
+  attack: 0.001,
+  decay: 1,
+  sustain: 0,
+  release: 0,
+  octaves: 3,
+};
 
 export const Synthesizer = () => {
   //setup audio nodes, refs are used to avoid re-rendering
@@ -55,6 +62,9 @@ export const Synthesizer = () => {
   const LPFEnvelope = useRef(
     new Tone.FrequencyEnvelope(defaultFrequencyEnvelopeOptions)
   ).current.connect(LPF.frequency);
+  const HPFEnvelope = useRef(
+    new Tone.FrequencyEnvelope(HPF_ENVELOPE)
+  ).current.connect(HPF.frequency);
   const poly = useRef(
     new Tone.PolySynth(Tone.Synth, defaultSynthOptions)
   ).current;
@@ -63,23 +73,16 @@ export const Synthesizer = () => {
 
   //setup stuff
   poly.maxPolyphony = 8;
-  const LFO = useRef(
-    new Tone.LFO(
-      3,
-      +LPFEnvelope.baseFrequency,
-      +LPFEnvelope.baseFrequency * Math.pow(2, 0)
-    )
-  ).current;
-  LFO.start();
-  LFO.connect(LPF.frequency);
+  const LFO = useRef(new synthLFO()).current;
   poly.chain(HPF, LPF, outLevel);
+  console.log(HPF.frequency.value, 'HPF');
 
   return (
     <>
       <AButton
         onClick={() => {
-          poly.triggerAttackRelease('C4', '8n');
-          LPFEnvelope.triggerAttackRelease('8n');
+          poly.triggerAttackRelease('C4', '4n');
+          LPFEnvelope.triggerAttackRelease('4n');
         }}
       ></AButton>
       <Stack
@@ -94,8 +97,7 @@ export const Synthesizer = () => {
           <Knob
             title="LFO"
             onValueChange={(value) => {
-              lfoVal = value;
-              console.log('lfoVal', lfoVal);
+              LFO.updateLFO(value);
             }}
           />
           <Knob
@@ -104,7 +106,11 @@ export const Synthesizer = () => {
             max={20000}
             defaultValue={20}
             isExp
-            onValueChange={(value) => HPF.set({ frequency: value })}
+            onValueChange={(value) => {
+              HPFEnvelope.baseFrequency = value;
+              console.log(HPF.frequency.value, 'HPF cutoff');
+              LFO.updateLFO();
+            }}
           />
           <Knob
             title="Cut-off"
@@ -114,17 +120,16 @@ export const Synthesizer = () => {
             isExp
             onValueChange={(value) => {
               LPFEnvelope.baseFrequency = value;
-              const cutoffLFO = map_range(lfoVal, 0, 100, 0, 6);
-              console.log('cutoffLFO', cutoffLFO, 'lfoVal', lfoVal);
-              LFO.set({
-                min: value,
-                max: Math.pow(2, cutoffLFO) * value,
-              });
+              console.log(LPF.frequency.value, 'LPF cutoff');
+              LFO.updateLFO();
             }}
           />
           <Knob
             title="Level"
-            onValueChange={(value) => outLevel.set({ gain: value / 100 })}
+            onValueChange={(value) => {
+              outLevel.gain.value = value / 100;
+              LFO.updateLFO();
+            }}
           />
         </Stack>
         <Stack spacing={3} direction="row">
@@ -216,7 +221,6 @@ export const Synthesizer = () => {
             </Select>
           </FormControl>
           <FormControl size="small">
-            {/* make input label smaller when not on focus */}
             <InputLabel
               sx={{
                 fontSize: '0.7rem',
@@ -233,25 +237,33 @@ export const Synthesizer = () => {
               }}
               autoWidth
               label="LFO"
-              // onChange={(e) => {
-              //   if (e.target.value === 'level') {
-              //
-              //     console.log('happened');
-              //   }
-              // }}
+              defaultValue={'none'}
+              onChange={(e) => {
+                if (e.target.value === 'level') {
+                  LFO.assignTo(outLevel);
+                }
+                if (e.target.value === 'Cut-Off') {
+                  LFO.assignTo(LPF, LPFEnvelope);
+                }
+                if (e.target.value === 'HPF') {
+                  LFO.assignTo(HPF, HPFEnvelope);
+                }
+                if (e.target.value === 'none') {
+                  LFO.disconnect();
+                }
+              }}
             >
-              <MenuItem sx={{ fontSize: '0.8rem' }} value={'pitch'}>
-                Cut-Off
-              </MenuItem>
-
               <MenuItem sx={{ fontSize: '0.8rem' }} value={'level'}>
                 Level
               </MenuItem>
-              <MenuItem sx={{ fontSize: '0.8rem' }} value={'sawtooth'}>
-                Pitch
+              <MenuItem sx={{ fontSize: '0.8rem' }} value={'Cut-Off'}>
+                Cut-Off
               </MenuItem>
-              <MenuItem sx={{ fontSize: '0.8rem' }} value={'square'}>
+              <MenuItem sx={{ fontSize: '0.8rem' }} value={'HPF'}>
                 HPF
+              </MenuItem>
+              <MenuItem sx={{ fontSize: '0.8rem' }} value={'none'}>
+                None
               </MenuItem>
             </Select>
           </FormControl>
