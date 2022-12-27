@@ -18,6 +18,7 @@ import { Horizontal3 } from './PLAYGROUND/horizontal_scrolling/Horizontal3';
 import { Knob } from './FX/Knob';
 import { Synthesizer } from './Instruments/Synthesizer';
 import { SynthesizerPage } from './pages/SynthesizerPage';
+import { SynthToTestLFO } from './Instruments/SynthToTestLFO';
 
 export const App = () => {
   return (
@@ -38,6 +39,8 @@ export const App = () => {
       />
       <Route path="horizontal3" element={<Horizontal3 />} />
       <Route path="synth" element={<SynthesizerPage />} />
+
+      <Route path="synthToTestLFO" element={<SynthToTestLFO />} />
     </Routes>
   );
 };

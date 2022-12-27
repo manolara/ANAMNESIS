@@ -8,7 +8,7 @@ import {
 import { Knob } from '../FX/Knob';
 import { AButton, APalette } from '../theme';
 import * as Tone from 'tone';
-import { useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import { Icon } from '@iconify/react';
 import waveSine from '@iconify/icons-ph/wave-sine';
@@ -18,6 +18,7 @@ import waveSawtooth from '@iconify/icons-ph/wave-sawtooth';
 import { ToneOscillatorType } from 'tone';
 import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import { fontSize } from '@mui/system';
+import { mapLog, map_range } from '../utils/utils';
 
 type OmitMonophonicOptions<T> = Omit<T, 'context' | 'onsilence'>;
 
@@ -44,6 +45,8 @@ const defaultFrequencyEnvelopeOptions: Partial<Tone.FrequencyEnvelopeOptions> =
     octaves: 3,
   };
 
+// const handleLFOChange = (value: number) => {
+
 export const Synthesizer = () => {
   //setup audio nodes, refs are used to avoid re-rendering
   const outLevel = useRef(new Tone.Gain().toDestination()).current;
@@ -56,18 +59,21 @@ export const Synthesizer = () => {
     new Tone.PolySynth(Tone.Synth, defaultSynthOptions)
   ).current;
 
+  let lfoVal = 0;
+
   //setup stuff
   poly.maxPolyphony = 8;
   const LFO = useRef(
     new Tone.LFO(
       3,
       +LPFEnvelope.baseFrequency,
-      +LPFEnvelope.baseFrequency * Math.pow(2, 3)
+      +LPFEnvelope.baseFrequency * Math.pow(2, 0)
     )
   ).current;
   LFO.start();
   LFO.connect(LPF.frequency);
   poly.chain(HPF, LPF, outLevel);
+
   return (
     <>
       <AButton
@@ -85,7 +91,13 @@ export const Synthesizer = () => {
         }}
       >
         <Stack spacing={3} direction="row">
-          <Knob title="LFO" />
+          <Knob
+            title="LFO"
+            onValueChange={(value) => {
+              lfoVal = value;
+              console.log('lfoVal', lfoVal);
+            }}
+          />
           <Knob
             title="HPF"
             min={20}
@@ -102,11 +114,11 @@ export const Synthesizer = () => {
             isExp
             onValueChange={(value) => {
               LPFEnvelope.baseFrequency = value;
-
+              const cutoffLFO = map_range(lfoVal, 0, 100, 0, 6);
+              console.log('cutoffLFO', cutoffLFO, 'lfoVal', lfoVal);
               LFO.set({
                 min: value,
-
-                max: Math.pow(2, 3) * value,
+                max: Math.pow(2, cutoffLFO) * value,
               });
             }}
           />
