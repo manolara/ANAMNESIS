@@ -22,7 +22,10 @@ vi.mock('tone', () => {
 describe('getCurrentBar', async () => {
   it('returns the current bar', () => {
     vi.spyOn(Tone.Transport, 'position', 'get').mockReturnValue('2:0:0');
-    expect(getCurrentBar()).toEqual(2);
+
+    const result = getCurrentBar();
+
+    expect(result).toEqual(2);
   });
 });
 

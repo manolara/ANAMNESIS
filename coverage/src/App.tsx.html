@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">38.98% </span>
+                <span class="strong">44.26% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>23/59</span>
+                <span class='fraction'>27/61</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">38.98% </span>
+                <span class="strong">44.26% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>23/59</span>
+                <span class='fraction'>27/61</span>
             </div>
         
             
@@ -122,7 +122,9 @@
 <a name='L57'></a><a href='#L57'>57</a>
 <a name='L58'></a><a href='#L58'>58</a>
 <a name='L59'></a><a href='#L59'>59</a>
-<a name='L60'></a><a href='#L60'>60</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -144,8 +146,10 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -189,16 +193,20 @@ import { DoodlerPage } from './pages/DoodlerPage';
 import { MySketchPage } from './pages/MySketchPage';
 import { Playground } from './PLAYGROUND/Playground';
 import { APalette, customTheme } from './theme';
-import { Theremin } from './pages/Theremin';
+&nbsp;
 import { PGPage } from './PLAYGROUND/PGPage';
 import * as Tone from 'tone';
 import { ChatGPT } from './PLAYGROUND/ChatGPT';
 import { Fatter } from './PLAYGROUND/Fatter';
-import { ThereminReassess } from './PLAYGROUND/ThereminReassess';
-import { ThereminWithoutState } from './PLAYGROUND/ThereminWithoutState';
+&nbsp;
+import { Theremin } from './Instruments/Theremin';
 &nbsp;
 import { Horizontal3 } from './PLAYGROUND/horizontal_scrolling/Horizontal3';
 import { Knob } from './FX/Knob';
+import { Synthesizer } from './Instruments/Synthesizer';
+import { SynthesizerPage } from './pages/SynthesizerPage';
+import { SynthToTestLFO } from './Instruments/SynthToTestLFO';
+import { ReactFlowTester } from './PLAYGROUND/ReactFlowTester';
 &nbsp;
 export const App = () =&gt; {
   return (
@@ -209,20 +217,18 @@ export const App = () =&gt; {
 <span class="cstat-no" title="statement not covered" >      {/* &lt;Route path="/legacy" element={&lt;Doodler /&gt;} /&gt; */}</span>
 <span class="cstat-no" title="statement not covered" >      &lt;Route path="/doodler_page" element={&lt;DoodlerPage /&gt;} /&gt;</span>
 <span class="cstat-no" title="statement not covered" >      &lt;Route path="/playground" element={&lt;Playground /&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >      &lt;Route path="theremin_page" element={&lt;Theremin /&gt;} /&gt;</span>
 <span class="cstat-no" title="statement not covered" >      &lt;Route path="PGPage" element={&lt;PGPage /&gt;} /&gt;</span>
 <span class="cstat-no" title="statement not covered" >      &lt;Route path="GPT" element={&lt;ChatGPT /&gt;} /&gt;</span>
 <span class="cstat-no" title="statement not covered" >      &lt;Route path="fatter" element={&lt;Fatter /&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >      &lt;Route path="reassess" element={&lt;ThereminReassess /&gt;} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >      &lt;Route path="reassess2" element={&lt;ThereminWithoutState /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >      &lt;Route path="reassess2" element={&lt;Theremin /&gt;} /&gt;</span>
 <span class="cstat-no" title="statement not covered" >      &lt;Route</span>
 <span class="cstat-no" title="statement not covered" >        path="knob"</span>
-<span class="cstat-no" title="statement not covered" >        element={</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Knob color={APalette.pink} defaultValue={0} min={0} max={100} /&gt;</span>
-<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >        element={&lt;Knob defaultValue={0} min={0} max={100} /&gt;}</span>
 <span class="cstat-no" title="statement not covered" >      /&gt;</span>
-<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >      &lt;Route path="horizontal3" element={&lt;Horizontal3 /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >      &lt;Route path="synth" element={&lt;SynthesizerPage /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >      &lt;Route path="synthToTestLFO" element={&lt;SynthToTestLFO /&gt;} /&gt;</span>
+<span class="cstat-no" title="statement not covered" >      &lt;Route path="reactFlowTest" element={&lt;ReactFlowTester /&gt;} /&gt;</span>
 <span class="cstat-no" title="statement not covered" >    &lt;/Routes&gt;</span>
 <span class="cstat-no" title="statement not covered" >  );</span>
 <span class="cstat-no" title="statement not covered" >}<span class="fstat-no" title="function not covered" >;</span></span>
@@ -247,7 +253,7 @@ export function WrappedApp() <span class="fstat-no" title="function not covered"
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2022-12-23T15:54:28.791Z
+                at 2022-12-28T16:39:36.156Z
             </div>
         <script src="../prettify.js"></script>
         <script>

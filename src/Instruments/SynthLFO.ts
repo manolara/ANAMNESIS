@@ -75,7 +75,6 @@ export class synthLFO {
 
   assignTo = (node: Tone.InputNode, envelope?: Tone.FrequencyEnvelope) => {
     this.assignedTo = node;
-    console.log(this.lfo);
     this.lfo.disconnect();
     if (node instanceof Tone.Filter) {
       const incomingValue = node.frequency.value;

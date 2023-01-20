@@ -12,13 +12,14 @@ import * as Tone from 'tone';
 import { ChatGPT } from './PLAYGROUND/ChatGPT';
 import { Fatter } from './PLAYGROUND/Fatter';
 
-import { ThereminWithoutState } from './Instruments/ThereminWithoutState';
+import { Theremin } from './Instruments/Theremin';
 
 import { Horizontal3 } from './PLAYGROUND/horizontal_scrolling/Horizontal3';
 import { Knob } from './FX/Knob';
 import { Synthesizer } from './Instruments/Synthesizer';
 import { SynthesizerPage } from './pages/SynthesizerPage';
 import { SynthToTestLFO } from './Instruments/SynthToTestLFO';
+import { ReactFlowTester } from './PLAYGROUND/ReactFlowTester';
 
 export const App = () => {
   return (
@@ -32,15 +33,15 @@ export const App = () => {
       <Route path="PGPage" element={<PGPage />} />
       <Route path="GPT" element={<ChatGPT />} />
       <Route path="fatter" element={<Fatter />} />
-      <Route path="reassess2" element={<ThereminWithoutState />} />
+      <Route path="reassess2" element={<Theremin />} />
       <Route
         path="knob"
         element={<Knob defaultValue={0} min={0} max={100} />}
       />
       <Route path="horizontal3" element={<Horizontal3 />} />
       <Route path="synth" element={<SynthesizerPage />} />
-
       <Route path="synthToTestLFO" element={<SynthToTestLFO />} />
+      <Route path="reactFlowTest" element={<ReactFlowTester />} />
     </Routes>
   );
 };

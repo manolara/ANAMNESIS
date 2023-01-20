@@ -246,7 +246,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   const thereminLoop = new Tone.Loop(song, `${recordingLength}m`);
 };
 
-export const ThereminWithoutState = () => {
+export const Theremin = () => {
   const [thereminState, setThereminState] = useState('idle');
   const [octave, setOctave] = useState(4);
   const [recordingLength, setRecordingLength] = useState(1);
