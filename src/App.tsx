@@ -20,7 +20,8 @@ import { Synthesizer } from './Instruments/Synthesizer';
 import { SynthesizerPage } from './pages/SynthesizerPage';
 import { SynthToTestLFO } from './Instruments/SynthToTestLFO';
 import { ReactFlowTester } from './PLAYGROUND/ReactFlowTester';
-import { ReactFlowWrapper } from './PLAYGROUND/ReactFlowWrapper';
+import { ReactFlowWrapper } from './ReactFlowWrapper';
+import { Flow } from './pages/Flow';
 
 export const App = () => {
   return (
@@ -43,6 +44,7 @@ export const App = () => {
       <Route path="synth" element={<SynthesizerPage />} />
       <Route path="synthToTestLFO" element={<SynthToTestLFO />} />
       <Route path="reactFlowTest" element={<ReactFlowWrapper />} />
+      <Route path="flow" element={<Flow />} />
     </Routes>
   );
 };
