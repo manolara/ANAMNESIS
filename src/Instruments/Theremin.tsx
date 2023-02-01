@@ -29,6 +29,10 @@ let cnv: p5.Renderer;
 let glow2ndgrad = 1;
 let glow = 0.2 * glow2ndgrad;
 let stroke = 2.2;
+let zoomFactor = 1;
+let sc_mouseX: number;
+let sc_mouseY: number;
+
 interface SequenceType {
   x: number[];
   y: number[];
@@ -78,6 +82,7 @@ interface ThereminProps extends SketchProps {
   octave?: number;
   thereminState?: string;
   recordingLength?: number;
+  zoomFactor?: number;
 }
 
 const sketch = (p: P5CanvasInstance<ThereminProps>) => {
@@ -127,11 +132,11 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     p: p5,
     playTheremin: (x: number, y: number) => void
   ) => {
-    sequence.x = [...sequence.x, p.mouseX];
-    sequence.y = [...sequence.y, p.mouseY];
+    sequence.x = [...sequence.x, sc_mouseX];
+    sequence.y = [...sequence.y, sc_mouseY];
     sequence.mouseOn = [...sequence.mouseOn, p.mouseIsPressed];
-    playTheremin(p.mouseX, p.mouseY);
-    showOrb(p.mouseX, p.mouseY);
+    playTheremin(sc_mouseX, sc_mouseY);
+    showOrb(sc_mouseX, sc_mouseY);
   };
 
   p.setup = () => {
@@ -182,10 +187,14 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   };
 
   p.draw = () => {
+    //zoom in and out
+    sc_mouseX = p.mouseX / zoomFactor;
+    sc_mouseY = p.mouseY / zoomFactor;
+
     if (thereminState === 'idle') {
       drawBackground();
-      showOrb(p.mouseX, p.mouseY);
-      playTheremin(p.mouseX, p.mouseY);
+      showOrb(sc_mouseX, sc_mouseY);
+      playTheremin(sc_mouseX, sc_mouseY);
     }
   };
   p.updateWithProps = (props: ThereminProps) => {
@@ -214,11 +223,15 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
       sequence.y = [];
       sequence.mouseOn = [];
     }
+    //zoom
+    if (props.zoomFactor) {
+      zoomFactor = props.zoomFactor;
+    }
   };
 
   const canvasPressed = () => {
     synth.triggerAttack(pitch);
-    playTheremin(p.mouseX, p.mouseY);
+    playTheremin(sc_mouseX, sc_mouseY);
   };
 
   const releaseNote = () => {
@@ -246,7 +259,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   const thereminLoop = new Tone.Loop(song, `${recordingLength}m`);
 };
 
-export const Theremin = () => {
+export const Theremin = ({ zoomFactor }: ThereminProps) => {
   const [thereminState, setThereminState] = useState('idle');
   const [octave, setOctave] = useState(4);
   const [recordingLength, setRecordingLength] = useState(1);
@@ -258,6 +271,7 @@ export const Theremin = () => {
         thereminState={thereminState}
         octave={octave}
         recordingLength={recordingLength}
+        zoomFactor={zoomFactor}
       />
       <Stack direction="row" width="100%" pt={0.5}>
         <Stack direction="row" spacing={2}>
