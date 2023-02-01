@@ -7,11 +7,12 @@ import { Metronome } from '../pages/Metronome';
 import { PlayButton } from '../playbackCtrl/PlayButton';
 import { StopButton } from '../playbackCtrl/StopButton';
 import { Playground } from './Playground';
+import { TextUpdaterNode } from './TextUpdaterNode';
 
 export const PGPage = () => {
   return (
     <>
-      <DoodlerPage />;
+      <DoodlerPage />
       <Playground />
       <Metronome />
       <StopButton />

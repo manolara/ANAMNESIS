@@ -14,7 +14,7 @@ import 'reactflow/dist/style.css';
 import { ThereminNode } from '../Nodes/ThereminNode';
 import { DoodlerPage } from '../pages/DoodlerPage';
 import { DoodlerNode } from '../Nodes/DoodlerNode';
-import { TextUpdaterNode } from './TextUpdaterNode';
+import { TextUpdaterNode } from '../PLAYGROUND/TextUpdaterNode';
 
 // add component to the node
 
@@ -55,7 +55,7 @@ const initialNodes: Node[] = [
 ];
 const initialEdges: Edge[] = [];
 
-export const ReactFlowTester = () => {
+export const Flow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const nodeTypes = useMemo(

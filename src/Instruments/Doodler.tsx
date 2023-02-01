@@ -20,6 +20,7 @@ import { getCurrentBeat, startLoop } from '../utils/utils';
 
 export interface DoodlerProps extends SketchProps {
   bassNoteProp: string;
+  zoomFactor: number;
 }
 
 const leadSynth = new Tone.MonoSynth();
@@ -46,6 +47,11 @@ let curColor: string;
 let stepArray: number[] = [];
 let cnv: p5.Renderer;
 let currentBar: number;
+let zoomFactor: number;
+let sc_mouseX: number;
+let sc_mouseY: number;
+let sc_pmouseX: number;
+let sc_pmouseY: number;
 function redLine(p: P5Instance<DoodlerProps>) {
   p.strokeWeight(3);
   p.stroke(175, 154, 250);
@@ -153,8 +159,17 @@ function sketch(p: P5Instance<DoodlerProps>) {
       bassNote = props.bassNoteProp;
       setBackground(p, gridOn, doodlerPalette[bassNoteToColor(bassNote)]);
     } else bassNote = 'C3';
+
+    if (props.zoomFactor !== undefined) {
+      zoomFactor = props.zoomFactor;
+    }
   };
-  p.draw = () => {};
+  p.draw = () => {
+    sc_mouseX = p.mouseX / zoomFactor;
+    sc_mouseY = p.mouseY / zoomFactor;
+    sc_pmouseX = p.pmouseX / zoomFactor;
+    sc_pmouseY = p.pmouseY / zoomFactor;
+  };
 
   const doodlerPressed = () => {
     Tone.start();
@@ -170,7 +185,7 @@ function sketch(p: P5Instance<DoodlerProps>) {
 
     mouseoff = false;
 
-    rightMostX = p.mouseX;
+    rightMostX = sc_mouseX;
     bcounter = 0;
 
     setBackground(p, gridOn, doodlerPalette[bassNoteToColor(bassNote)]);
@@ -178,9 +193,9 @@ function sketch(p: P5Instance<DoodlerProps>) {
 
   p.mouseReleased = () => {
     if (
-      p.mouseX > 0 &&
-      p.mouseY > 0 &&
-      p.mouseY < p.height &&
+      sc_mouseX > 0 &&
+      sc_mouseY > 0 &&
+      sc_mouseY < p.height &&
       mouseoff === false
     ) {
       mouseoff = true;
@@ -196,19 +211,19 @@ function sketch(p: P5Instance<DoodlerProps>) {
 
   p.mouseDragged = () => {
     if (
-      p.pmouseX > 0 &&
-      p.mouseX < p.width &&
-      p.mouseY > 0 &&
-      p.mouseY < p.height
+      sc_pmouseX > 0 &&
+      sc_mouseX < p.width &&
+      sc_mouseY > 0 &&
+      sc_mouseY < p.height
     ) {
       p.stroke(0);
-      if (p.mouseX >= rightMostX) {
-        p.line(p.pmouseX, p.pmouseY, p.mouseX, p.mouseY);
-        rightMostX = p.mouseX;
-        xCoordinatesLine.push(p.mouseX);
-        y.push(p.mouseY);
-        if (p.mouseX % 75 === 0) {
-          stepArray.push(p.mouseX);
+      if (sc_mouseX >= rightMostX) {
+        p.line(sc_pmouseX, sc_pmouseY, sc_mouseX, sc_mouseY);
+        rightMostX = sc_mouseX;
+        xCoordinatesLine.push(sc_mouseX);
+        y.push(sc_mouseY);
+        if (sc_mouseX % 75 === 0) {
+          stepArray.push(sc_mouseX);
         }
       }
     }
@@ -216,6 +231,12 @@ function sketch(p: P5Instance<DoodlerProps>) {
 }
 
 /* eslint-disable-next-line react/display-name */
-export const Doodler = ({ bassNoteProp }: DoodlerProps) => {
-  return <ReactP5Wrapper sketch={sketch} bassNoteProp={bassNoteProp} />;
+export const Doodler = ({ bassNoteProp, zoomFactor }: DoodlerProps) => {
+  return (
+    <ReactP5Wrapper
+      sketch={sketch}
+      bassNoteProp={bassNoteProp}
+      zoomFactor={zoomFactor}
+    />
+  );
 };
