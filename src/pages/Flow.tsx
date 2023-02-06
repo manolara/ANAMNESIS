@@ -15,6 +15,7 @@ import { ThereminNode } from '../Nodes/ThereminNode';
 import { DoodlerPage } from '../pages/DoodlerPage';
 import { DoodlerNode } from '../Nodes/DoodlerNode';
 import { TextUpdaterNode } from '../PLAYGROUND/TextUpdaterNode';
+import { SynthNode } from '../Nodes/SynthNode';
 
 // add component to the node
 
@@ -52,6 +53,15 @@ const initialNodes: Node[] = [
     dragHandle: '.custom-drag-handle',
     position: { x: 500, y: 200 },
   },
+  {
+    id: '4',
+    type: 'synth',
+    data: {
+      label: 'Node 1',
+    },
+    dragHandle: '.custom-drag-handle',
+    position: { x: 600, y: 200 },
+  },
 ];
 const initialEdges: Edge[] = [];
 
@@ -63,6 +73,7 @@ export const Flow = () => {
       textUpdater: TextUpdaterNode,
       doodler: DoodlerNode,
       theremin: ThereminNode,
+      synth: SynthNode,
     }),
     []
   );

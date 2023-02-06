@@ -16,10 +16,8 @@ import { Theremin } from './Instruments/Theremin';
 
 import { Horizontal3 } from './PLAYGROUND/horizontal_scrolling/Horizontal3';
 import { Knob } from './FX/Knob';
-import { Synthesizer } from './Instruments/Synthesizer';
 import { SynthesizerPage } from './pages/SynthesizerPage';
 import { SynthToTestLFO } from './Instruments/SynthToTestLFO';
-import { ReactFlowTester } from './PLAYGROUND/ReactFlowTester';
 import { ReactFlowWrapper } from './ReactFlowWrapper';
 import { Flow } from './pages/Flow';
 

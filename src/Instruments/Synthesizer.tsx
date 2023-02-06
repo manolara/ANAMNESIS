@@ -8,7 +8,7 @@ import {
 import { Knob } from '../FX/Knob';
 import { AButton, APalette } from '../theme';
 import * as Tone from 'tone';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, memo } from 'react';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import { Icon } from '@iconify/react';
 import waveSine from '@iconify/icons-ph/wave-sine';
@@ -54,20 +54,23 @@ const HPF_ENVELOPE: Partial<Tone.FrequencyEnvelopeOptions> = {
   octaves: 3,
 };
 
-export const Synthesizer = () => {
+export const Synthesizer = memo(() => {
   //setup audio nodes, refs are used to avoid re-rendering
-  const outLevel = useRef(new Tone.Gain().toDestination()).current;
-  const HPF = useRef(new Tone.Filter(20, 'highpass')).current;
-  const LPF = useRef(new Tone.Filter(3000, 'lowpass')).current;
-  const LPFEnvelope = useRef(
-    new Tone.FrequencyEnvelope(defaultFrequencyEnvelopeOptions)
-  ).current.connect(LPF.frequency);
-  const HPFEnvelope = useRef(
-    new Tone.FrequencyEnvelope(HPF_ENVELOPE)
-  ).current.connect(HPF.frequency);
-  const poly = useRef(
-    new Tone.PolySynth(Tone.Synth, defaultSynthOptions)
-  ).current;
+  const outLevel = useMemo(() => new Tone.Gain().toDestination(), []);
+  const HPF = useMemo(() => new Tone.Filter(20, 'highpass'), []);
+  const LPF = useMemo(() => new Tone.Filter(3000, 'lowpass'), []);
+  const LPFEnvelope = useMemo(
+    () => new Tone.FrequencyEnvelope(defaultFrequencyEnvelopeOptions),
+    []
+  ).connect(LPF.frequency);
+  const HPFEnvelope = useMemo(
+    () => new Tone.FrequencyEnvelope(HPF_ENVELOPE),
+    []
+  ).connect(HPF.frequency);
+  const poly = useMemo(
+    () => new Tone.PolySynth(Tone.Synth, defaultSynthOptions),
+    []
+  );
 
   let lfoVal = 0;
 
@@ -271,4 +274,4 @@ export const Synthesizer = () => {
       </Stack>
     </>
   );
-};
+});

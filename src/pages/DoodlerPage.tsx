@@ -7,6 +7,7 @@ interface DoodlerPageProps {
 }
 export const DoodlerPage = ({ zoomFactor = 1 }: DoodlerPageProps) => {
   const [bassNote, setBassNote] = useState('C3');
+
   return (
     <>
       <Doodler bassNoteProp={bassNote} zoomFactor={zoomFactor} />
