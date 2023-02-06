@@ -72,8 +72,6 @@ export const Synthesizer = memo(() => {
     []
   );
 
-  let lfoVal = 0;
-
   //setup stuff
   poly.maxPolyphony = 8;
   const LFO = useRef(new synthLFO()).current;
