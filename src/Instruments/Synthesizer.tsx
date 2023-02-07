@@ -23,6 +23,10 @@ import { synthLFO } from './SynthLFO';
 
 type OmitMonophonicOptions<T> = Omit<T, 'context' | 'onsilence'>;
 
+interface synthProps {
+  synth: Tone.PolySynth;
+}
+
 const defaultSynthOptions: RecursivePartial<
   OmitMonophonicOptions<Tone.SynthOptions>
 > = {
@@ -54,7 +58,7 @@ const HPF_ENVELOPE: Partial<Tone.FrequencyEnvelopeOptions> = {
   octaves: 3,
 };
 
-export const Synthesizer = memo(() => {
+export const Synthesizer = memo(({ synth }: synthProps) => {
   //setup audio nodes, refs are used to avoid re-rendering
   const outLevel = useMemo(() => new Tone.Gain().toDestination(), []);
   const HPF = useMemo(() => new Tone.Filter(20, 'highpass'), []);
@@ -67,10 +71,11 @@ export const Synthesizer = memo(() => {
     () => new Tone.FrequencyEnvelope(HPF_ENVELOPE),
     []
   ).connect(HPF.frequency);
-  const poly = useMemo(
-    () => new Tone.PolySynth(Tone.Synth, defaultSynthOptions),
-    []
-  );
+  // const poly = useMemo(
+  //   () => new Tone.PolySynth(Tone.Synth, defaultSynthOptions),
+  //   []
+  // );
+  const poly = synth.set(defaultSynthOptions);
 
   //setup stuff
   poly.maxPolyphony = 8;

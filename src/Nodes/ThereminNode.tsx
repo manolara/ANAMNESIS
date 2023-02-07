@@ -24,9 +24,7 @@ export function ThereminNode() {
           transform: ' translate(-100%, 0)',
         }}
       ></Stack>
-
       <Theremin zoomFactor={zoom} />
-
       <Handle type="source" position={Position.Left} id="a" />
     </>
   );
