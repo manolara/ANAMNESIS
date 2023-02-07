@@ -54,15 +54,15 @@ const initialNodes: Node[] = [
     dragHandle: '.custom-drag-handle',
     position: { x: 500, y: 200 },
   },
-  {
-    id: '4',
-    type: 'synth',
-    data: {
-      label: 'Node 1',
-    },
-    dragHandle: '.custom-drag-handle',
-    position: { x: 600, y: 200 },
-  },
+  // {
+  //   id: '4',
+  //   type: 'synth',
+  //   data: {
+  //     label: 'Node 1',
+  //   },
+  //   dragHandle: '.custom-drag-handle',
+  //   position: { x: 600, y: 200 },
+  // },
 ];
 const initialEdges: Edge[] = [];
 
@@ -96,6 +96,10 @@ export const Flow = () => {
         }}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          console.log('context menu', e);
+        }}
       >
         <FlowContext open={openContext} />
         <Background />

@@ -5,14 +5,21 @@ import * as Tone from 'tone';
 
 interface DoodlerPageProps {
   zoomFactor?: number;
-  synth?: Tone.PolySynth;
+  soundSource?: Tone.PolySynth;
 }
-export const DoodlerPage = ({ zoomFactor = 1 }: DoodlerPageProps) => {
+export const DoodlerPage = ({
+  zoomFactor = 1,
+  soundSource,
+}: DoodlerPageProps) => {
   const [bassNote, setBassNote] = useState('C3');
-
+  console.log('soundSource', soundSource);
   return (
     <>
-      <Doodler bassNoteProp={bassNote} zoomFactor={zoomFactor} />
+      <Doodler
+        soundSource={soundSource}
+        bassNoteProp={bassNote}
+        zoomFactor={zoomFactor}
+      />
       <BassnotesBar setBassNote={setBassNote} />
     </>
   );

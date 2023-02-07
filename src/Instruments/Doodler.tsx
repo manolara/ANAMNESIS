@@ -21,9 +21,10 @@ import { getCurrentBeat, startLoop } from '../utils/utils';
 export interface DoodlerProps extends SketchProps {
   bassNoteProp: string;
   zoomFactor: number;
+  soundSource?: Tone.PolySynth;
 }
 
-const leadSynth = new Tone.MonoSynth();
+let leadSynth: Tone.MonoSynth | Tone.PolySynth = new Tone.MonoSynth();
 let loopLengthBars = 2;
 setupLeadSynth(leadSynth);
 const bassSynth = new Tone.MonoSynth({ volume: -3 }).toDestination();
@@ -139,6 +140,7 @@ function sketch(p: P5Instance<DoodlerProps>) {
     console.log(currentBar);
   }
   p.setup = () => {
+    console.log('and again');
     curColor = doodlerPalette.lightBlue;
     const gainLead = new Tone.Gain(0.6).toDestination();
     const postFilter = new Tone.Filter(2200, 'lowpass').connect(gainLead);
@@ -152,7 +154,9 @@ function sketch(p: P5Instance<DoodlerProps>) {
     p.strokeWeight(2);
     cnv.mousePressed(doodlerPressed);
 
-    flutterAndWow(leadSynth, 9, 6, 1.6, 20);
+    leadSynth instanceof Tone.MonoSynth
+      ? flutterAndWow(leadSynth, 9, 6, 1.6, 20)
+      : null;
   };
   p.updateWithProps = (props) => {
     if (bassNote !== undefined) {
@@ -162,6 +166,10 @@ function sketch(p: P5Instance<DoodlerProps>) {
 
     if (props.zoomFactor !== undefined) {
       zoomFactor = props.zoomFactor;
+    }
+    if (props.soundSource !== undefined && props.soundSource !== leadSynth) {
+      leadSynth = props.soundSource;
+      console.log('yoo ma boi');
     }
   };
   p.draw = () => {
@@ -231,12 +239,17 @@ function sketch(p: P5Instance<DoodlerProps>) {
 }
 
 /* eslint-disable-next-line react/display-name */
-export const Doodler = ({ bassNoteProp, zoomFactor }: DoodlerProps) => {
+export const Doodler = ({
+  bassNoteProp,
+  zoomFactor,
+  soundSource,
+}: DoodlerProps) => {
   return (
     <ReactP5Wrapper
       sketch={sketch}
       bassNoteProp={bassNoteProp}
       zoomFactor={zoomFactor}
+      soundSource={soundSource}
     />
   );
 };
