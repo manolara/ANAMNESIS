@@ -38,7 +38,10 @@ export const PGNodeConnect = () => {
       },
     });
   };
-  const [doodlerConnect, setDoodlerConnect] = useState<
+  const [doodler1Connect, setDoodler1Connect] = useState<
+    keyof SoundSources | null
+  >(null);
+  const [doodler2Connect, setDoodler2Connect] = useState<
     keyof SoundSources | null
   >(null);
   const synthComponents: React.ReactElement[] = Object.values(soundSources).map(
@@ -47,10 +50,7 @@ export const PGNodeConnect = () => {
   const synthEngines: Tone.PolySynth[] = Object.values(soundSources).map(
     (soundSource) => soundSource.engine
   );
-  console.log({ doodlerConnect });
-  doodlerConnect
-    ? console.log(synthEngines[doodlerConnect])
-    : console.log('no doodler connect');
+
   return (
     <>
       <Stack direction="row" spacing={1}>
@@ -58,7 +58,7 @@ export const PGNodeConnect = () => {
       </Stack>
       <DoodlerPage
         soundSource={
-          doodlerConnect !== null ? synthEngines[doodlerConnect] : undefined
+          doodler1Connect !== null ? synthEngines[doodler1Connect] : undefined
         }
       />
       <AButton
@@ -74,16 +74,24 @@ export const PGNodeConnect = () => {
       <AButton
         sx={{ m: 1 }}
         onClick={() => {
-          setDoodlerConnect(0);
+          setDoodler1Connect(0);
         }}
       >
         connect to synth 1
+      </AButton>
+      <AButton
+        sx={{ m: 1 }}
+        onClick={() => {
+          setDoodler1Connect(0);
+        }}
+      >
+        connect 2 to synth 1
       </AButton>
       {synthComponents.length > 1 ? (
         <AButton
           sx={{ m: 1 }}
           onClick={() => {
-            setDoodlerConnect(1);
+            setDoodler1Connect(1);
           }}
         >
           connect to synth 2

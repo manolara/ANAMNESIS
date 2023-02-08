@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BassnotesBar } from '../Instruments/BassnotesBar';
 import { Doodler } from '../Instruments/Doodler';
 import * as Tone from 'tone';
+import { PGDoodler } from '../PLAYGROUND/PGDoodler';
 
 interface DoodlerPageProps {
   zoomFactor?: number;
@@ -15,7 +16,7 @@ export const DoodlerPage = ({
   console.log('soundSource', soundSource);
   return (
     <>
-      <Doodler
+      <PGDoodler
         soundSource={soundSource}
         bassNoteProp={bassNote}
         zoomFactor={zoomFactor}
