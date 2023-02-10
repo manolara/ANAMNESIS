@@ -38,7 +38,7 @@ export const PGNodeConnect = () => {
       },
     });
   };
-  const [doodler1Connect, setDoodler1Connect] = useState<
+  const [doodlerConnect, setDoodlerConnect] = useState<
     keyof SoundSources | null
   >(null);
   const [doodler2Connect, setDoodler2Connect] = useState<
@@ -58,7 +58,7 @@ export const PGNodeConnect = () => {
       </Stack>
       <DoodlerPage
         soundSource={
-          doodler1Connect !== null ? synthEngines[doodler1Connect] : undefined
+          doodlerConnect !== null ? synthEngines[doodlerConnect] : undefined
         }
       />
       <AButton
@@ -74,7 +74,7 @@ export const PGNodeConnect = () => {
       <AButton
         sx={{ m: 1 }}
         onClick={() => {
-          setDoodler1Connect(0);
+          setDoodlerConnect(0);
         }}
       >
         connect to synth 1
@@ -82,7 +82,7 @@ export const PGNodeConnect = () => {
       <AButton
         sx={{ m: 1 }}
         onClick={() => {
-          setDoodler1Connect(0);
+          setDoodlerConnect(0);
         }}
       >
         connect 2 to synth 1
@@ -91,7 +91,7 @@ export const PGNodeConnect = () => {
         <AButton
           sx={{ m: 1 }}
           onClick={() => {
-            setDoodler1Connect(1);
+            setDoodlerConnect(1);
           }}
         >
           connect to synth 2

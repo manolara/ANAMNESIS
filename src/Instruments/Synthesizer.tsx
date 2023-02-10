@@ -78,7 +78,7 @@ export const Synthesizer = memo(({ synth }: synthProps) => {
   const poly = synth.set(defaultSynthOptions);
 
   //setup stuff
-  poly.maxPolyphony = 1;
+  poly.maxPolyphony = 8;
   const LFO = useRef(new synthLFO()).current;
   poly.chain(HPF, LPF, outLevel);
   console.log(HPF.frequency.value, 'HPF');
