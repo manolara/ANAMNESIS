@@ -239,17 +239,11 @@ export const PGDoodler = ({
   zoomFactor,
   soundSource,
 }: DoodlerProps) => {
-  const [sendSynth, setSendSynth] = useState(true);
   console.log('no probelm till here');
   if (soundSource !== undefined) {
     leadSynth = soundSource;
   }
 
-  useEffect(() => {
-    setSendSynth(true);
-    setTimeout(() => setSendSynth(false), 10);
-    console.log('sendSynth', sendSynth);
-  }, [soundSource]);
   return (
     <ReactP5Wrapper
       sketch={sketch}
