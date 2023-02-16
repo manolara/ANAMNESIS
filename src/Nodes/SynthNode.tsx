@@ -1,6 +1,6 @@
 /// react-flow node for synthesizer instrument
 import { Stack } from '@mui/material';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Handle, Position, useStore } from 'reactflow';
 import { PolySynth } from 'tone';
 import { Synthesizer } from '../Instruments/Synthesizer';
@@ -13,6 +13,7 @@ const zoomSelector = (s: any) => s.transform[2];
 export const SynthNode = () => {
   const zoom = useStore(zoomSelector);
   console.log({ zoom });
+  const synth = useMemo(() => new PolySynth(), []);
   return (
     <>
       <Handle type="target" position={Position.Right} />
@@ -27,7 +28,7 @@ export const SynthNode = () => {
         }}
       ></Stack>
 
-      <Synthesizer synth={new PolySynth()} />
+      <Synthesizer synth={synth} />
 
       <Handle type="source" position={Position.Left} id="a" />
     </>
