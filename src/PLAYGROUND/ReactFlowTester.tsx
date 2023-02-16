@@ -17,6 +17,7 @@ import { DoodlerNode } from '../Nodes/DoodlerNode';
 import { TextUpdaterNode } from './TextUpdaterNode';
 import { ContextMenu, IconMenuItem } from 'mui-nested-menu';
 import { Divider } from '@mui/material';
+import { SynthNode } from '../Nodes/SynthNode';
 
 // add component to the node
 
@@ -30,10 +31,11 @@ const initialNodes: Node[] = [
   },
   {
     id: '2',
-    type: 'textUpdater',
+    type: 'synth',
     data: {
       label: 'Node 1',
     },
+    dragHandle: '.custom-drag-handle',
     position: { x: 500, y: 5 },
   },
   {
@@ -65,6 +67,7 @@ export const ReactFlowTester = () => {
       textUpdater: TextUpdaterNode,
       doodler: DoodlerNode,
       theremin: ThereminNode,
+      synth: SynthNode,
     }),
     []
   );

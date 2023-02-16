@@ -2,6 +2,7 @@
 import { Stack } from '@mui/material';
 import { useCallback } from 'react';
 import { Handle, Position, useStore } from 'reactflow';
+import { PolySynth } from 'tone';
 import { Synthesizer } from '../Instruments/Synthesizer';
 import { DoodlerPage } from '../pages/DoodlerPage';
 import { APalette } from '../theme';
@@ -26,7 +27,7 @@ export const SynthNode = () => {
         }}
       ></Stack>
 
-      <Synthesizer />
+      <Synthesizer synth={new PolySynth()} />
 
       <Handle type="source" position={Position.Left} id="a" />
     </>
