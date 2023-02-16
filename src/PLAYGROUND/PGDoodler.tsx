@@ -1,6 +1,10 @@
 import p5 from 'p5';
 import React, { memo, useMemo } from 'react';
-import { P5Instance, ReactP5Wrapper, SketchProps } from 'react-p5-wrapper';
+import {
+  P5CanvasInstance,
+  ReactP5Wrapper,
+  SketchProps,
+} from 'react-p5-wrapper';
 
 import * as Tone from 'tone';
 import { Loop } from 'tone';
@@ -33,7 +37,7 @@ const doodlerPalette = {
   purple: '#d5c6e0',
 };
 let leadSynth: Tone.PolySynth | Tone.MonoSynth = new Tone.MonoSynth();
-function sketch(p: P5Instance<DoodlerProps>) {
+function sketch(p: P5CanvasInstance<DoodlerProps>) {
   let loopLengthBars = 2;
   setupLeadSynth(leadSynth as Tone.MonoSynth);
   const bassSynth = new Tone.MonoSynth({ volume: -3 }).toDestination();
@@ -63,7 +67,7 @@ function sketch(p: P5Instance<DoodlerProps>) {
   let sc_pmouseX: number;
   let sc_pmouseY: number;
   const loopBeat = new Tone.Loop(song, '4n');
-  function redLine(p: P5Instance<DoodlerProps>) {
+  function redLine(p: P5CanvasInstance<DoodlerProps>) {
     p.strokeWeight(3);
     p.stroke(175, 154, 250);
 
@@ -73,7 +77,7 @@ function sketch(p: P5Instance<DoodlerProps>) {
     }
   }
 
-  const blackLine = (p: P5Instance<DoodlerProps>) => {
+  const blackLine = (p: P5CanvasInstance<DoodlerProps>) => {
     p.strokeWeight(3);
     p.stroke(0);
 
@@ -156,7 +160,7 @@ function sketch(p: P5Instance<DoodlerProps>) {
       ? flutterAndWow(leadSynth, 9, 6, 1.6, 20)
       : null;
   };
-  p.updateWithProps = (props) => {
+  p.updateWithProps = (props: any) => {
     if (bassNote !== undefined) {
       bassNote = props.bassNoteProp;
       setBackground(p, gridOn, doodlerPalette[bassNoteToColor(bassNote)]);
