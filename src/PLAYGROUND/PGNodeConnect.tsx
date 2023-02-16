@@ -61,6 +61,7 @@ export const PGNodeConnect = () => {
           doodlerConnect !== null ? synthEngines[doodlerConnect] : undefined
         }
       />
+      <DoodlerPage />
       <AButton
         sx={{ mt: 1 }}
         onClick={() => {
