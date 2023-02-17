@@ -15,6 +15,8 @@ import { ThereminNode } from '../Nodes/ThereminNode';
 import { DoodlerPage } from '../pages/DoodlerPage';
 import { DoodlerNode } from '../Nodes/DoodlerNode';
 import { TextUpdaterNode } from './TextUpdaterNode';
+import { ContextMenu, IconMenuItem } from 'mui-nested-menu';
+import { Divider } from '@mui/material';
 
 // add component to the node
 
@@ -79,6 +81,7 @@ export const ReactFlowTester = () => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        // onPaneContextMenu={(e) => e.preventDefault()}
       >
         <Background />
         <Controls />

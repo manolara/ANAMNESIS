@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import ReactFlow, {
   Controls,
   Background,
@@ -16,6 +16,7 @@ import { DoodlerPage } from '../pages/DoodlerPage';
 import { DoodlerNode } from '../Nodes/DoodlerNode';
 import { TextUpdaterNode } from '../PLAYGROUND/TextUpdaterNode';
 import { SynthNode } from '../Nodes/SynthNode';
+import { FlowContext } from '../PLAYGROUND/FlowContext';
 
 // add component to the node
 
@@ -68,6 +69,7 @@ const initialEdges: Edge[] = [];
 export const Flow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [openContext, setOpenContext] = useState(false);
   const nodeTypes = useMemo(
     () => ({
       textUpdater: TextUpdaterNode,
@@ -88,9 +90,14 @@ export const Flow = () => {
         edges={edges}
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
+        onPaneContextMenu={(event) => {
+          event.preventDefault();
+          setOpenContext(true);
+        }}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
       >
+        <FlowContext open={openContext} />
         <Background />
         <Controls />
       </ReactFlow>
