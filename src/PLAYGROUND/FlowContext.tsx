@@ -76,7 +76,7 @@ export const FlowContext = ({ ...menuProps }: FlowContextProps) => {
   ];
 
   return (
-    <React.Fragment>
+    <>
       {open ? (
         <Menu
           onClose={() => setOpen(false)}
@@ -105,6 +105,6 @@ export const FlowContext = ({ ...menuProps }: FlowContextProps) => {
       ) : null}
 
       {menuProps.children}
-    </React.Fragment>
+    </>
   );
 };

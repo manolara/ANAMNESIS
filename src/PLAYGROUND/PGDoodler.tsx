@@ -254,7 +254,3 @@ export const PGDoodler = ({
     />
   );
 };
-
-// if (soundSource !== undefined) {
-//   leadSynth = soundSource;
-// }
