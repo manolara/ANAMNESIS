@@ -1,3 +1,5 @@
+import { Stack } from '@mui/system';
+import { Planets } from '../Instruments/Planets';
 import { Theremin } from '../Instruments/Theremin';
 import { DoodlerPage } from '../pages/DoodlerPage';
 import { Metronome } from '../pages/Metronome';
@@ -9,11 +11,15 @@ import { Playground } from './Playground';
 export const PGPage = () => {
   return (
     <>
-      <DoodlerPage />
+      <Stack direction="row" spacing={4}>
+        <DoodlerPage />
+        <Planets />
+      </Stack>
       <Playground />
       <Metronome />
       <StopButton />
       <PlayButton />
+
       <Theremin />
     </>
   );

@@ -55,4 +55,5 @@ export const APalette = {
   delay: '#fffeb8',
   lofi: '#bde0fe',
   beige: '#ffd7ba',
+  planets: '#fedbbd',
 };
