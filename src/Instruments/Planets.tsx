@@ -1,5 +1,7 @@
 import { P5CanvasInstance, ReactP5Wrapper } from 'react-p5-wrapper';
+import { l } from 'vitest/dist/index-ea17aa0c';
 import { APalette } from '../theme';
+import * as Tone from 'tone';
 
 const sketch = (p: P5CanvasInstance) => {
   // define a planet class
@@ -21,28 +23,44 @@ const sketch = (p: P5CanvasInstance) => {
     }
     orbit() {
       this.orbitAngle += this.orbitSpeed * this.orbitDirection;
-      this.x = p.width / 2 + this.orbitRadius * p.cos(this.orbitAngle);
-      this.y = p.height / 2 + this.orbitRadius * p.sin(this.orbitAngle);
+      this.x = this.orbitRadius * p.cos(this.orbitAngle);
+      this.y = this.orbitRadius * p.sin(this.orbitAngle);
     }
   }
+
+  const notes = [`A3`, `C4`, `D4`, `E4`, `E4`, `G4`, `B4`, `C5`];
+  //create a synth and connect and increase release
+  let synth = new Tone.PolySynth(Tone.Synth, {
+    oscillator: { type: 'sine' },
+    envelope: { attack: 0.5, release: 2 },
+  });
+  let reverb = new Tone.Reverb({ decay: 5, wet: 0.8 });
+  synth.chain(reverb, Tone.Destination);
+  synth.volume.value = -10;
+
+  let lineAngle = 0;
   let x = 0;
   let y = 0;
-  let framerate = 30;
+  let framerate = 60;
   let planets: Planet[] = [];
   p.setup = () => {
     p.createCanvas(300, 300);
     p.background('#fbe0ca');
     p.frameRate(framerate);
+    p.angleMode(p.DEGREES);
     //push 5 planets at random positions
     for (let i = 0; i < 5; i++) {
       let radius = 10;
       let orbitRadius = p.random(50, 100);
-      let orbitSpeed = p.random(0.01, 0.1);
-      let orbitAngle = p.random(0, p.TWO_PI);
+      let orbitSpeed = p.random(
+        (0.01 * 180) / p.TWO_PI,
+        (0.1 * 180) / p.TWO_PI
+      );
+      let orbitAngle = p.random(0, 360);
       let orbitDirection = p.random([-1, 1]);
       let color = APalette.lofi;
-      let x = p.width / 2 + orbitRadius * p.cos(orbitAngle);
-      let y = p.height / 2 + orbitRadius * p.sin(orbitAngle);
+      let x = orbitRadius * p.cos(orbitAngle);
+      let y = orbitRadius * p.sin(orbitAngle);
       planets.push(
         new Planet(
           x,
@@ -67,11 +85,26 @@ const sketch = (p: P5CanvasInstance) => {
     p.circle(0, 0, 50);
     p.stroke('#ddc7f7');
     p.strokeWeight(2);
-    p.rotate((p.PI * p.frameCount) / (2 * framerate));
-    p.line(p.width / 2, p.height / 2, x, y);
+    lineAngle = (lineAngle + 0.5) % 360;
+    p.rotate(-lineAngle);
+    p.line(0, 0, p.width, 0);
     p.pop();
     //draw planets
+    p.translate(p.width / 2, p.height / 2);
+
     planets.forEach((planet) => {
+      let planetAngle =
+        p.floor(p.atan2(-planet.y, planet.x)) < 0
+          ? p.floor(p.atan2(-planet.y, planet.x)) + 360
+          : p.floor(p.atan2(-planet.y, planet.x));
+      //console.log('planetAngle', planetAngle, 'lineAngle', lineAngle);
+      if (p.abs(lineAngle - planetAngle) < 2) {
+        //map orbit angle to midi note
+        let note =
+          notes[p.floor(p.map(planet.orbitRadius, 50, 100, 0, notes.length))];
+        synth.triggerAttackRelease(note, '16n');
+      }
+
       planet.draw();
       planet.orbit();
     });
