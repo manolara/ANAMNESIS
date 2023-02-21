@@ -36,7 +36,7 @@ const sketch = (p: P5CanvasInstance) => {
   });
   let reverb = new Tone.Reverb({ decay: 5, wet: 0.8 });
   synth.chain(reverb, Tone.Destination);
-  synth.volume.value = -10;
+  synth.volume.value = -6;
 
   let lineAngle = 0;
   let x = 0;
@@ -49,7 +49,7 @@ const sketch = (p: P5CanvasInstance) => {
     p.frameRate(framerate);
     p.angleMode(p.DEGREES);
     //push 5 planets at random positions
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 100; i++) {
       let radius = 10;
       let orbitRadius = p.random(50, 100);
       let orbitSpeed = p.random(

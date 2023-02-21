@@ -19,7 +19,7 @@ const CompressorFX = new Tone.Compressor({
   ratio: ratioDefault,
   attack: 0.3,
   release: 0.1,
-}).toDestination();
+});
 
 export const Compressor = ({ color, input }: CompressorProps) => {
   input.chain(CompressorFX, CompressorOut);

@@ -11,6 +11,7 @@ import { Delay, DelayOut } from '../../FX/Delay';
 import { Compressor, CompressorOut } from '../../FX/Compressor';
 import { Lofi, LofiOut } from '../../FX/Lofi';
 import { Synthesizer } from '../../Instruments/Synthesizer';
+import { EQ3, EQOut } from '../../FX/EQ';
 
 const testSynth = new Tone.Synth({
   oscillator: {
@@ -19,7 +20,7 @@ const testSynth = new Tone.Synth({
 });
 
 export const Horizontal3 = () => {
-  LofiOut.toDestination();
+  EQOut.toDestination();
   const page1Ref = useRef<HTMLDivElement>(null);
   const page2Ref = useRef<HTMLDivElement>(null);
   const handleScroll = (ref: RefObject<HTMLDivElement>) => {
@@ -78,8 +79,8 @@ export const Horizontal3 = () => {
             <Reverb input={testSynth} color={APalette.reverb} />
             <Delay input={ReverbOut} color={APalette.delay} />
             <Compressor input={DelayOut} color={APalette.orange} />
-
             <Lofi input={CompressorOut} color={APalette.lofi} />
+            <EQ3 input={LofiOut} />
           </Stack>
           <AButton
             onClick={() => {
