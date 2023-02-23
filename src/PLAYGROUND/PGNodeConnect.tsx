@@ -44,6 +44,8 @@ export const PGNodeConnect = () => {
   const [doodler2Connect, setDoodler2Connect] = useState<
     keyof SoundSources | null
   >(null);
+
+  //just for ease of access
   const synthComponents: React.ReactElement[] = Object.values(soundSources).map(
     (soundSource) => soundSource.component
   );

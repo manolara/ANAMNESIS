@@ -1,5 +1,5 @@
 import p5 from 'p5';
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo, useRef } from 'react';
 import {
   P5CanvasInstance,
   ReactP5Wrapper,
@@ -22,10 +22,16 @@ import {
 } from '../utils/Doodler_utils';
 import { getCurrentBeat, startLoop } from '../utils/utils';
 
-export interface DoodlerProps extends SketchProps {
+export interface InputDoodlerProps extends SketchProps {
   bassNoteProp: string;
   zoomFactor: number;
   soundSource?: Tone.PolySynth;
+  test?: object;
+}
+export interface DoodlerProps extends SketchProps {
+  bassNoteProp: string;
+  zoomFactor: number;
+  soundSource?: () => Tone.PolySynth;
   test?: object;
 }
 
@@ -36,8 +42,8 @@ const doodlerPalette = {
   orange: '#FEC89A',
   purple: '#d5c6e0',
 };
-let leadSynth: Tone.PolySynth | Tone.MonoSynth = new Tone.MonoSynth();
 function sketch(p: P5CanvasInstance<DoodlerProps>) {
+  let leadSynth: Tone.PolySynth | Tone.MonoSynth = new Tone.MonoSynth();
   let loopLengthBars = 2;
   setupLeadSynth(leadSynth as Tone.MonoSynth);
   const bassSynth = new Tone.MonoSynth({ volume: -3 }).toDestination();
@@ -169,9 +175,8 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     if (props.zoomFactor !== undefined) {
       zoomFactor = props.zoomFactor;
     }
-    if (props.soundSource !== undefined) {
-      leadSynth = props.soundSource;
-      props.soundSource = undefined;
+    if (props.soundSource() !== undefined) {
+      leadSynth = props.soundSource();
     }
   };
   p.draw = () => {
@@ -245,12 +250,14 @@ export const PGDoodler = ({
   zoomFactor,
   soundSource,
 }: DoodlerProps) => {
+  const soundSourceFn = useCallback(() => soundSource, [soundSource]);
+
   return (
     <ReactP5Wrapper
       sketch={sketch}
       bassNoteProp={bassNoteProp}
       zoomFactor={zoomFactor}
-      soundSource={soundSource}
+      soundSource={soundSourceFn}
     />
   );
 };
