@@ -32,7 +32,6 @@ export function DoodlerNode() {
         zoomFactor={zoom}
       />
       <Handle type="source" position={Position.Left} id="a" />
-      <AButton onClick={() => console.log('would bug')}></AButton>
     </>
   );
 }

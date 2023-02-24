@@ -3,7 +3,7 @@
 import { FiberManualRecord } from '@mui/icons-material';
 import { Autocomplete, Icon, Stack, TextField } from '@mui/material';
 import p5 from 'p5';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   P5CanvasInstance,
   ReactP5Wrapper,
@@ -14,11 +14,17 @@ import { Abs } from 'tone';
 import { AButton, APalette } from '../theme';
 import { getCurrentBar } from '../utils/utils';
 
+interface InputThereminProps {
+  soundSource?: Tone.MonoSynth;
+  zoomFactor?: number;
+}
+
 interface ThereminProps extends SketchProps {
   notes?: string[];
   thereminState?: string;
   recordingLength?: number;
   zoomFactor?: number;
+  soundSource?: () => Tone.MonoSynth;
 }
 
 interface SequenceType {
@@ -60,7 +66,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
 
   /// TONE.js///////
   const volKnob = new Tone.Gain();
-  const synth = new Tone.MonoSynth({
+  let synth = new Tone.MonoSynth({
     oscillator: {
       type: 'triangle',
     },
@@ -209,6 +215,10 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     if (props.zoomFactor) {
       zoomFactor = props.zoomFactor;
     }
+
+    if (props.soundSource) {
+      synth = props.soundSource();
+    }
   };
 
   const canvasPressed = () => {
@@ -241,7 +251,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   const thereminLoop = new Tone.Loop(song, `${recordingLength}m`);
 };
 
-export const Theremin = ({ zoomFactor }: ThereminProps) => {
+export const Theremin = ({ zoomFactor, soundSource }: InputThereminProps) => {
   const [thereminState, setThereminState] = useState('idle');
   const [octave, setOctave] = useState(4);
   const [recordingLength, setRecordingLength] = useState(2);
@@ -275,6 +285,7 @@ export const Theremin = ({ zoomFactor }: ThereminProps) => {
       `C${oct + 1}`,
     ]);
   };
+  const soundSourceFn = useCallback(() => soundSource, [soundSource]);
 
   return (
     <Stack width={`${canvasWidth}px`}>
@@ -284,6 +295,7 @@ export const Theremin = ({ zoomFactor }: ThereminProps) => {
         notes={notes}
         recordingLength={recordingLength}
         zoomFactor={zoomFactor}
+        soundSource={soundSourceFn}
       />
       <Stack direction="row" width="100%" pt={0.5}>
         <Stack direction="row" spacing={2}>

@@ -18,7 +18,7 @@ import { Horizontal3 } from './PLAYGROUND/horizontal_scrolling/Horizontal3';
 import { Knob } from './FX/Knob';
 import { SynthesizerPage } from './pages/SynthesizerPage';
 import { SynthToTestLFO } from './Instruments/SynthToTestLFO';
-import { ReactFlowWrapper } from './ReactFlowWrapper';
+import { ReactFlowWrapperTest } from './ReactFlowWrapperTest';
 import { Flow } from './pages/Flow';
 import { PGNodeConnect } from './PLAYGROUND/PGNodeConnect';
 
@@ -42,7 +42,7 @@ export const App = () => {
       <Route path="horizontal3" element={<Horizontal3 />} />
       <Route path="synth" element={<SynthesizerPage />} />
       <Route path="synthToTestLFO" element={<SynthToTestLFO />} />
-      <Route path="reactFlowTest" element={<ReactFlowWrapper />} />
+      <Route path="reactFlowTest" element={<ReactFlowWrapperTest />} />
       <Route path="flow" element={<Flow />} />
       <Route path="PGNodeConnect" element={<PGNodeConnect />} />
     </Routes>
