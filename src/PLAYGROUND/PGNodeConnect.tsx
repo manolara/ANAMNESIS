@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Synthesizer } from '../Instruments/Synthesizer';
 import { DoodlerPage } from '../pages/DoodlerPage';
 import { AButton } from '../theme';
@@ -15,7 +15,7 @@ interface SoundSources {
 }
 
 export const PGNodeConnect = () => {
-  const initSynth = new Tone.PolySynth();
+  const initSynth = useMemo(() => new Tone.PolySynth(), []);
   const initSoundSources: SoundSources = {
     0: {
       engine: initSynth,
@@ -63,7 +63,11 @@ export const PGNodeConnect = () => {
           doodlerConnect !== null ? synthEngines[doodlerConnect] : undefined
         }
       />
-      <DoodlerPage />
+      <DoodlerPage
+        soundSource={
+          doodler2Connect !== null ? synthEngines[doodler2Connect] : undefined
+        }
+      />
       <AButton
         sx={{ mt: 1 }}
         onClick={() => {
@@ -85,7 +89,7 @@ export const PGNodeConnect = () => {
       <AButton
         sx={{ m: 1 }}
         onClick={() => {
-          setDoodlerConnect(0);
+          setDoodler2Connect(0);
         }}
       >
         connect 2 to synth 1

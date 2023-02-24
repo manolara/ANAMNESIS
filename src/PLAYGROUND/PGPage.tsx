@@ -15,6 +15,7 @@ export const PGPage = () => {
       <StopButton />
       <PlayButton />
       <Theremin />
+      <Theremin />
     </>
   );
 };

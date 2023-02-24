@@ -249,7 +249,7 @@ export const PGDoodler = ({
   bassNoteProp,
   zoomFactor,
   soundSource,
-}: DoodlerProps) => {
+}: InputDoodlerProps) => {
   const soundSourceFn = useCallback(() => soundSource, [soundSource]);
 
   return (
