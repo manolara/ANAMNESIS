@@ -8,23 +8,21 @@ import {
 import { Knob } from '../FX/Knob';
 import { AButton, APalette } from '../theme';
 import * as Tone from 'tone';
-import { useEffect, useMemo, useRef, useState, memo } from 'react';
+import { useMemo, useRef, memo } from 'react';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import { Icon } from '@iconify/react';
 import waveSine from '@iconify/icons-ph/wave-sine';
 import waveSquare from '@iconify/icons-ph/wave-square';
 import waveTriangle from '@iconify/icons-ph/wave-triangle';
 import waveSawtooth from '@iconify/icons-ph/wave-sawtooth';
-import { ToneOscillatorType } from 'tone';
 import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
-import { fontSize } from '@mui/system';
-import { mapLog, map_range } from '../utils/utils';
 import { synthLFO } from './SynthLFO';
 
 type OmitMonophonicOptions<T> = Omit<T, 'context' | 'onsilence'>;
 
 interface synthProps {
   synth: Tone.PolySynth;
+  output: Tone.ToneAudioNode;
 }
 
 const defaultSynthOptions: RecursivePartial<
@@ -58,9 +56,9 @@ const HPF_ENVELOPE: Partial<Tone.FrequencyEnvelopeOptions> = {
   octaves: 3,
 };
 
-export const Synthesizer = memo(({ synth }: synthProps) => {
+export const Synthesizer = memo(({ synth, output }: synthProps) => {
   //setup audio nodes, refs are used to avoid re-rendering
-  const outLevel = useMemo(() => new Tone.Gain().toDestination(), []);
+  const outLevel = useMemo(() => new Tone.Gain(), []);
   const HPF = useMemo(() => new Tone.Filter(20, 'highpass'), []);
   const LPF = useMemo(() => new Tone.Filter(3000, 'lowpass'), []);
   const LPFEnvelope = useMemo(
@@ -80,7 +78,7 @@ export const Synthesizer = memo(({ synth }: synthProps) => {
   //setup stuff
   poly.maxPolyphony = 8;
   const LFO = useRef(new synthLFO()).current;
-  poly.chain(HPF, LPF, outLevel);
+  poly.chain(HPF, LPF, outLevel, output);
   console.log(HPF.frequency.value, 'HPF');
 
   return (

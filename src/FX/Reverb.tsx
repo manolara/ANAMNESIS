@@ -1,32 +1,29 @@
 import { Stack, Typography, useTheme } from '@mui/material';
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 
 import * as Tone from 'tone';
+import { APalette } from '../theme';
 import { Knob } from './Knob';
 
 interface ReverbProps {
-  color: string;
-  input: Tone.ToneAudioNode;
-  // output: Tone.OutputNode;
+  reverbEngine: Tone.Reverb;
+  reverbOutput: Tone.Signal;
 }
 
-export const ReverbOut = new Tone.Signal();
-const ReverbFX = new Tone.Reverb();
-
-export const Reverb = ({ color, input }: ReverbProps) => {
-  input.chain(ReverbFX, ReverbOut);
+export const Reverb = ({ reverbEngine, reverbOutput }: ReverbProps) => {
   const decayDefault = 0.2;
   const mixDefault = 50;
-  const [mix, setMix] = React.useState(mixDefault);
-  const [decay, setDecay] = React.useState(decayDefault);
-  ReverbFX.set({ decay: decay, wet: mix / 100 });
+  const [mix, setMix] = useState(mixDefault);
+  const [decay, setDecay] = useState(decayDefault);
+  reverbEngine.set({ decay: decay, wet: mix / 100 });
+  reverbEngine.connect(reverbOutput);
 
   return (
     <>
       <Stack
         // width="30%"
         height="fit-content"
-        sx={{ p: 1, backgroundColor: color, minWidth: 'fit-content' }}
+        sx={{ p: 1, backgroundColor: APalette.reverb, minWidth: 'fit-content' }}
       >
         <Typography width="100%" className="unselectable" mb={1}>
           Reverb

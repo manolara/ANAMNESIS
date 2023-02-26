@@ -8,17 +8,14 @@ import {
 import { Knob } from '../FX/Knob';
 import { AButton, APalette } from '../theme';
 import * as Tone from 'tone';
-import { useEffect, useMemo, useRef, useState, memo } from 'react';
+import { useMemo, useRef, memo } from 'react';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import { Icon } from '@iconify/react';
 import waveSine from '@iconify/icons-ph/wave-sine';
 import waveSquare from '@iconify/icons-ph/wave-square';
 import waveTriangle from '@iconify/icons-ph/wave-triangle';
 import waveSawtooth from '@iconify/icons-ph/wave-sawtooth';
-import { ToneOscillatorType } from 'tone';
 import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
-import { fontSize } from '@mui/system';
-import { mapLog, map_range } from '../utils/utils';
 import { synthLFO } from './SynthLFO';
 
 interface synthProps {

@@ -2,17 +2,16 @@ import { Stack, Typography, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import * as Tone from 'tone';
+import { APalette } from '../theme';
 import { Knob } from './Knob';
 
 interface LofiProps {
-  input: Tone.ToneAudioNode;
-  color: string;
+  input: Tone.Signal;
+  output: Tone.Signal;
 }
 const noiseLevelDefault = 0;
 const wowDepthDefault = 0;
 const brokenDefault = 16;
-
-export const LofiOut = new Tone.Signal();
 
 const BitCrushFX = new Tone.BitCrusher({ bits: 16 });
 
@@ -29,10 +28,10 @@ const Noise = new Tone.Player({
   volume: -10,
 });
 
-export const Lofi = ({ color, input }: LofiProps) => {
+export const Lofi = ({ input, output }: LofiProps) => {
   useEffect(() => {
-    input.chain(LofiFX, BitCrushFX, LofiOut);
-    Noise.chain(NoiseOut, LofiOut);
+    input.chain(LofiFX, BitCrushFX, output);
+    Noise.chain(NoiseOut, output);
   }, [input]);
 
   const [noiseLevel, setNoiseLevel] = useState(noiseLevelDefault);
@@ -58,7 +57,7 @@ export const Lofi = ({ color, input }: LofiProps) => {
     <>
       <Stack
         height="fit-content"
-        sx={{ p: 1, backgroundColor: color, minWidth: 'fit-content' }}
+        sx={{ p: 1, backgroundColor: APalette.lofi, minWidth: 'fit-content' }}
       >
         <Typography width="100%" className="unselectable" mb={1}>
           Lofi
