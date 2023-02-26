@@ -26,7 +26,7 @@ import * as Tone from 'tone';
 interface ANode extends Node {
   audioNodeType?: 'instrument' | 'soundSource' | 'FX';
 }
-const synth1 = new Tone.MonoSynth();
+const synth1 = new Tone.PolySynth();
 const initialNodes: ANode[] = [
   {
     id: '1',
@@ -86,7 +86,6 @@ export const ReactFlowTester = () => {
       const sourceEngine = nodes.find((node) => node.id === connection.source)
         ?.data.soundEngine;
       console.log({ sourceEngine });
-      // make target soundSource the sourceEngine
       setNodes((nodes) =>
         nodes.map((node) => {
           if (node.id === connection.target) {

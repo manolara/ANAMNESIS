@@ -182,6 +182,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     ) {
       leadSynth = props.soundSource();
       console.log('leadSynth what the flick', props.soundSource());
+      //check the type of props.soundSource()
     }
   };
   p.draw = () => {

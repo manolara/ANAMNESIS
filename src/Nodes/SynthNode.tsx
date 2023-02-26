@@ -28,7 +28,7 @@ export const SynthNode = ({ data }: any) => {
         }}
       ></Stack>
 
-      <Synthesizer synth={data.synth ?? synth} />
+      <Synthesizer synth={data.soundEngine ?? synth} />
 
       <Handle type="target" position={Position.Left} id="a" />
     </>

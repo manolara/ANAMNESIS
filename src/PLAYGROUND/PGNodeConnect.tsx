@@ -4,7 +4,6 @@ import { DoodlerPage } from '../pages/DoodlerPage';
 import { AButton } from '../theme';
 import * as Tone from 'tone';
 import { Stack } from '@mui/material';
-import React from 'react';
 
 interface SoundSource {
   engine: Tone.PolySynth;
@@ -13,12 +12,6 @@ interface SoundSource {
 
 interface SoundSources {
   [key: number]: SoundSource;
-}
-
-interface Instruments {
-  id: 0;
-  component: React.ReactElement;
-  input: Tone.Signal | undefined;
 }
 
 export const PGNodeConnect = () => {
@@ -45,6 +38,13 @@ export const PGNodeConnect = () => {
       },
     });
   };
+  const [doodlerConnect, setDoodlerConnect] = useState<
+    keyof SoundSources | null
+  >(null);
+  const [doodler2Connect, setDoodler2Connect] = useState<
+    keyof SoundSources | null
+  >(null);
+
   //just for ease of access
   const synthComponents: React.ReactElement[] = Object.values(soundSources).map(
     (soundSource) => soundSource.component
@@ -53,28 +53,21 @@ export const PGNodeConnect = () => {
     (soundSource) => soundSource.engine
   );
 
-  const initInstruments: Instruments[] = [
-    {
-      id: 0,
-      component: <DoodlerPage />,
-      input: undefined,
-    },
-  ];
-
-  const [instruments, setInstruments] = useState(initInstruments);
-
   return (
     <>
       <Stack direction="row" spacing={1}>
         {synthComponents}
       </Stack>
-      {instruments.map((instrument) =>
-        React.cloneElement(instrument.component, {
-          key: instrument.id,
-          soundSource: instrument.input,
-        })
-      )}
-
+      <DoodlerPage
+        soundSource={
+          doodlerConnect !== null ? synthEngines[doodlerConnect] : undefined
+        }
+      />
+      <DoodlerPage
+        soundSource={
+          doodler2Connect !== null ? synthEngines[doodler2Connect] : undefined
+        }
+      />
       <AButton
         sx={{ mt: 1 }}
         onClick={() => {
@@ -85,7 +78,7 @@ export const PGNodeConnect = () => {
       >
         add synth
       </AButton>
-      {/* <AButton
+      <AButton
         sx={{ m: 1 }}
         onClick={() => {
           setDoodlerConnect(0);
@@ -110,7 +103,7 @@ export const PGNodeConnect = () => {
         >
           connect to synth 2
         </AButton>
-      ) : null} */}
+      ) : null}
     </>
   );
 };
