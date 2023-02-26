@@ -175,7 +175,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     if (props.zoomFactor !== undefined) {
       zoomFactor = props.zoomFactor;
     }
-    if (props.soundSource() !== undefined) {
+    if (props.soundSource && props.soundSource() !== undefined) {
       leadSynth = props.soundSource();
     }
   };

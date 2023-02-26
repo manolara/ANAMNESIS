@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BassnotesBar } from '../Instruments/BassnotesBar';
 import * as Tone from 'tone';
 import { Doodler } from '../Instruments/Doodler';
+import { PGDoodler } from '../PLAYGROUND/PGDoodler';
 
 interface DoodlerPageProps {
   zoomFactor?: number;

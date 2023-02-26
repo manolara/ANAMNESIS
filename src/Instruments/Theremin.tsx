@@ -216,7 +216,11 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
       zoomFactor = props.zoomFactor;
     }
 
-    if (props.soundSource) {
+    if (
+      props.soundSource &&
+      props.soundSource() &&
+      props.soundSource() !== synth
+    ) {
       synth = props.soundSource();
     }
   };

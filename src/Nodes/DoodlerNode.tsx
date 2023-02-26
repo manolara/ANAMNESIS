@@ -1,18 +1,16 @@
 import { Stack } from '@mui/material';
-import { useCallback, useState } from 'react';
 import { Handle, Position, useStore } from 'reactflow';
 
 import { DoodlerPage } from '../pages/DoodlerPage';
-import { AButton, APalette } from '../theme';
-import * as Tone from 'tone';
+import { APalette } from '../theme';
 
 const handleStyle = { left: 10 };
 const zoomSelector = (s: any) => s.transform[2];
-export function DoodlerNode() {
+
+export const DoodlerNode = ({ data }: any) => {
   const zoom = useStore(zoomSelector);
   console.log({ zoom });
-  const [changeSynth, setChangeSynth] = useState(false);
-  const synth = new Tone.PolySynth();
+
   return (
     <>
       <Handle type="target" position={Position.Right} />
@@ -28,10 +26,12 @@ export function DoodlerNode() {
       ></Stack>
 
       <DoodlerPage
-        soundSource={changeSynth ? synth : undefined}
+        // soundSource={useMemo(() => {
+        //   return new Tone.PolySynth();
+        // }, [])}
         zoomFactor={zoom}
       />
       <Handle type="source" position={Position.Left} id="a" />
     </>
   );
-}
+};

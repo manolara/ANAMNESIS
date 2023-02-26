@@ -9,6 +9,7 @@ import ReactFlow, {
   Connection,
   addEdge,
   useStore,
+  useEdges,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { ThereminNode } from '../Nodes/ThereminNode';
@@ -18,10 +19,14 @@ import { TextUpdaterNode } from './TextUpdaterNode';
 import { ContextMenu, IconMenuItem } from 'mui-nested-menu';
 import { Divider } from '@mui/material';
 import { SynthNode } from '../Nodes/SynthNode';
-
+import * as Tone from 'tone';
 // add component to the node
 
-const initialNodes: Node[] = [
+interface ANode extends Node {
+  audioNodeType?: 'instrument' | 'soundSource' | 'FX';
+}
+const synth1 = new Tone.MonoSynth();
+const initialNodes: ANode[] = [
   {
     id: '1',
     data: {
@@ -34,6 +39,7 @@ const initialNodes: Node[] = [
     type: 'synth',
     data: {
       label: 'Node 1',
+      synth: undefined,
     },
     dragHandle: '.custom-drag-handle',
     position: { x: 500, y: 5 },
@@ -43,6 +49,7 @@ const initialNodes: Node[] = [
     type: 'doodler',
     data: {
       label: 'Node 1',
+      soundSource: undefined,
     },
     dragHandle: '.custom-drag-handle',
     position: { x: 500, y: 5 },
@@ -72,9 +79,15 @@ export const ReactFlowTester = () => {
     []
   );
   const onConnect = useCallback(
-    (connection: Connection) => setEdges((eds) => addEdge(connection, eds)),
+    (connection: Connection) => {
+      setEdges((eds) => addEdge(connection, eds));
+      //filter nodes and print the one with id of connection.source
+      console.log(nodes.filter((node) => node.id === connection.source));
+    },
     [setEdges]
   );
+  console.log(useEdges());
+
   return (
     <div style={{ height: '100%' }}>
       <ReactFlow

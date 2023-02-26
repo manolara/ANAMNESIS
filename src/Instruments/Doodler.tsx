@@ -1,5 +1,5 @@
 import p5 from 'p5';
-import { useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import {
   P5CanvasInstance,
   ReactP5Wrapper,
@@ -71,6 +71,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
   let sc_mouseY: number;
   let sc_pmouseX: number;
   let sc_pmouseY: number;
+
   const loopBeat = new Tone.Loop(song, '4n');
   function redLine(p: P5CanvasInstance<DoodlerProps>) {
     p.strokeWeight(3);
@@ -156,7 +157,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     cnv = p.createCanvas(600, 400);
     // cnv.position(p.windowWidth / 1.9, p.windowHeight / 4);
     cnv.style('border: 3px solid #8bb6da;;');
-    console.log('setup');
+
     setBackground(p, gridOn, curColor);
     p.strokeWeight(2);
     cnv.mousePressed(doodlerPressed);
@@ -174,8 +175,13 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     if (props.zoomFactor !== undefined) {
       zoomFactor = props.zoomFactor;
     }
-    if (props.soundSource() !== undefined) {
+    if (
+      props.soundSource &&
+      props.soundSource() !== undefined &&
+      props.soundSource() !== leadSynth
+    ) {
       leadSynth = props.soundSource();
+      console.log('leadSynth', leadSynth);
     }
   };
   p.draw = () => {
@@ -218,7 +224,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
 
       songCounter = firstCell(xCoordinatesLine);
       newLine = true;
-      console.log(loopBeat.state, 'loopBeat.state');
+
       startLoop(loopBeat, '1m');
     }
   };
@@ -244,19 +250,19 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
   };
 }
 
-export const Doodler = ({
-  bassNoteProp,
-  zoomFactor,
-  soundSource,
-}: InputDoodlerProps) => {
-  const soundSourceFn = useCallback(() => soundSource, [soundSource]);
+export const Doodler = memo(
+  ({ bassNoteProp, zoomFactor, soundSource }: InputDoodlerProps) => {
+    const soundSourceFn = soundSource
+      ? useCallback(() => soundSource, [soundSource])
+      : undefined;
 
-  return (
-    <ReactP5Wrapper
-      sketch={sketch}
-      bassNoteProp={bassNoteProp}
-      zoomFactor={zoomFactor}
-      soundSource={soundSourceFn}
-    />
-  );
-};
+    return (
+      <ReactP5Wrapper
+        sketch={sketch}
+        bassNoteProp={bassNoteProp}
+        zoomFactor={zoomFactor}
+        soundSource={soundSourceFn}
+      />
+    );
+  }
+);

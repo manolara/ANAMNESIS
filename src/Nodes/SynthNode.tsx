@@ -10,7 +10,7 @@ import { APalette } from '../theme';
 const handleStyle = { left: 10 };
 const zoomSelector = (s: any) => s.transform[2];
 
-export const SynthNode = () => {
+export const SynthNode = ({ data }: any) => {
   const zoom = useStore(zoomSelector);
   console.log({ zoom });
   const synth = useMemo(() => new PolySynth(), []);
@@ -28,7 +28,7 @@ export const SynthNode = () => {
         }}
       ></Stack>
 
-      <Synthesizer synth={synth} />
+      <Synthesizer synth={data.synth ?? synth} />
 
       <Handle type="source" position={Position.Left} id="a" />
     </>
