@@ -13,7 +13,7 @@ export function ThereminNode() {
   console.log({ zoom });
   return (
     <>
-      <Handle type="target" position={Position.Right} />
+      <Handle type="source" position={Position.Right} />
       <Stack
         height={18}
         width={18}
@@ -25,7 +25,7 @@ export function ThereminNode() {
         }}
       ></Stack>
       <Theremin zoomFactor={zoom} />
-      <Handle type="source" position={Position.Left} id="a" />
+      <Handle type="target" position={Position.Left} id="a" />
     </>
   );
 }

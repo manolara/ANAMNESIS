@@ -13,7 +13,7 @@ export const DoodlerPage = ({
   soundSource,
 }: DoodlerPageProps) => {
   const [bassNote, setBassNote] = useState('C3');
-  console.log('soundSource', soundSource);
+
   return (
     <>
       <Doodler

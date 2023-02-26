@@ -181,7 +181,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
       props.soundSource() !== leadSynth
     ) {
       leadSynth = props.soundSource();
-      console.log('leadSynth', leadSynth);
+      console.log('leadSynth what the flick', props.soundSource());
     }
   };
   p.draw = () => {
@@ -250,19 +250,21 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
   };
 }
 
-export const Doodler = memo(
-  ({ bassNoteProp, zoomFactor, soundSource }: InputDoodlerProps) => {
-    const soundSourceFn = soundSource
-      ? useCallback(() => soundSource, [soundSource])
-      : undefined;
+export const Doodler = ({
+  bassNoteProp,
+  zoomFactor,
+  soundSource,
+}: InputDoodlerProps) => {
+  const soundSourceFn = useCallback(() => soundSource, [soundSource]);
 
-    return (
-      <ReactP5Wrapper
-        sketch={sketch}
-        bassNoteProp={bassNoteProp}
-        zoomFactor={zoomFactor}
-        soundSource={soundSourceFn}
-      />
-    );
-  }
-);
+  console.log('wtfff', soundSourceFn());
+
+  return (
+    <ReactP5Wrapper
+      sketch={sketch}
+      bassNoteProp={bassNoteProp}
+      zoomFactor={zoomFactor}
+      soundSource={soundSourceFn}
+    />
+  );
+};

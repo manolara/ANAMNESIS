@@ -2,7 +2,7 @@ import * as Tone from 'tone';
 
 import { RefObject, useRef } from 'react';
 
-import { Box, Icon, Stack, Typography } from '@mui/material';
+import { Box, Icon, Stack } from '@mui/material';
 import EastIcon from '@mui/icons-material/East';
 import WestIcon from '@mui/icons-material/West';
 import { Reverb, ReverbOut } from '../../FX/Reverb';
@@ -10,7 +10,6 @@ import { AButton, APalette } from '../../theme';
 import { Delay, DelayOut } from '../../FX/Delay';
 import { Compressor, CompressorOut } from '../../FX/Compressor';
 import { Lofi, LofiOut } from '../../FX/Lofi';
-import { Synthesizer } from '../../Instruments/Synthesizer';
 
 const testSynth = new Tone.Synth({
   oscillator: {

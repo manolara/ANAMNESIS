@@ -10,6 +10,7 @@ import ReactFlow, {
   addEdge,
   useStore,
   useEdges,
+  useNodes,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { ThereminNode } from '../Nodes/ThereminNode';
@@ -39,10 +40,10 @@ const initialNodes: ANode[] = [
     type: 'synth',
     data: {
       label: 'Node 1',
-      synth: undefined,
+      soundEngine: synth1,
     },
     dragHandle: '.custom-drag-handle',
-    position: { x: 500, y: 5 },
+    position: { x: 5, y: 5 },
   },
   {
     id: '3',
@@ -61,7 +62,7 @@ const initialNodes: ANode[] = [
       label: 'Node 1',
     },
     dragHandle: '.custom-drag-handle',
-    position: { x: 500, y: 200 },
+    position: { x: 1000, y: 200 },
   },
 ];
 const initialEdges: Edge[] = [];
@@ -81,12 +82,29 @@ export const ReactFlowTester = () => {
   const onConnect = useCallback(
     (connection: Connection) => {
       setEdges((eds) => addEdge(connection, eds));
-      //filter nodes and print the one with id of connection.source
-      console.log(nodes.filter((node) => node.id === connection.source));
+
+      const sourceEngine = nodes.find((node) => node.id === connection.source)
+        ?.data.soundEngine;
+      console.log({ sourceEngine });
+      // make target soundSource the sourceEngine
+      setNodes((nodes) =>
+        nodes.map((node) => {
+          if (node.id === connection.target) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                soundSource: sourceEngine,
+              },
+            };
+          }
+          return node;
+        })
+      );
     },
     [setEdges]
   );
-  console.log(useEdges());
+  console.log(useNodes());
 
   return (
     <div style={{ height: '100%' }}>

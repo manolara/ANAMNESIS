@@ -10,10 +10,11 @@ const zoomSelector = (s: any) => s.transform[2];
 export const DoodlerNode = ({ data }: any) => {
   const zoom = useStore(zoomSelector);
   console.log({ zoom });
+  console.log({ data });
 
   return (
     <>
-      <Handle type="target" position={Position.Right} />
+      <Handle type="source" position={Position.Right} />
       <Stack
         height={18}
         width={18}
@@ -25,13 +26,8 @@ export const DoodlerNode = ({ data }: any) => {
         }}
       ></Stack>
 
-      <DoodlerPage
-        // soundSource={useMemo(() => {
-        //   return new Tone.PolySynth();
-        // }, [])}
-        zoomFactor={zoom}
-      />
-      <Handle type="source" position={Position.Left} id="a" />
+      <DoodlerPage soundSource={data.soundSource} zoomFactor={zoom} />
+      <Handle type="target" position={Position.Left} id="a" />
     </>
   );
 };

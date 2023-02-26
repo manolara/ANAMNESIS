@@ -16,7 +16,7 @@ export const SynthNode = ({ data }: any) => {
   const synth = useMemo(() => new PolySynth(), []);
   return (
     <>
-      <Handle type="target" position={Position.Right} />
+      <Handle type="source" position={Position.Right} />
       <Stack
         height={18}
         width={18}
@@ -30,7 +30,7 @@ export const SynthNode = ({ data }: any) => {
 
       <Synthesizer synth={data.synth ?? synth} />
 
-      <Handle type="source" position={Position.Left} id="a" />
+      <Handle type="target" position={Position.Left} id="a" />
     </>
   );
 };
