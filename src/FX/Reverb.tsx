@@ -6,11 +6,11 @@ import { APalette } from '../theme';
 import { Knob } from './Knob';
 
 interface ReverbProps {
-  reverbInput: Tone.Signal;
-  reverbOutput: Tone.Signal;
+  input: Tone.Signal;
+  output: Tone.Signal;
 }
 
-export const Reverb = ({ reverbInput, reverbOutput }: ReverbProps) => {
+export const Reverb = ({ input, output }: ReverbProps) => {
   const decayDefault = 0.2;
   const mixDefault = 50;
   const reverbEngine = useMemo(
@@ -20,7 +20,12 @@ export const Reverb = ({ reverbInput, reverbOutput }: ReverbProps) => {
   console.log('rerendering reverb');
 
   useEffect(() => {
-    reverbInput.chain(reverbEngine, reverbOutput);
+    input.chain(reverbEngine, output);
+    return () => {
+      input.disconnect(reverbEngine);
+      reverbEngine.disconnect(output);
+      reverbEngine.dispose();
+    };
   }, []);
 
   return (

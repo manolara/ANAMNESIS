@@ -22,6 +22,7 @@ import { ReactFlowWrapperTest } from './ReactFlowWrapperTest';
 import { Flow } from './pages/Flow';
 import { PGNodeConnect } from './PLAYGROUND/PGNodeConnect';
 import { PGFXChainTest } from './PLAYGROUND/PGFXChainTest';
+import { UseReverbTests } from './PLAYGROUND/useReverbTests';
 
 export const App = () => {
   return (
@@ -47,6 +48,7 @@ export const App = () => {
       <Route path="flow" element={<Flow />} />
       <Route path="PGNodeConnect" element={<PGNodeConnect />} />
       <Route path="PGFXChainTest" element={<PGFXChainTest />} />
+      <Route path="useReverbTests" element={<UseReverbTests />} />
     </Routes>
   );
 };

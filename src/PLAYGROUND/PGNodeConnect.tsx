@@ -71,7 +71,7 @@ export const PGNodeConnect = () => {
     <>
       <Stack direction="row" spacing={1}>
         {synthComponents}
-        <Reverb reverbInput={reverbInput} reverbOutput={reverbOutput} />
+        <Reverb input={reverbInput} output={reverbOutput} />
         <Lofi input={LofiInput} output={LofiOutput} />
       </Stack>
       <DoodlerPage
