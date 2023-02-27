@@ -1,22 +1,27 @@
 import { Stack, Typography, useTheme } from '@mui/material';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import * as Tone from 'tone';
 import { APalette } from '../theme';
 import { Knob } from './Knob';
 
 interface ReverbProps {
-  reverbEngine: Tone.Reverb;
+  reverbInput: Tone.Signal;
   reverbOutput: Tone.Signal;
 }
 
-export const Reverb = ({ reverbEngine, reverbOutput }: ReverbProps) => {
+export const Reverb = ({ reverbInput, reverbOutput }: ReverbProps) => {
   const decayDefault = 0.2;
   const mixDefault = 50;
-  const [mix, setMix] = useState(mixDefault);
-  const [decay, setDecay] = useState(decayDefault);
-  reverbEngine.set({ decay: decay, wet: mix / 100 });
-  reverbEngine.connect(reverbOutput);
+  const reverbEngine = useMemo(
+    () => new Tone.Reverb({ decay: decayDefault, wet: mixDefault / 100 }),
+    []
+  );
+  console.log('rerendering reverb');
+
+  useEffect(() => {
+    reverbInput.chain(reverbEngine, reverbOutput);
+  }, []);
 
   return (
     <>
@@ -36,13 +41,13 @@ export const Reverb = ({ reverbEngine, reverbOutput }: ReverbProps) => {
             isExp={true}
             hasDecimals={true}
             defaultValue={decayDefault}
-            onValueChange={(value) => setDecay(value)}
+            onValueChange={(value) => reverbEngine.set({ decay: value })}
           />
           <Knob
             title={'Mix'}
             isExp={false}
             defaultValue={mixDefault}
-            onValueChange={(value) => setMix(value)}
+            onValueChange={(value) => reverbEngine.set({ wet: value / 100 })}
           />
           <Knob title={'HPF'} isExp min={20} max={2000} />
         </Stack>

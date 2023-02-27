@@ -63,7 +63,7 @@ export const PGNodeConnect = () => {
     (soundSource) => soundSource.engine
   );
   const reverbOutput = useMemo(() => new Tone.Signal(), []);
-  const reverbEngine1 = useMemo(() => new Tone.Reverb(), []);
+  const reverbInput = useMemo(() => new Tone.Signal(), []);
   const LofiInput = useMemo(() => new Tone.Signal(), []);
   const LofiOutput = useMemo(() => new Tone.Signal().toDestination(), []);
 
@@ -71,7 +71,7 @@ export const PGNodeConnect = () => {
     <>
       <Stack direction="row" spacing={1}>
         {synthComponents}
-        <Reverb reverbEngine={reverbEngine1} reverbOutput={reverbOutput} />
+        <Reverb reverbInput={reverbInput} reverbOutput={reverbOutput} />
         <Lofi input={LofiInput} output={LofiOutput} />
       </Stack>
       <DoodlerPage
@@ -112,7 +112,7 @@ export const PGNodeConnect = () => {
       <AButton
         sx={{ m: 1 }}
         onClick={() => {
-          soundSources?.[0].output.disconnect().connect(reverbEngine1);
+          soundSources?.[0].output.disconnect().connect(reverbInput);
           console.log('reverb connected');
         }}
       >
