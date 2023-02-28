@@ -46,6 +46,17 @@ export const Lofi = ({ input, output }: LofiProps) => {
   useEffect(() => {
     input.chain(LofiFX, BitCrushFX, output);
     Noise.chain(NoiseOut, output);
+    return () => {
+      input.disconnect(LofiFX);
+      LofiFX.disconnect(BitCrushFX);
+      BitCrushFX.disconnect(output);
+      Noise.disconnect(NoiseOut);
+      NoiseOut.disconnect(output);
+      LofiFX.dispose();
+      BitCrushFX.dispose();
+      Noise.dispose();
+      NoiseOut.dispose();
+    };
   }, []);
 
   const [noiseLevel, setNoiseLevel] = useState(noiseLevelDefault);
@@ -55,7 +66,7 @@ export const Lofi = ({ input, output }: LofiProps) => {
     }
     if (Noise.state === 'stopped' && noiseLevel > 0) {
       Noise.start();
-      console.log(Noise.state);
+      console.log('noise started');
     }
   }, [noiseLevel]);
   return (

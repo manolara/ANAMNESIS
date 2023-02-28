@@ -1,32 +1,35 @@
 import { Stack, Typography, useTheme } from '@mui/material';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { APalette } from '../theme';
 
 import * as Tone from 'tone';
 import { Knob } from './Knob';
 
 interface DelayProps {
-  input: Tone.ToneAudioNode;
-  color: string;
+  input: Tone.Signal;
+  output: Tone.Signal;
 }
-export const DelayOut = new Tone.Signal();
-const DelayFX = new Tone.FeedbackDelay();
 
-export const Delay = ({ color, input }: DelayProps) => {
-  input.chain(DelayFX, DelayOut);
+export const Delay = ({ input, output }: DelayProps) => {
+  const DelayFX = useMemo(() => new Tone.FeedbackDelay(), []);
   const feedbackDefault = 20;
   const mixDefault = 50;
-  const [feedback, setFeedback] = useState(feedbackDefault);
-  const [mix, setMix] = useState(mixDefault);
 
-  DelayFX.set({ feedback: feedback / 100, wet: mix / 100 });
-  console.log('rerendering');
+  useEffect(() => {
+    input.chain(DelayFX, output);
+    return () => {
+      DelayFX.disconnect(output);
+      DelayFX.dispose();
+    };
+  }, []);
+
+  DelayFX.set({ feedback: feedbackDefault / 100, wet: mixDefault / 100 });
   return (
     <>
       <Stack
         // width="30%"
         height="fit-content"
-        sx={{ p: 1, backgroundColor: color, minWidth: 'fit-content' }}
+        sx={{ p: 1, backgroundColor: APalette.delay, minWidth: 'fit-content' }}
       >
         <Typography width="100%" className="unselectable" mb={1}>
           Delay
@@ -35,13 +38,13 @@ export const Delay = ({ color, input }: DelayProps) => {
           <Knob
             title={'Feedback'}
             defaultValue={feedbackDefault}
-            onValueChange={(value) => setFeedback(value)}
+            onValueChange={(value) => DelayFX.set({ feedback: value / 100 })}
           />
           <Knob
             title={'Mix'}
             isExp={false}
             defaultValue={mixDefault}
-            onValueChange={(value) => setMix(value)}
+            onValueChange={(value) => DelayFX.set({ wet: value / 100 })}
           />
           <Knob title={'Filter'} isExp min={20} max={2000} />
         </Stack>
