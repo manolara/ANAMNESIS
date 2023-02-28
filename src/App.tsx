@@ -23,6 +23,7 @@ import { Flow } from './pages/Flow';
 import { PGNodeConnect } from './PLAYGROUND/PGNodeConnect';
 import { PGFXChainTest } from './PLAYGROUND/PGFXChainTest';
 import { UseReverbTests } from './PLAYGROUND/useReverbTests';
+import { ReactFlowProvider } from 'reactflow';
 
 export const App = () => {
   return (
@@ -45,7 +46,14 @@ export const App = () => {
       <Route path="synth" element={<SynthesizerPage />} />
       <Route path="synthToTestLFO" element={<SynthToTestLFO />} />
       <Route path="reactFlowTest" element={<ReactFlowWrapperTest />} />
-      <Route path="flow" element={<Flow />} />
+      <Route
+        path="flow"
+        element={
+          <ReactFlowProvider>
+            <Flow />
+          </ReactFlowProvider>
+        }
+      />
       <Route path="PGNodeConnect" element={<PGNodeConnect />} />
       <Route path="PGFXChainTest" element={<PGFXChainTest />} />
       <Route path="useReverbTests" element={<UseReverbTests />} />

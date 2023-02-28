@@ -258,8 +258,6 @@ export const Doodler = ({
 }: InputDoodlerProps) => {
   const soundSourceFn = useCallback(() => soundSource, [soundSource]);
 
-  console.log('wtfff', soundSourceFn());
-
   return (
     <ReactP5Wrapper
       sketch={sketch}

@@ -1,10 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, MenuItem, MenuProps } from '@mui/material';
-import { ContextMenu, NestedMenuItem } from 'mui-nested-menu';
+import { NestedMenuItem } from 'mui-nested-menu';
+import { Node } from 'reactflow';
+import { Reverb } from '../FX/Reverb';
+import * as Tone from 'tone';
+import { createFX } from './createFX';
+import { Delay } from '../FX/Delay';
 
-interface FlowContextProps extends MenuProps {}
+interface FlowContextProps extends MenuProps {
+  addNode: (node: Node) => void;
+}
 
-export const FlowContext = ({ ...menuProps }: FlowContextProps) => {
+export const FlowContext = ({ addNode, ...menuProps }: FlowContextProps) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -24,6 +31,23 @@ export const FlowContext = ({ ...menuProps }: FlowContextProps) => {
   const handleMenuItemClick = (onClick: () => void) => {
     setOpen(false);
     onClick();
+  };
+  const addFX = (
+    FXComponent: React.FC<{ input: Tone.Signal; output: Tone.Signal }>
+  ) => {
+    const newFX = createFX(FXComponent);
+    addNode({
+      id: '5',
+      type: 'FX',
+      data: {
+        label: `${FXComponent}`,
+        component: newFX.component,
+        input: newFX.input,
+        output: newFX.output,
+      },
+      dragHandle: '.custom-drag-handle',
+      position: { x: 500, y: 200 },
+    });
   };
   const menuItems = [
     {
@@ -57,11 +81,11 @@ export const FlowContext = ({ ...menuProps }: FlowContextProps) => {
       children: [
         {
           label: 'Reverb',
-          onClick: () => console.log('Reverb'),
+          onClick: () => addFX(Reverb),
         },
         {
           label: 'Delay',
-          onClick: () => console.log('Delay'),
+          onClick: () => addFX(Delay),
         },
         {
           label: 'Compressor',

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import ReactFlow, {
   Controls,
   Background,
@@ -8,52 +8,63 @@ import ReactFlow, {
   Edge,
   Connection,
   addEdge,
-  useStore,
+  NodeChange,
+  applyNodeChanges,
+  EdgeChange,
+  applyEdgeChanges,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { ThereminNode } from '../Nodes/ThereminNode';
-import { DoodlerPage } from '../pages/DoodlerPage';
 import { DoodlerNode } from '../Nodes/DoodlerNode';
 import { TextUpdaterNode } from '../PLAYGROUND/TextUpdaterNode';
 import { SynthNode } from '../Nodes/SynthNode';
 import { FlowContext } from '../PLAYGROUND/FlowContext';
+import { FXNode } from '../Nodes/FXNode';
+import * as Tone from 'tone';
 
-// add component to the node
+// Define custom type strings for your custom nodes
 
-const initialNodes: Node[] = [
-  {
-    id: '1',
-    data: {
-      label: 'Node 1',
-    },
-    position: { x: 250, y: 5 },
-  },
-  {
-    id: '2',
-    type: 'textUpdater',
-    data: {
-      label: 'Node 1',
-    },
-    position: { x: 500, y: 5 },
-  },
+interface InstrumentData {
+  label: string;
+  soundSource?: Tone.PolySynth | undefined;
+}
+interface FXData {
+  label: string;
+  input: Tone.Signal;
+  output: Tone.Signal;
+  component: ReactElement;
+}
+
+interface SoundSourceData {
+  label: string;
+  soundEngine: Tone.MonoSynth | Tone.PolySynth;
+}
+
+type InstrumentNode = Node<InstrumentData>;
+type FXNode = Node<FXData>;
+type SoundSourceNode = Node<SoundSourceData>;
+type ANode = InstrumentNode | FXNode | SoundSourceNode;
+
+const initialNodes: ANode[] = [
   {
     id: '3',
     type: 'doodler',
     data: {
       label: 'Node 1',
+      soundSource: undefined,
     },
     dragHandle: '.custom-drag-handle',
     position: { x: 500, y: 5 },
   },
-  {
-    id: '4',
-    type: 'theremin',
-    data: {
-      label: 'Node 1',
-    },
-    dragHandle: '.custom-drag-handle',
-    position: { x: 500, y: 200 },
-  },
+  // {
+  //   id: '4',
+  //   type: 'theremin',
+  //   data: {
+  //     label: 'Node 1',
+  //   },
+  //   dragHandle: '.custom-drag-handle',
+  //   position: { x: 500, y: 200 },
+  // },
   // {
   //   id: '4',
   //   type: 'synth',
@@ -67,15 +78,31 @@ const initialNodes: Node[] = [
 const initialEdges: Edge[] = [];
 
 export const Flow = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const addNode = (node: InstrumentNode | FXNode | SoundSourceNode) => {
+    setNodes((nodes) => [...nodes, node]);
+  };
+
+  const [nodes, setNodes] = useState<ANode[]>(initialNodes);
+  const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const [openContext, setOpenContext] = useState(false);
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) =>
+      setNodes((nds) => applyNodeChanges(changes, nds)),
+    [setNodes]
+  );
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) =>
+      setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [setEdges]
+  );
+
   const nodeTypes = useMemo(
     () => ({
       textUpdater: TextUpdaterNode,
       doodler: DoodlerNode,
       theremin: ThereminNode,
       synth: SynthNode,
+      FX: FXNode,
     }),
     []
   );
@@ -83,6 +110,20 @@ export const Flow = () => {
     (connection: Connection) => setEdges((eds) => addEdge(connection, eds)),
     [setEdges]
   );
+  useEffect(() => {
+    addNode({
+      id: '1000',
+      type: 'synth',
+      data: {
+        label: 'Node 1',
+        soundEngine: new Tone.PolySynth(),
+        output: new Tone.Signal().toDestination(),
+      },
+      dragHandle: '.custom-drag-handle',
+      position: { x: 600, y: 200 },
+    });
+  }, []);
+
   return (
     <div style={{ height: '100%' }}>
       <ReactFlow
@@ -101,7 +142,7 @@ export const Flow = () => {
           console.log('context menu', e);
         }}
       >
-        <FlowContext open={openContext} />
+        <FlowContext addNode={addNode} open={openContext} />
         <Background />
         <Controls />
       </ReactFlow>

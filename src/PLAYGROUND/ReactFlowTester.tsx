@@ -35,16 +35,16 @@ const initialNodes: ANode[] = [
     },
     position: { x: 250, y: 5 },
   },
-  {
-    id: '2',
-    type: 'synth',
-    data: {
-      label: 'Node 1',
-      soundEngine: synth1,
-    },
-    dragHandle: '.custom-drag-handle',
-    position: { x: 5, y: 5 },
-  },
+  // {
+  //   id: '2',
+  //   type: 'synth',
+  //   data: {
+  //     label: 'Node 1',
+  //     soundEngine: synth1,
+  //   },
+  //   dragHandle: '.custom-drag-handle',
+  //   position: { x: 5, y: 5 },
+  // },
   {
     id: '3',
     type: 'doodler',

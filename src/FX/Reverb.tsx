@@ -25,6 +25,8 @@ export const Reverb = ({ input, output }: ReverbProps) => {
       input.disconnect(reverbEngine);
       reverbEngine.disconnect(output);
       reverbEngine.dispose();
+      input.dispose();
+      output.dispose();
     };
   }, []);
 

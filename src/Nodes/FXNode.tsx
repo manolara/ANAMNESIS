@@ -6,7 +6,7 @@ import { DragHandle } from './DragHandle';
 const handleStyle = { left: 10 };
 const zoomSelector = (s: any) => s.transform[2];
 
-export const DoodlerNode = ({ data }: any) => {
+export const FXNode = ({ data }: any) => {
   const zoom = useStore(zoomSelector);
 
   return (
@@ -14,7 +14,7 @@ export const DoodlerNode = ({ data }: any) => {
       <Handle type="source" position={Position.Right} />
       <DragHandle />
 
-      <DoodlerPage soundSource={data.soundSource} zoomFactor={zoom} />
+      {data.component}
       <Handle type="target" position={Position.Left} id="a" />
     </>
   );
