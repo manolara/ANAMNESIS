@@ -3,17 +3,14 @@ import { useEffect, useMemo, useState } from 'react';
 
 import * as Tone from 'tone';
 import { APalette } from '../theme';
+import { FXProps } from '../types/componentProps';
 import { Knob } from './Knob';
 
-interface LofiProps {
-  input: Tone.Signal;
-  output: Tone.Signal;
-}
 const noiseLevelDefault = 0;
 const wowDepthDefault = 0;
 const brokenDefault = 16;
 
-export const Lofi = ({ input, output }: LofiProps) => {
+export const Lofi = ({ input, output }: FXProps) => {
   const BitCrushFX = useMemo(
     () => new Tone.BitCrusher({ bits: brokenDefault }),
     []
@@ -56,6 +53,8 @@ export const Lofi = ({ input, output }: LofiProps) => {
       BitCrushFX.dispose();
       Noise.dispose();
       NoiseOut.dispose();
+      input.dispose();
+      output.dispose();
     };
   }, []);
 

@@ -4,13 +4,9 @@ import { APalette } from '../theme';
 
 import * as Tone from 'tone';
 import { Knob } from './Knob';
+import { FXProps } from '../types/componentProps';
 
-interface DelayProps {
-  input: Tone.Signal;
-  output: Tone.Signal;
-}
-
-export const Delay = ({ input, output }: DelayProps) => {
+export const Delay = ({ input, output }: FXProps) => {
   const DelayFX = useMemo(() => new Tone.FeedbackDelay(), []);
   const feedbackDefault = 20;
   const mixDefault = 50;
@@ -18,6 +14,8 @@ export const Delay = ({ input, output }: DelayProps) => {
   useEffect(() => {
     input.chain(DelayFX, output);
     return () => {
+      input.dispose();
+      output.dispose();
       DelayFX.disconnect(output);
       DelayFX.dispose();
     };

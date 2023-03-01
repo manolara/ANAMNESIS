@@ -5,6 +5,7 @@ import {
   ReactP5Wrapper,
   SketchProps,
 } from 'react-p5-wrapper';
+import { useStore } from 'reactflow';
 
 import * as Tone from 'tone';
 // eslint-disable-next-line import/no-cycle
@@ -21,17 +22,14 @@ import {
 } from '../utils/Doodler_utils';
 import { startLoop } from '../utils/utils';
 
-export interface InputDoodlerProps extends SketchProps {
+export interface InputDoodlerProps {
   bassNoteProp: string;
-  zoomFactor: number;
   soundSource?: Tone.PolySynth;
-  test?: object;
 }
 export interface DoodlerProps extends SketchProps {
   bassNoteProp: string;
   zoomFactor: number;
   soundSource?: () => Tone.PolySynth;
-  test?: object;
 }
 
 const doodlerPalette = {
@@ -250,13 +248,15 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     }
   };
 }
-
-export const Doodler = ({
-  bassNoteProp,
-  zoomFactor,
-  soundSource,
-}: InputDoodlerProps) => {
+const zoomSelector = (s: any) => s.transform[2];
+export const Doodler = ({ bassNoteProp, soundSource }: InputDoodlerProps) => {
   const soundSourceFn = useCallback(() => soundSource, [soundSource]);
+  let zoomFactor = 1;
+  try {
+    zoomFactor = useStore(zoomSelector);
+  } catch (e) {
+    console.log('zoom not found');
+  }
 
   return (
     <ReactP5Wrapper

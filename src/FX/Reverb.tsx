@@ -3,14 +3,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import * as Tone from 'tone';
 import { APalette } from '../theme';
+import { FXProps } from '../types/componentProps';
 import { Knob } from './Knob';
 
-interface ReverbProps {
-  input: Tone.Signal;
-  output: Tone.Signal;
-}
-
-export const Reverb = ({ input, output }: ReverbProps) => {
+export const Reverb = ({ input, output }: FXProps) => {
   const decayDefault = 0.2;
   const mixDefault = 50;
   const reverbEngine = useMemo(

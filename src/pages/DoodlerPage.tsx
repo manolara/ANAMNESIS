@@ -3,24 +3,14 @@ import { BassnotesBar } from '../Instruments/BassnotesBar';
 import * as Tone from 'tone';
 import { Doodler } from '../Instruments/Doodler';
 import { PGDoodler } from '../PLAYGROUND/PGDoodler';
+import { InstrumentProps } from '../types/componentProps';
 
-interface DoodlerPageProps {
-  zoomFactor?: number;
-  soundSource?: Tone.PolySynth;
-}
-export const DoodlerPage = ({
-  zoomFactor = 1,
-  soundSource,
-}: DoodlerPageProps) => {
+export const DoodlerPage = ({ soundSource }: InstrumentProps) => {
   const [bassNote, setBassNote] = useState('C3');
 
   return (
     <>
-      <Doodler
-        soundSource={soundSource}
-        bassNoteProp={bassNote}
-        zoomFactor={zoomFactor}
-      />
+      <Doodler soundSource={soundSource} bassNoteProp={bassNote} />
       <BassnotesBar setBassNote={setBassNote} />
     </>
   );

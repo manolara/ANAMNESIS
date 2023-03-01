@@ -4,15 +4,12 @@ import { APalette } from '../theme';
 
 import * as Tone from 'tone';
 import { Knob } from './Knob';
+import { FXProps } from '../types/componentProps';
 
-interface CompressorProps {
-  input: Tone.Signal;
-  output: Tone.Signal;
-}
 const thresholdDefault = -24;
 const ratioDefault = 4;
 
-export const Compressor = ({ input, output }: CompressorProps) => {
+export const Compressor = ({ input, output }: FXProps) => {
   const CompressorFX = useMemo(
     () =>
       new Tone.Compressor({
@@ -27,6 +24,8 @@ export const Compressor = ({ input, output }: CompressorProps) => {
     input.chain(CompressorFX, output);
 
     return () => {
+      input.dispose();
+      output.dispose();
       CompressorFX.disconnect(output);
       CompressorFX.dispose();
     };

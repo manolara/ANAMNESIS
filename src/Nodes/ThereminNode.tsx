@@ -6,11 +6,8 @@ import { DoodlerPage } from '../pages/DoodlerPage';
 import { APalette } from '../theme';
 
 const handleStyle = { left: 10 };
-const zoomSelector = (s: any) => s.transform[2];
 
 export function ThereminNode() {
-  const zoom = useStore(zoomSelector);
-  console.log({ zoom });
   return (
     <>
       <Handle type="source" position={Position.Right} />
@@ -24,7 +21,7 @@ export function ThereminNode() {
           transform: ' translate(-100%, 0)',
         }}
       ></Stack>
-      <Theremin zoomFactor={zoom} />
+      <Theremin />
       <Handle type="target" position={Position.Left} id="a" />
     </>
   );

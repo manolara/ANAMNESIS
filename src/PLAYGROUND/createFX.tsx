@@ -9,18 +9,18 @@ interface createFXFn {
 }
 
 export const createFX = (
-  FXComponent: React.FC<{ input: Tone.Signal; output: Tone.Signal }>
+  effectComponent: React.FC<{ input: Tone.Signal; output: Tone.Signal }>
 ): createFXFn => {
   const FXInput = new Tone.Signal();
   const FXOutput = new Tone.Signal();
 
-  const reverbComponent = createElement(FXComponent, {
+  const FXComponent = createElement(effectComponent, {
     input: FXInput,
     output: FXOutput,
   });
 
   return {
-    component: reverbComponent,
+    component: FXComponent,
     input: FXInput,
     output: FXOutput,
   };

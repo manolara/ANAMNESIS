@@ -9,14 +9,15 @@ import {
   ReactP5Wrapper,
   SketchProps,
 } from 'react-p5-wrapper';
+import { useStore } from 'reactflow';
 import * as Tone from 'tone';
 import { Abs } from 'tone';
+import { InstrumentProps } from '../pages/DoodlerPage';
 import { AButton, APalette } from '../theme';
 import { getCurrentBar } from '../utils/utils';
 
 interface InputThereminProps {
   soundSource?: Tone.MonoSynth;
-  zoomFactor?: number;
 }
 
 interface ThereminProps extends SketchProps {
@@ -255,7 +256,8 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   const thereminLoop = new Tone.Loop(song, `${recordingLength}m`);
 };
 
-export const Theremin = ({ zoomFactor, soundSource }: InputThereminProps) => {
+const zoomSelector = (s: any) => s.transform[2];
+export const Theremin = ({ soundSource }: InstrumentProps) => {
   const [thereminState, setThereminState] = useState('idle');
   const [octave, setOctave] = useState(4);
   const [recordingLength, setRecordingLength] = useState(2);
@@ -290,6 +292,12 @@ export const Theremin = ({ zoomFactor, soundSource }: InputThereminProps) => {
     ]);
   };
   const soundSourceFn = useCallback(() => soundSource, [soundSource]);
+  let zoomFactor = 1;
+  try {
+    zoomFactor = useStore(zoomSelector);
+  } catch (e) {
+    console.log('zoom not found');
+  }
 
   return (
     <Stack width={`${canvasWidth}px`}>

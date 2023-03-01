@@ -1,10 +1,8 @@
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import ReactFlow, {
   Controls,
   Background,
   Node,
-  useNodesState,
-  useEdgesState,
   Edge,
   Connection,
   addEdge,
@@ -14,71 +12,74 @@ import ReactFlow, {
   applyEdgeChanges,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { ThereminNode } from '../Nodes/ThereminNode';
-import { DoodlerNode } from '../Nodes/DoodlerNode';
-import { TextUpdaterNode } from '../PLAYGROUND/TextUpdaterNode';
-import { SynthNode } from '../Nodes/SynthNode';
 import { FlowContext } from '../PLAYGROUND/FlowContext';
 import { FXNode } from '../Nodes/FXNode';
 import * as Tone from 'tone';
+import { InstrumentNode } from '../Nodes/InstrumentNode';
+import { DoodlerPage } from './DoodlerPage';
+import { SynthNode } from '../Nodes/SynthNode';
+import { Theremin } from '../Instruments/Theremin';
+import { InstrumentProps } from '../types/componentProps';
 
 // Define custom type strings for your custom nodes
 
-interface InstrumentData {
-  label: string;
+export interface InstrumentDataProps {
+  label: 'Doodler' | 'Theremin';
+  component: ({ soundSource }: InstrumentProps) => JSX.Element;
   soundSource?: Tone.PolySynth | undefined;
 }
-interface FXData {
+export interface FXDataProps {
   label: string;
   input: Tone.Signal;
   output: Tone.Signal;
-  component: ReactElement;
+  component: ({
+    input,
+    output,
+  }: {
+    input: Tone.Signal;
+    output: Tone.Signal;
+  }) => JSX.Element;
 }
 
-interface SoundSourceData {
+export interface SoundSourceDataProps {
   label: string;
-  soundEngine: Tone.MonoSynth | Tone.PolySynth;
+  soundEngine: Tone.MonoSynth | Tone.PolySynth | undefined;
+  output: Tone.Signal;
 }
 
-type InstrumentNode = Node<InstrumentData>;
-type FXNode = Node<FXData>;
-type SoundSourceNode = Node<SoundSourceData>;
-type ANode = InstrumentNode | FXNode | SoundSourceNode;
+type InstrumentNodeType = Node<InstrumentDataProps, 'instrument'>;
+type FXNodeType = Node<FXDataProps, 'FX'>;
+type SoundSourceNodeType = Node<SoundSourceDataProps, 'soundSource'>;
+export type ANode = InstrumentNodeType | FXNodeType | SoundSourceNodeType;
 
 const initialNodes: ANode[] = [
   {
-    id: '3',
-    type: 'doodler',
+    id: '1',
+    type: 'instrument',
     data: {
-      label: 'Node 1',
+      label: 'Doodler',
+      component: DoodlerPage,
       soundSource: undefined,
     },
     dragHandle: '.custom-drag-handle',
     position: { x: 500, y: 5 },
   },
-  // {
-  //   id: '4',
-  //   type: 'theremin',
-  //   data: {
-  //     label: 'Node 1',
-  //   },
-  //   dragHandle: '.custom-drag-handle',
-  //   position: { x: 500, y: 200 },
-  // },
-  // {
-  //   id: '4',
-  //   type: 'synth',
-  //   data: {
-  //     label: 'Node 1',
-  //   },
-  //   dragHandle: '.custom-drag-handle',
-  //   position: { x: 600, y: 200 },
-  // },
+  {
+    id: '2',
+    type: 'instrument',
+    data: {
+      label: 'Theremin',
+      component: Theremin,
+      soundSource: undefined,
+    },
+    dragHandle: '.custom-drag-handle',
+    position: { x: 500, y: 400 },
+  },
 ];
 const initialEdges: Edge[] = [];
 
 export const Flow = () => {
-  const addNode = (node: InstrumentNode | FXNode | SoundSourceNode) => {
+  const addNode = (node: ANode) => {
     setNodes((nodes) => [...nodes, node]);
   };
 
@@ -87,6 +88,7 @@ export const Flow = () => {
   const [openContext, setOpenContext] = useState(false);
   const onNodesChange = useCallback(
     (changes: NodeChange[]) =>
+      //@ts-ignore
       setNodes((nds) => applyNodeChanges(changes, nds)),
     [setNodes]
   );
@@ -98,11 +100,9 @@ export const Flow = () => {
 
   const nodeTypes = useMemo(
     () => ({
-      textUpdater: TextUpdaterNode,
-      doodler: DoodlerNode,
-      theremin: ThereminNode,
-      synth: SynthNode,
+      instrument: InstrumentNode,
       FX: FXNode,
+      soundSource: SynthNode,
     }),
     []
   );
@@ -113,9 +113,9 @@ export const Flow = () => {
   useEffect(() => {
     addNode({
       id: '1000',
-      type: 'synth',
+      type: 'soundSource',
       data: {
-        label: 'Node 1',
+        label: 'synth',
         soundEngine: new Tone.PolySynth(),
         output: new Tone.Signal().toDestination(),
       },
