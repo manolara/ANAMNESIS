@@ -12,8 +12,9 @@ import {
 import { useStore } from 'reactflow';
 import * as Tone from 'tone';
 import { Abs } from 'tone';
-import { InstrumentProps } from '../pages/DoodlerPage';
+
 import { AButton, APalette } from '../theme';
+import { InstrumentProps } from '../types/componentProps';
 import { getCurrentBar } from '../utils/utils';
 
 interface InputThereminProps {

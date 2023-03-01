@@ -1,4 +1,5 @@
 import { Theremin } from '../Instruments/Theremin';
+import { MasterNode } from '../Nodes/MasterNode';
 import { DoodlerPage } from '../pages/DoodlerPage';
 import { Metronome } from '../pages/Metronome';
 
@@ -16,6 +17,7 @@ export const PGPage = () => {
       <PlayButton />
       <Theremin />
       <Theremin />
+      <MasterNode />
     </>
   );
 };

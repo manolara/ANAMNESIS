@@ -10,6 +10,7 @@ import ReactFlow, {
   applyNodeChanges,
   EdgeChange,
   applyEdgeChanges,
+  useNodes,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { FlowContext } from '../PLAYGROUND/FlowContext';
@@ -20,6 +21,9 @@ import { DoodlerPage } from './DoodlerPage';
 import { SynthNode } from '../Nodes/SynthNode';
 import { Theremin } from '../Instruments/Theremin';
 import { InstrumentProps } from '../types/componentProps';
+import { v4 as uuidv4 } from 'uuid';
+import { MasterNode } from '../Nodes/MasterNode';
+import { Reverb } from '../FX/Reverb';
 
 // Define custom type strings for your custom nodes
 
@@ -47,14 +51,23 @@ export interface SoundSourceDataProps {
   output: Tone.Signal;
 }
 
+interface MasterNodeDataProps {
+  input: Tone.Signal;
+}
+
 type InstrumentNodeType = Node<InstrumentDataProps, 'instrument'>;
 type FXNodeType = Node<FXDataProps, 'FX'>;
 type SoundSourceNodeType = Node<SoundSourceDataProps, 'soundSource'>;
-export type ANode = InstrumentNodeType | FXNodeType | SoundSourceNodeType;
+type MasterNodeType = Node<MasterNodeDataProps, 'master'>;
+export type ANode =
+  | InstrumentNodeType
+  | FXNodeType
+  | SoundSourceNodeType
+  | MasterNodeType;
 
 const initialNodes: ANode[] = [
   {
-    id: '1',
+    id: uuidv4(),
     type: 'instrument',
     data: {
       label: 'Doodler',
@@ -62,10 +75,10 @@ const initialNodes: ANode[] = [
       soundSource: undefined,
     },
     dragHandle: '.custom-drag-handle',
-    position: { x: 500, y: 5 },
+    position: { x: 2000, y: 5 },
   },
   {
-    id: '2',
+    id: uuidv4(),
     type: 'instrument',
     data: {
       label: 'Theremin',
@@ -73,7 +86,28 @@ const initialNodes: ANode[] = [
       soundSource: undefined,
     },
     dragHandle: '.custom-drag-handle',
-    position: { x: 500, y: 400 },
+    position: { x: 1000, y: 1000 },
+  },
+  {
+    id: uuidv4(),
+    type: 'FX',
+    data: {
+      label: 'Reverb',
+      input: new Tone.Signal(),
+      output: new Tone.Signal(),
+      component: Reverb,
+    },
+    dragHandle: '.custom-drag-handle',
+    position: { x: 650, y: 250 },
+  },
+  {
+    id: uuidv4(),
+    type: 'master',
+    data: {
+      input: new Tone.Signal(),
+    },
+    dragHandle: '.custom-drag-handle',
+    position: { x: 1000, y: 200 },
   },
 ];
 const initialEdges: Edge[] = [];
@@ -103,26 +137,87 @@ export const Flow = () => {
       instrument: InstrumentNode,
       FX: FXNode,
       soundSource: SynthNode,
+      master: MasterNode,
     }),
     []
   );
+  const changeInput = (nodeToChange: ANode, newInput: Tone.Signal) => {
+    if (nodeToChange.type !== 'FX' && nodeToChange.type !== 'master') return;
+    // @ts-ignore
+    setNodes((nodes) =>
+      nodes.map((node) => {
+        if (node.id === nodeToChange.id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              input: newInput,
+            },
+          };
+        }
+        return node;
+      })
+    );
+  };
+
   const onConnect = useCallback(
-    (connection: Connection) => setEdges((eds) => addEdge(connection, eds)),
-    [setEdges]
+    (connection: Connection) => {
+      setEdges((eds) => addEdge(connection, eds));
+      const sourceNode = nodes.find((node) => node.id === connection.source);
+      const targetNode = nodes.find((node) => node.id === connection.target);
+
+      if (
+        sourceNode?.type === 'instrument' &&
+        targetNode?.type === 'soundSource'
+      ) {
+        // @ts-ignore
+        setNodes((nodes) =>
+          nodes.map((node) => {
+            if (node.id === sourceNode.id) {
+              debugger;
+              return {
+                ...node,
+                data: {
+                  ...node.data,
+                  soundSource: targetNode.data.soundEngine,
+                },
+              };
+            }
+            return node;
+          })
+        );
+      }
+      if (sourceNode?.type === 'soundSource' && targetNode?.type === 'FX') {
+        changeInput(targetNode, sourceNode.data.output);
+      }
+      if (sourceNode?.type === 'FX' && targetNode?.type === 'FX') {
+        sourceNode.data.output.connect(targetNode.data.input);
+      }
+      if (sourceNode?.type === 'FX' && targetNode?.type === 'master') {
+        sourceNode.data.output.connect(targetNode.data.input);
+      }
+      if (sourceNode?.type === 'soundSource' && targetNode?.type === 'master') {
+        sourceNode.data.output.connect(targetNode.data.input);
+      }
+    },
+
+    [setEdges, setNodes, nodes]
   );
   useEffect(() => {
     addNode({
-      id: '1000',
+      id: uuidv4(),
       type: 'soundSource',
       data: {
         label: 'synth',
         soundEngine: new Tone.PolySynth(),
-        output: new Tone.Signal().toDestination(),
+        output: new Tone.Signal(),
       },
       dragHandle: '.custom-drag-handle',
-      position: { x: 600, y: 200 },
+      position: { x: 200, y: 200 },
     });
   }, []);
+
+  console.log('nodes', nodes);
 
   return (
     <div style={{ height: '100%' }}>

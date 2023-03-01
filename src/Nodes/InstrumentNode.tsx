@@ -1,5 +1,5 @@
 import { createElement } from 'react';
-import { Handle, Node, Position } from 'reactflow';
+import { Handle, Position } from 'reactflow';
 
 import { DragHandle } from './DragHandle';
 
@@ -10,10 +10,10 @@ export const InstrumentNode = ({ data }: any) => {
 
   return (
     <>
-      <Handle type="source" position={Position.Right} />
+      <Handle type="target" position={Position.Left} id="a" />
       <DragHandle />
       {instrumentComponent}
-      <Handle type="target" position={Position.Left} id="a" />
+      <Handle type="source" position={Position.Right} />
     </>
   );
 };

@@ -3,11 +3,12 @@ import { Menu, MenuItem, MenuProps } from '@mui/material';
 import { NestedMenuItem } from 'mui-nested-menu';
 import { Reverb } from '../FX/Reverb';
 import * as Tone from 'tone';
-import { Delay, FXProps } from '../FX/Delay';
+import { Delay } from '../FX/Delay';
 import { ANode } from '../pages/Flow';
 import { Compressor } from '../FX/Compressor';
 import { Lofi } from '../FX/Lofi';
 import { v4 as uuidv4 } from 'uuid';
+import { FXProps } from '../types/componentProps';
 
 interface FlowContextProps extends MenuProps {
   addNode: (node: ANode) => void;
@@ -42,7 +43,7 @@ export const FlowContext = ({ addNode, ...menuProps }: FlowContextProps) => {
         label: `${FXComponent}`,
         component: FXComponent,
         input: new Tone.Signal(),
-        output: new Tone.Signal(),
+        output: new Tone.Signal().toDestination(),
       },
       dragHandle: '.custom-drag-handle',
       position: { x: 500, y: 200 },

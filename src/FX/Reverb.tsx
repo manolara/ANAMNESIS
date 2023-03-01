@@ -13,10 +13,10 @@ export const Reverb = ({ input, output }: FXProps) => {
     () => new Tone.Reverb({ decay: decayDefault, wet: mixDefault / 100 }),
     []
   );
-  console.log('rerendering reverb');
 
   useEffect(() => {
     input.chain(reverbEngine, output);
+    console.log('new input');
     return () => {
       input.disconnect(reverbEngine);
       reverbEngine.disconnect(output);
@@ -24,7 +24,7 @@ export const Reverb = ({ input, output }: FXProps) => {
       input.dispose();
       output.dispose();
     };
-  }, []);
+  }, [input]);
 
   return (
     <>

@@ -17,7 +17,7 @@ export const SynthNode = ({ data }: any) => {
 
   return (
     <>
-      <Handle type="source" position={Position.Right} />
+      <Handle type="target" position={Position.Left} id="a" />
       <Stack
         height={18}
         width={18}
@@ -30,8 +30,7 @@ export const SynthNode = ({ data }: any) => {
       ></Stack>
 
       <Synthesizer synth={data.soundEngine ?? synth} output={data.output} />
-
-      <Handle type="target" position={Position.Left} id="a" />
+      <Handle type="source" position={Position.Right} />
     </>
   );
 };
