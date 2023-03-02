@@ -1,10 +1,13 @@
 import { Stack, Typography } from '@mui/material';
 import { Handle, Position } from 'reactflow';
+import { AButton } from '../theme';
 import { DragHandle } from './DragHandle';
+import * as Tone from 'tone';
 
 export const MasterNode = ({ data }: any) => {
+  const mixer = new Tone.Channel();
   data?.input?.toDestination();
-  console.log(data.input);
+
   return (
     <>
       <Handle type="target" position={Position.Left} />
@@ -24,6 +27,20 @@ export const MasterNode = ({ data }: any) => {
         >
           MASTER
         </Typography>
+        {/* Button to add new handle */}
+        <AButton
+          sx={{
+            fontSize: '15px',
+            height: '20px',
+            width: '100%',
+            position: 'absolute',
+            bottom: '0',
+            borderRadius: '0',
+          }}
+          onClick={() => console.log('add handle')}
+        >
+          +
+        </AButton>
       </Stack>
     </>
   );

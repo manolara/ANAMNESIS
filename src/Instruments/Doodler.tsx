@@ -40,9 +40,9 @@ const doodlerPalette = {
   purple: '#d5c6e0',
 };
 function sketch(p: P5CanvasInstance<DoodlerProps>) {
-  let leadSynth: Tone.PolySynth | Tone.MonoSynth = new Tone.MonoSynth();
+  let defaultSynth: Tone.PolySynth | Tone.MonoSynth = new Tone.MonoSynth();
   let loopLengthBars = 2;
-  setupLeadSynth(leadSynth as Tone.MonoSynth);
+  setupLeadSynth(defaultSynth as Tone.MonoSynth);
   const bassSynth = new Tone.MonoSynth({ volume: -3 }).toDestination();
   setupBassSynth(bassSynth);
   const gridOn = false;
@@ -69,6 +69,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
   let sc_mouseY: number;
   let sc_pmouseX: number;
   let sc_pmouseY: number;
+  let leadSynth: Tone.PolySynth | Tone.MonoSynth;
 
   const loopBeat = new Tone.Loop(song, '4n');
   function redLine(p: P5CanvasInstance<DoodlerProps>) {
@@ -151,7 +152,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     const gainLead = new Tone.Gain(0.6).toDestination();
     const postFilter = new Tone.Filter(2200, 'lowpass').connect(gainLead);
     const drive = new Tone.Distortion(0.3).connect(postFilter);
-    leadSynth.connect(drive);
+    defaultSynth.connect(drive);
     cnv = p.createCanvas(600, 400);
     // cnv.position(p.windowWidth / 1.9, p.windowHeight / 4);
     cnv.style('border: 3px solid #8bb6da;;');
@@ -160,9 +161,11 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     p.strokeWeight(2);
     cnv.mousePressed(doodlerPressed);
 
-    leadSynth instanceof Tone.MonoSynth
-      ? flutterAndWow(leadSynth, 9, 6, 1.6, 20)
+    defaultSynth instanceof Tone.MonoSynth
+      ? flutterAndWow(defaultSynth, 9, 6, 1.6, 20)
       : null;
+
+    leadSynth = defaultSynth;
   };
   p.updateWithProps = (props: any) => {
     if (bassNote !== undefined) {
@@ -173,15 +176,17 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     if (props.zoomFactor !== undefined) {
       zoomFactor = props.zoomFactor;
     }
-    if (
-      props.soundSource &&
-      props.soundSource() !== undefined &&
-      props.soundSource() !== leadSynth
-    ) {
-      leadSynth = props.soundSource();
-      console.log('leadSynth what the flick', props.soundSource());
-      //check the type of props.soundSource()
-    }
+    if (props.soundSource)
+      if (
+        props.soundSource() !== undefined &&
+        props.soundSource() !== leadSynth
+      ) {
+        leadSynth = props.soundSource();
+        console.log('leadSynth what the flick', props.soundSource());
+        //check the type of props.soundSource()
+      } else if (props.soundSource() === undefined) {
+        leadSynth = defaultSynth;
+      }
   };
   p.draw = () => {
     sc_mouseX = p.mouseX / zoomFactor;

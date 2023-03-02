@@ -25,8 +25,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { MasterNode } from '../Nodes/MasterNode';
 import { Reverb } from '../FX/Reverb';
 
-// Define custom type strings for your custom nodes
-
 export interface InstrumentDataProps {
   label: 'Doodler' | 'Theremin';
   component: ({ soundSource }: InstrumentProps) => JSX.Element;
@@ -75,7 +73,7 @@ const initialNodes: ANode[] = [
       soundSource: undefined,
     },
     dragHandle: '.custom-drag-handle',
-    position: { x: 2000, y: 5 },
+    position: { x: -500, y: 5 },
   },
   {
     id: uuidv4(),
@@ -127,9 +125,30 @@ export const Flow = () => {
     [setNodes]
   );
   const onEdgesChange = useCallback(
-    (changes: EdgeChange[]) =>
-      setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges]
+    (changes: EdgeChange[]) => {
+      for (let change of changes) {
+        if (change.type === 'remove') {
+          // @ts-expect-error
+          const edgeChanged = edges.find((edge) => edge.id === change.id);
+          const edgeSourceNode = nodes.find(
+            (node) => node.id === edgeChanged?.source
+          );
+
+          if (
+            edgeSourceNode?.type === 'FX' ||
+            edgeSourceNode?.type === 'soundSource'
+          ) {
+            edgeSourceNode.data.output.disconnect();
+          } else if (edgeSourceNode?.type === 'instrument') {
+            debugger;
+            changeSoundSource(edgeSourceNode, undefined);
+          }
+        }
+
+        setEdges((eds) => applyEdgeChanges(changes, eds));
+      }
+    },
+    [setEdges, edges]
   );
 
   const nodeTypes = useMemo(
@@ -160,6 +179,27 @@ export const Flow = () => {
     );
   };
 
+  const changeSoundSource = (
+    nodeToChange: InstrumentNodeType,
+    newSoundSource: Tone.PolySynth | undefined
+  ) => {
+    // @ts-ignore
+    setNodes((nodes) =>
+      nodes.map((node) => {
+        if (node.id === nodeToChange.id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              soundSource: newSoundSource,
+            },
+          };
+        }
+        return node;
+      })
+    );
+  };
+
   const onConnect = useCallback(
     (connection: Connection) => {
       setEdges((eds) => addEdge(connection, eds));
@@ -170,25 +210,13 @@ export const Flow = () => {
         sourceNode?.type === 'instrument' &&
         targetNode?.type === 'soundSource'
       ) {
-        // @ts-ignore
-        setNodes((nodes) =>
-          nodes.map((node) => {
-            if (node.id === sourceNode.id) {
-              debugger;
-              return {
-                ...node,
-                data: {
-                  ...node.data,
-                  soundSource: targetNode.data.soundEngine,
-                },
-              };
-            }
-            return node;
-          })
+        changeSoundSource(
+          sourceNode,
+          targetNode.data.soundEngine as Tone.PolySynth
         );
       }
       if (sourceNode?.type === 'soundSource' && targetNode?.type === 'FX') {
-        changeInput(targetNode, sourceNode.data.output);
+        sourceNode.data.output.connect(targetNode.data.input);
       }
       if (sourceNode?.type === 'FX' && targetNode?.type === 'FX') {
         sourceNode.data.output.connect(targetNode.data.input);

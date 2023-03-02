@@ -8,7 +8,33 @@ import { ANode } from '../pages/Flow';
 import { Compressor } from '../FX/Compressor';
 import { Lofi } from '../FX/Lofi';
 import { v4 as uuidv4 } from 'uuid';
-import { FXProps } from '../types/componentProps';
+import {
+  FXProps,
+  InstrumentProps,
+  SoundSourceProps,
+} from '../types/componentProps';
+import { Theremin } from '../Instruments/Theremin';
+import { Synthesizer, synthProps } from '../Instruments/Synthesizer';
+import { MonoSynth } from '../Instruments/MonoSynth';
+import { DoodlerPage } from '../pages/DoodlerPage';
+
+///object to hold all the components
+const components = {
+  Instrument: {
+    Doodler: DoodlerPage,
+    Theremin: Theremin,
+  },
+  'Sound Source': {
+    MonoSynth: Synthesizer,
+    PolySynth: MonoSynth,
+  },
+  FX: {
+    Reverb: Reverb,
+    Delay: Delay,
+    Compressor: Compressor,
+    Lofi: Lofi,
+  },
+};
 
 interface FlowContextProps extends MenuProps {
   addNode: (node: ANode) => void;
@@ -43,23 +69,55 @@ export const FlowContext = ({ addNode, ...menuProps }: FlowContextProps) => {
         label: `${FXComponent}`,
         component: FXComponent,
         input: new Tone.Signal(),
-        output: new Tone.Signal().toDestination(),
+        output: new Tone.Signal(),
       },
       dragHandle: '.custom-drag-handle',
-      position: { x: 500, y: 200 },
+      position: { x: mousePosition.x, y: mousePosition.y },
     });
   };
+
+  const addInstrument = (
+    InstrumentComponent: ({ soundSource }: InstrumentProps) => JSX.Element,
+    label: 'Theremin' | 'Doodler'
+  ) => {
+    addNode({
+      id: uuidv4(),
+      type: 'instrument',
+      data: {
+        label: label,
+        component: InstrumentComponent,
+        soundSource: undefined,
+      },
+      dragHandle: '.custom-drag-handle',
+      position: { x: mousePosition.x, y: mousePosition.y },
+    });
+  };
+
+  const addSoundSource = (label: 'Monosynth' | 'PolySynth' | 'Piano') => {
+    addNode({
+      id: uuidv4(),
+      type: 'soundSource',
+      data: {
+        label: label,
+        soundEngine: new Tone.PolySynth(),
+        output: new Tone.Signal(),
+      },
+      dragHandle: '.custom-drag-handle',
+      position: { x: mousePosition.x, y: mousePosition.y },
+    });
+  };
+
   const menuItems = [
     {
       label: 'Instrument',
       children: [
         {
-          label: 'Theremin',
-          onClick: () => console.log('Theremin'),
+          label: 'Doodler',
+          onClick: () => addInstrument(DoodlerPage, 'Doodler'),
         },
         {
-          label: 'Doodler',
-          onClick: () => console.log('Doodler'),
+          label: 'Theremin',
+          onClick: () => addInstrument(Theremin, 'Theremin'),
         },
       ],
     },
@@ -72,7 +130,7 @@ export const FlowContext = ({ addNode, ...menuProps }: FlowContextProps) => {
         },
         {
           label: 'PolySynth',
-          onClick: () => console.log('PolySynth'),
+          onClick: () => addSoundSource('PolySynth'),
         },
       ],
     },

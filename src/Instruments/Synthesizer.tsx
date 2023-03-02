@@ -20,7 +20,7 @@ import { synthLFO } from './SynthLFO';
 
 type OmitMonophonicOptions<T> = Omit<T, 'context' | 'onsilence'>;
 
-interface synthProps {
+export interface synthProps {
   synth: Tone.PolySynth;
   output: Tone.ToneAudioNode;
 }
