@@ -1,10 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, MenuItem, MenuProps } from '@mui/material';
-import { ContextMenu, NestedMenuItem } from 'mui-nested-menu';
+import { NestedMenuItem } from 'mui-nested-menu';
+import { Reverb } from '../FX/Reverb';
+import * as Tone from 'tone';
+import { Delay } from '../FX/Delay';
+import { ANode } from '../pages/Flow';
+import { Compressor } from '../FX/Compressor';
+import { Lofi } from '../FX/Lofi';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  FXProps,
+  InstrumentProps,
+  SoundSourceProps,
+} from '../types/componentProps';
+import { Theremin } from '../Instruments/Theremin';
+import { Synthesizer, synthProps } from '../Instruments/Synthesizer';
+import { MonoSynth } from '../Instruments/MonoSynth';
+import { DoodlerPage } from '../pages/DoodlerPage';
 
-interface FlowContextProps extends MenuProps {}
+///object to hold all the components
+const components = {
+  Instrument: {
+    Doodler: DoodlerPage,
+    Theremin: Theremin,
+  },
+  'Sound Source': {
+    MonoSynth: Synthesizer,
+    PolySynth: MonoSynth,
+  },
+  FX: {
+    Reverb: Reverb,
+    Delay: Delay,
+    Compressor: Compressor,
+    Lofi: Lofi,
+  },
+};
 
-export const FlowContext = ({ ...menuProps }: FlowContextProps) => {
+interface FlowContextProps extends MenuProps {
+  addNode: (node: ANode) => void;
+}
+
+export const FlowContext = ({ addNode, ...menuProps }: FlowContextProps) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -25,17 +61,63 @@ export const FlowContext = ({ ...menuProps }: FlowContextProps) => {
     setOpen(false);
     onClick();
   };
+  const addFX = (FXComponent: ({ input, output }: FXProps) => JSX.Element) => {
+    addNode({
+      id: uuidv4(),
+      type: 'FX',
+      data: {
+        label: `${FXComponent}`,
+        component: FXComponent,
+        input: new Tone.Signal(),
+        output: new Tone.Signal(),
+      },
+      dragHandle: '.custom-drag-handle',
+      position: { x: mousePosition.x, y: mousePosition.y },
+    });
+  };
+
+  const addInstrument = (
+    InstrumentComponent: ({ soundSource }: InstrumentProps) => JSX.Element,
+    label: 'Theremin' | 'Doodler'
+  ) => {
+    addNode({
+      id: uuidv4(),
+      type: 'instrument',
+      data: {
+        label: label,
+        component: InstrumentComponent,
+        soundSource: undefined,
+      },
+      dragHandle: '.custom-drag-handle',
+      position: { x: mousePosition.x, y: mousePosition.y },
+    });
+  };
+
+  const addSoundSource = (label: 'Monosynth' | 'PolySynth' | 'Piano') => {
+    addNode({
+      id: uuidv4(),
+      type: 'soundSource',
+      data: {
+        label: label,
+        soundEngine: new Tone.PolySynth(),
+        output: new Tone.Signal(),
+      },
+      dragHandle: '.custom-drag-handle',
+      position: { x: mousePosition.x, y: mousePosition.y },
+    });
+  };
+
   const menuItems = [
     {
       label: 'Instrument',
       children: [
         {
-          label: 'Theremin',
-          onClick: () => console.log('Theremin'),
+          label: 'Doodler',
+          onClick: () => addInstrument(DoodlerPage, 'Doodler'),
         },
         {
-          label: 'Doodler',
-          onClick: () => console.log('Doodler'),
+          label: 'Theremin',
+          onClick: () => addInstrument(Theremin, 'Theremin'),
         },
       ],
     },
@@ -48,7 +130,7 @@ export const FlowContext = ({ ...menuProps }: FlowContextProps) => {
         },
         {
           label: 'PolySynth',
-          onClick: () => console.log('PolySynth'),
+          onClick: () => addSoundSource('PolySynth'),
         },
       ],
     },
@@ -57,26 +139,26 @@ export const FlowContext = ({ ...menuProps }: FlowContextProps) => {
       children: [
         {
           label: 'Reverb',
-          onClick: () => console.log('Reverb'),
+          onClick: () => addFX(Reverb),
         },
         {
           label: 'Delay',
-          onClick: () => console.log('Delay'),
+          onClick: () => addFX(Delay),
         },
         {
           label: 'Compressor',
-          onClick: () => console.log('Compressor'),
+          onClick: () => addFX(Compressor),
         },
         {
           label: 'Lofi',
-          onClick: () => console.log('Lofi'),
+          onClick: () => addFX(Lofi),
         },
       ],
     },
   ];
 
   return (
-    <React.Fragment>
+    <>
       {open ? (
         <Menu
           onClose={() => setOpen(false)}
@@ -105,6 +187,6 @@ export const FlowContext = ({ ...menuProps }: FlowContextProps) => {
       ) : null}
 
       {menuProps.children}
-    </React.Fragment>
+    </>
   );
 };

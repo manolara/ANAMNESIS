@@ -3,89 +3,81 @@
 import { FiberManualRecord } from '@mui/icons-material';
 import { Autocomplete, Icon, Stack, TextField } from '@mui/material';
 import p5 from 'p5';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   P5CanvasInstance,
   ReactP5Wrapper,
   SketchProps,
 } from 'react-p5-wrapper';
+import { useStore } from 'reactflow';
 import * as Tone from 'tone';
 import { Abs } from 'tone';
+
 import { AButton, APalette } from '../theme';
+import { InstrumentProps } from '../types/componentProps';
 import { getCurrentBar } from '../utils/utils';
 
-const canvasHeight = 500;
-const canvasWidth = 700;
-let outVol = 0.5;
-let vol = -60;
-let pitch: string;
-let cellNum: number;
-let prevCell;
+interface InputThereminProps {
+  soundSource?: Tone.MonoSynth;
+}
 
-let wowFreq = 3;
-let wow: Tone.LFO;
-const wowRange = 20;
-let cnv: p5.Renderer;
-let glow2ndgrad = 1;
-let glow = 0.2 * glow2ndgrad;
-let stroke = 2.2;
-let zoomFactor = 1;
-let sc_mouseX: number;
-let sc_mouseY: number;
+interface ThereminProps extends SketchProps {
+  notes?: string[];
+  thereminState?: string;
+  recordingLength?: number;
+  zoomFactor?: number;
+  soundSource?: () => Tone.MonoSynth;
+}
 
 interface SequenceType {
   x: number[];
   y: number[];
   mouseOn: boolean[];
 }
-let sequence: SequenceType = {
-  x: [],
-  y: [],
-  mouseOn: [],
-};
-let sequenceCounter: number;
-
-let loopLengthBars = 1;
-let barVisualizerPosition: number = 0;
-
-/// TONE.js///////
-const volKnob = new Tone.Gain();
-const synth = new Tone.MonoSynth({
-  oscillator: {
-    type: 'triangle',
-  },
-}).connect(volKnob);
-
-const thereminOut = new Tone.Gain(outVol).toDestination();
-
-volKnob.connect(thereminOut);
-
-let notes: string[] = [];
-
-const setNotes = (oct: number) => {
-  notes = [
-    `G${oct - 1}`,
-    `A${oct - 1}`,
-    `B${oct - 1}`,
-    `C${oct}`,
-    `D${oct}`,
-    `E${oct}`,
-    `F${oct}`,
-    `G${oct}`,
-    `A${oct}`,
-    `B${oct}`,
-    `C${oct + 1}`,
-  ];
-};
-
-interface ThereminProps extends SketchProps {
-  octave?: number;
-  thereminState?: string;
-  recordingLength?: number;
-  zoomFactor?: number;
-}
+const canvasHeight = 500;
+const canvasWidth = 700;
 
 const sketch = (p: P5CanvasInstance<ThereminProps>) => {
+  let notes = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
+  let outVol = 0.5;
+  let vol = -60;
+  let pitch: string;
+  let cellNum: number;
+  let prevCell;
+
+  let wowFreq = 3;
+  let wow: Tone.LFO;
+  const wowRange = 20;
+  let cnv: p5.Renderer;
+  let glow2ndgrad = 1;
+  let glow = 0.2 * glow2ndgrad;
+  let stroke = 2.2;
+  let zoomFactor = 1;
+  let sc_mouseX: number;
+  let sc_mouseY: number;
+
+  let sequence: SequenceType = {
+    x: [],
+    y: [],
+    mouseOn: [],
+  };
+  let sequenceCounter: number;
+
+  let loopLengthBars = 1;
+  let barVisualizerPosition: number = 0;
+
+  /// TONE.js///////
+  const volKnob = new Tone.Gain();
+  let synth = new Tone.MonoSynth({
+    oscillator: {
+      type: 'triangle',
+    },
+  }).connect(volKnob);
+
+  const thereminOut = new Tone.Gain(outVol).toDestination();
+
+  volKnob.connect(thereminOut);
+
   let oct = 4;
   let recordingLength = 1;
   let thereminState = 'idle';
@@ -143,7 +135,6 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     cnv = p.createCanvas(canvasWidth, canvasHeight);
     cnv.mousePressed(canvasPressed);
 
-    setNotes(oct);
     cnv.mouseOut(() => {
       if (p.mouseIsPressed) {
         releaseNote();
@@ -198,9 +189,8 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     }
   };
   p.updateWithProps = (props: ThereminProps) => {
-    if (props.octave) {
-      oct = props.octave;
-      setNotes(oct);
+    if (props.notes) {
+      notes = props.notes;
     }
     if (props.recordingLength) {
       recordingLength = props.recordingLength;
@@ -226,6 +216,14 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     //zoom
     if (props.zoomFactor) {
       zoomFactor = props.zoomFactor;
+    }
+
+    if (
+      props.soundSource &&
+      props.soundSource() &&
+      props.soundSource() !== synth
+    ) {
+      synth = props.soundSource();
     }
   };
 
@@ -259,40 +257,78 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   const thereminLoop = new Tone.Loop(song, `${recordingLength}m`);
 };
 
-export const Theremin = ({ zoomFactor }: ThereminProps) => {
+const zoomSelector = (s: any) => s.transform[2];
+export const Theremin = ({ soundSource }: InstrumentProps) => {
   const [thereminState, setThereminState] = useState('idle');
   const [octave, setOctave] = useState(4);
-  const [recordingLength, setRecordingLength] = useState(1);
+  const [recordingLength, setRecordingLength] = useState(2);
   const barLenghts = [1, 2, 4, 8];
+  const [notes, setNotes] = useState([
+    `G${octave - 1}`,
+    `A${octave - 1}`,
+    `B${octave - 1}`,
+    `C${octave}`,
+    `D${octave}`,
+    `E${octave}`,
+    `F${octave}`,
+    `G${octave}`,
+    `A${octave}`,
+    `B${octave}`,
+    `C${octave + 1}`,
+  ]);
+  const updateOctave = (oct: number) => {
+    setOctave(oct);
+    setNotes([
+      `G${oct - 1}`,
+      `A${oct - 1}`,
+      `B${oct - 1}`,
+      `C${oct}`,
+      `D${oct}`,
+      `E${oct}`,
+      `F${oct}`,
+      `G${oct}`,
+      `A${oct}`,
+      `B${oct}`,
+      `C${oct + 1}`,
+    ]);
+  };
+  const soundSourceFn = useCallback(() => soundSource, [soundSource]);
+  let zoomFactor = 1;
+  try {
+    zoomFactor = useStore(zoomSelector);
+  } catch (e) {
+    console.log('zoom not found');
+  }
+
   return (
     <Stack width={`${canvasWidth}px`}>
       <ReactP5Wrapper
         sketch={sketch}
         thereminState={thereminState}
-        octave={octave}
+        notes={notes}
         recordingLength={recordingLength}
         zoomFactor={zoomFactor}
+        soundSource={soundSourceFn}
       />
       <Stack direction="row" width="100%" pt={0.5}>
         <Stack direction="row" spacing={2}>
           <AButton
             onClick={() => {
-              setOctave(octave - 1);
-              setNotes(octave);
+              updateOctave(octave - 1);
             }}
           >
             oct --1
           </AButton>
           <AButton
             onClick={() => {
-              setOctave(octave + 1);
+              updateOctave(octave + 1);
             }}
           >
             oct +1
           </AButton>
           <Autocomplete
             disablePortal
-            defaultValue={'1'}
+            defaultValue={'2'}
             id="bar-length"
             options={barLenghts.map(String)}
             onChange={(e, value) => {

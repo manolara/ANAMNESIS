@@ -1,11 +1,11 @@
-import { P5Instance } from 'react-p5-wrapper';
+import { P5CanvasInstance } from 'react-p5-wrapper';
 
 import * as Tone from 'tone';
 // eslint-disable-next-line import/no-cycle
 import { DoodlerProps } from '../Instruments/Doodler';
 
 export const setBackground = (
-  p: P5Instance<DoodlerProps>,
+  p: P5CanvasInstance<DoodlerProps>,
   gridOn: boolean,
   curColor: string
 ) => {
@@ -187,6 +187,7 @@ export const findTranPoints = (xCoordinatesLine: number[]) => {
   }
   newTranPoints.unshift(0);
   newTranPoints.push(xCoordinatesLine.length - 1);
+
   return newTranPoints;
 };
 

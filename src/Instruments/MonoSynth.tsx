@@ -18,16 +18,11 @@ import waveSawtooth from '@iconify/icons-ph/wave-sawtooth';
 import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import { synthLFO } from './SynthLFO';
 
-type OmitMonophonicOptions<T> = Omit<T, 'context' | 'onsilence'>;
-
-export interface synthProps {
-  synth: Tone.PolySynth;
-  output: Tone.ToneAudioNode;
+interface synthProps {
+  synth: Tone.MonoSynth;
 }
 
-const defaultSynthOptions: RecursivePartial<
-  OmitMonophonicOptions<Tone.SynthOptions>
-> = {
+const defaultSynthOptions: RecursivePartial<Tone.MonoSynthOptions> = {
   oscillator: {
     type: 'sawtooth',
   },
@@ -56,9 +51,9 @@ const HPF_ENVELOPE: Partial<Tone.FrequencyEnvelopeOptions> = {
   octaves: 3,
 };
 
-export const Synthesizer = memo(({ synth, output }: synthProps) => {
+export const MonoSynth = memo(({ synth }: synthProps) => {
   //setup audio nodes, refs are used to avoid re-rendering
-  const outLevel = useMemo(() => new Tone.Gain(), []);
+  const outLevel = useMemo(() => new Tone.Gain().toDestination(), []);
   const HPF = useMemo(() => new Tone.Filter(20, 'highpass'), []);
   const LPF = useMemo(() => new Tone.Filter(3000, 'lowpass'), []);
   const LPFEnvelope = useMemo(
@@ -76,10 +71,8 @@ export const Synthesizer = memo(({ synth, output }: synthProps) => {
   const poly = synth.set(defaultSynthOptions);
 
   //setup stuff
-  poly.maxPolyphony = 8;
   const LFO = useRef(new synthLFO()).current;
-  poly.chain(HPF, LPF, outLevel, output);
-  console.log(HPF.frequency.value, 'HPF');
+  poly.chain(HPF, LPF, outLevel);
 
   return (
     <>
@@ -92,7 +85,7 @@ export const Synthesizer = memo(({ synth, output }: synthProps) => {
       <Stack
         className="unselectable"
         sx={{
-          backgroundColor: APalette.beige,
+          backgroundColor: APalette.purple,
           width: 'fit-content',
           p: 1,
         }}

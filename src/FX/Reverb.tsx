@@ -1,32 +1,37 @@
 import { Stack, Typography, useTheme } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import * as Tone from 'tone';
+import { APalette } from '../theme';
+import { FXProps } from '../types/componentProps';
 import { Knob } from './Knob';
 
-interface ReverbProps {
-  color: string;
-  input: Tone.ToneAudioNode;
-  // output: Tone.OutputNode;
-}
-
-export const ReverbOut = new Tone.Signal();
-const ReverbFX = new Tone.Reverb();
-
-export const Reverb = ({ color, input }: ReverbProps) => {
-  input.chain(ReverbFX, ReverbOut);
+export const Reverb = ({ input, output }: FXProps) => {
   const decayDefault = 0.2;
   const mixDefault = 50;
-  const [mix, setMix] = React.useState(mixDefault);
-  const [decay, setDecay] = React.useState(decayDefault);
-  ReverbFX.set({ decay: decay, wet: mix / 100 });
+  const reverbEngine = useMemo(
+    () => new Tone.Reverb({ decay: decayDefault, wet: mixDefault / 100 }),
+    []
+  );
+
+  useEffect(() => {
+    input.chain(reverbEngine, output);
+    console.log('new input');
+    return () => {
+      input.disconnect(reverbEngine);
+      reverbEngine.disconnect(output);
+      reverbEngine.dispose();
+      input.dispose();
+      output.dispose();
+    };
+  }, [input]);
 
   return (
     <>
       <Stack
         // width="30%"
         height="fit-content"
-        sx={{ p: 1, backgroundColor: color, minWidth: 'fit-content' }}
+        sx={{ p: 1, backgroundColor: APalette.reverb, minWidth: 'fit-content' }}
       >
         <Typography width="100%" className="unselectable" mb={1}>
           Reverb
@@ -39,13 +44,13 @@ export const Reverb = ({ color, input }: ReverbProps) => {
             isExp={true}
             hasDecimals={true}
             defaultValue={decayDefault}
-            onValueChange={(value) => setDecay(value)}
+            onValueChange={(value) => reverbEngine.set({ decay: value })}
           />
           <Knob
             title={'Mix'}
             isExp={false}
             defaultValue={mixDefault}
-            onValueChange={(value) => setMix(value)}
+            onValueChange={(value) => reverbEngine.set({ wet: value / 100 })}
           />
           <Knob title={'HPF'} isExp min={20} max={2000} />
         </Stack>

@@ -1,39 +1,44 @@
 import { Stack, Typography, useTheme } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { APalette } from '../theme';
 
 import * as Tone from 'tone';
 import { Knob } from './Knob';
+import { FXProps } from '../types/componentProps';
 
-interface CompressorProps {
-  input: Tone.ToneAudioNode;
-  color: string;
-}
 const thresholdDefault = -24;
 const ratioDefault = 4;
 
-export const CompressorOut = new Tone.Signal();
+export const Compressor = ({ input, output }: FXProps) => {
+  const CompressorFX = useMemo(
+    () =>
+      new Tone.Compressor({
+        threshold: thresholdDefault,
+        ratio: ratioDefault,
+        attack: 0.3,
+        release: 0.1,
+      }),
+    []
+  );
+  useEffect(() => {
+    input.chain(CompressorFX, output);
 
-const CompressorFX = new Tone.Compressor({
-  threshold: thresholdDefault,
-  ratio: ratioDefault,
-  attack: 0.3,
-  release: 0.1,
-});
+    return () => {
+      input.dispose();
+      output.dispose();
+      CompressorFX.disconnect(output);
+      CompressorFX.dispose();
+    };
+  }, []);
 
-export const Compressor = ({ color, input }: CompressorProps) => {
-  input.chain(CompressorFX, CompressorOut);
-
-  const [threshold, setThreshold] = useState(thresholdDefault);
-  const [ratio, setRatio] = useState(ratioDefault);
-  CompressorFX.set({ threshold: threshold, ratio: ratio });
+  CompressorFX.set({ threshold: thresholdDefault, ratio: ratioDefault });
   console.log('wetness', CompressorFX.get().ratio);
   return (
     <>
       <Stack
         // width="30%"
         height="fit-content"
-        sx={{ p: 1, backgroundColor: color, minWidth: 'fit-content' }}
+        sx={{ p: 1, backgroundColor: APalette.orange, minWidth: 'fit-content' }}
       >
         <Typography width="100%" className="unselectable" mb={1}>
           Compressor
@@ -42,7 +47,7 @@ export const Compressor = ({ color, input }: CompressorProps) => {
           <Knob
             title={'Threshold'}
             defaultValue={thresholdDefault}
-            onValueChange={(value) => setThreshold(value)}
+            onValueChange={(value) => CompressorFX.set({ threshold: value })}
             min={-60}
             max={0}
           />
@@ -52,7 +57,7 @@ export const Compressor = ({ color, input }: CompressorProps) => {
             hasDecimals={false}
             title={'Ratio'}
             defaultValue={ratioDefault}
-            onValueChange={(value) => setRatio(value)}
+            onValueChange={(value) => CompressorFX.set({ ratio: value })}
           />
           <Knob title={'Out'} isExp min={20} max={2000} />
         </Stack>

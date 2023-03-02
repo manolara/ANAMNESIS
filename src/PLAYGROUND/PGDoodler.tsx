@@ -1,13 +1,13 @@
 import p5 from 'p5';
-import { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo, useRef } from 'react';
 import {
   P5CanvasInstance,
   ReactP5Wrapper,
   SketchProps,
 } from 'react-p5-wrapper';
-import { useStore } from 'reactflow';
 
 import * as Tone from 'tone';
+import { Loop } from 'tone';
 // eslint-disable-next-line import/no-cycle
 import {
   bassNoteToColor,
@@ -20,16 +20,19 @@ import {
   setupBassSynth,
   setupLeadSynth,
 } from '../utils/Doodler_utils';
-import { startLoop } from '../utils/utils';
+import { getCurrentBeat, startLoop } from '../utils/utils';
 
-export interface InputDoodlerProps {
+export interface InputDoodlerProps extends SketchProps {
   bassNoteProp: string;
+  zoomFactor: number;
   soundSource?: Tone.PolySynth;
+  test?: object;
 }
 export interface DoodlerProps extends SketchProps {
   bassNoteProp: string;
   zoomFactor: number;
   soundSource?: () => Tone.PolySynth;
+  test?: object;
 }
 
 const doodlerPalette = {
@@ -40,9 +43,9 @@ const doodlerPalette = {
   purple: '#d5c6e0',
 };
 function sketch(p: P5CanvasInstance<DoodlerProps>) {
-  let defaultSynth: Tone.PolySynth | Tone.MonoSynth = new Tone.MonoSynth();
+  let leadSynth: Tone.PolySynth | Tone.MonoSynth = new Tone.MonoSynth();
   let loopLengthBars = 2;
-  setupLeadSynth(defaultSynth as Tone.MonoSynth);
+  setupLeadSynth(leadSynth as Tone.MonoSynth);
   const bassSynth = new Tone.MonoSynth({ volume: -3 }).toDestination();
   setupBassSynth(bassSynth);
   const gridOn = false;
@@ -69,8 +72,6 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
   let sc_mouseY: number;
   let sc_pmouseX: number;
   let sc_pmouseY: number;
-  let leadSynth: Tone.PolySynth | Tone.MonoSynth;
-
   const loopBeat = new Tone.Loop(song, '4n');
   function redLine(p: P5CanvasInstance<DoodlerProps>) {
     p.strokeWeight(3);
@@ -152,20 +153,18 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     const gainLead = new Tone.Gain(0.6).toDestination();
     const postFilter = new Tone.Filter(2200, 'lowpass').connect(gainLead);
     const drive = new Tone.Distortion(0.3).connect(postFilter);
-    defaultSynth.connect(drive);
+    leadSynth.connect(drive);
     cnv = p.createCanvas(600, 400);
     // cnv.position(p.windowWidth / 1.9, p.windowHeight / 4);
     cnv.style('border: 3px solid #8bb6da;;');
-
+    console.log('setup');
     setBackground(p, gridOn, curColor);
     p.strokeWeight(2);
     cnv.mousePressed(doodlerPressed);
 
-    defaultSynth instanceof Tone.MonoSynth
-      ? flutterAndWow(defaultSynth, 9, 6, 1.6, 20)
+    leadSynth instanceof Tone.MonoSynth
+      ? flutterAndWow(leadSynth, 9, 6, 1.6, 20)
       : null;
-
-    leadSynth = defaultSynth;
   };
   p.updateWithProps = (props: any) => {
     if (bassNote !== undefined) {
@@ -176,17 +175,9 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     if (props.zoomFactor !== undefined) {
       zoomFactor = props.zoomFactor;
     }
-    if (props.soundSource)
-      if (
-        props.soundSource() !== undefined &&
-        props.soundSource() !== leadSynth
-      ) {
-        leadSynth = props.soundSource();
-        console.log('leadSynth what the flick', props.soundSource());
-        //check the type of props.soundSource()
-      } else if (props.soundSource() === undefined) {
-        leadSynth = defaultSynth;
-      }
+    if (props.soundSource && props.soundSource() !== undefined) {
+      leadSynth = props.soundSource();
+    }
   };
   p.draw = () => {
     sc_mouseX = p.mouseX / zoomFactor;
@@ -228,7 +219,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
 
       songCounter = firstCell(xCoordinatesLine);
       newLine = true;
-
+      console.log(loopBeat.state, 'loopBeat.state');
       startLoop(loopBeat, '1m');
     }
   };
@@ -253,15 +244,13 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     }
   };
 }
-const zoomSelector = (s: any) => s.transform[2];
-export const Doodler = ({ bassNoteProp, soundSource }: InputDoodlerProps) => {
+
+export const PGDoodler = ({
+  bassNoteProp,
+  zoomFactor,
+  soundSource,
+}: InputDoodlerProps) => {
   const soundSourceFn = useCallback(() => soundSource, [soundSource]);
-  let zoomFactor = 1;
-  try {
-    zoomFactor = useStore(zoomSelector);
-  } catch (e) {
-    console.log('zoom not found');
-  }
 
   return (
     <ReactP5Wrapper

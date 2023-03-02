@@ -1,64 +1,78 @@
 import { Stack, Typography, useTheme } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import * as Tone from 'tone';
+import { APalette } from '../theme';
+import { FXProps } from '../types/componentProps';
 import { Knob } from './Knob';
 
-interface LofiProps {
-  input: Tone.ToneAudioNode;
-  color: string;
-}
 const noiseLevelDefault = 0;
 const wowDepthDefault = 0;
 const brokenDefault = 16;
 
-export const LofiOut = new Tone.Signal();
+export const Lofi = ({ input, output }: FXProps) => {
+  const BitCrushFX = useMemo(
+    () => new Tone.BitCrusher({ bits: brokenDefault }),
+    []
+  );
 
-const BitCrushFX = new Tone.BitCrusher({ bits: 16 });
+  const LofiFX = useMemo(
+    () =>
+      new Tone.Vibrato({
+        frequency: 1.6,
+        depth: wowDepthDefault / 100,
+        type: 'triangle',
+      }),
+    []
+  );
 
-export const LofiFX = new Tone.Vibrato({
-  frequency: 1.6,
-  depth: wowDepthDefault / 100,
-  type: 'triangle',
-});
+  const NoiseOut = useMemo(
+    () => new Tone.Gain(noiseLevelDefault).connect(LofiFX),
+    []
+  );
+  const Noise = useMemo(
+    () =>
+      new Tone.Player({
+        url: 'assets/Tape_Noise_05.mp3',
+        loop: true,
+        volume: -10,
+      }),
+    []
+  );
 
-const NoiseOut = new Tone.Gain().connect(LofiFX);
-const Noise = new Tone.Player({
-  url: 'assets/Tape_Noise_05.mp3',
-  loop: true,
-  volume: -10,
-});
-
-export const Lofi = ({ color, input }: LofiProps) => {
   useEffect(() => {
-    input.chain(LofiFX, BitCrushFX, LofiOut);
-    Noise.chain(NoiseOut, LofiOut);
-  }, [input]);
+    input.chain(LofiFX, BitCrushFX, output);
+    Noise.chain(NoiseOut, output);
+    return () => {
+      input.disconnect(LofiFX);
+      LofiFX.disconnect(BitCrushFX);
+      BitCrushFX.disconnect(output);
+      Noise.disconnect(NoiseOut);
+      NoiseOut.disconnect(output);
+      LofiFX.dispose();
+      BitCrushFX.dispose();
+      Noise.dispose();
+      NoiseOut.dispose();
+      input.dispose();
+      output.dispose();
+    };
+  }, []);
 
   const [noiseLevel, setNoiseLevel] = useState(noiseLevelDefault);
-  NoiseOut.set({ gain: noiseLevel / 100 });
-
-  const [wowDepth, setWowDepth] = useState(wowDepthDefault);
-  LofiFX.set({ depth: wowDepth / 100 });
-
-  const [broken, setBroken] = useState(brokenDefault);
-  BitCrushFX.set({ bits: broken });
-
   useEffect(() => {
     if (noiseLevel === 0 && Noise.state === 'started') {
       Noise.stop();
     }
     if (Noise.state === 'stopped' && noiseLevel > 0) {
       Noise.start();
-      console.log(Noise.state);
+      console.log('noise started');
     }
   }, [noiseLevel]);
-
   return (
     <>
       <Stack
         height="fit-content"
-        sx={{ p: 1, backgroundColor: color, minWidth: 'fit-content' }}
+        sx={{ p: 1, backgroundColor: APalette.lofi, minWidth: 'fit-content' }}
       >
         <Typography width="100%" className="unselectable" mb={1}>
           Lofi
@@ -67,7 +81,10 @@ export const Lofi = ({ color, input }: LofiProps) => {
           <Knob
             title={'Noise'}
             defaultValue={noiseLevelDefault}
-            onValueChange={(value) => setNoiseLevel(value)}
+            onValueChange={(value) => {
+              NoiseOut.set({ gain: value / 100 });
+              setNoiseLevel(value);
+            }}
             min={0}
             max={100}
           />
@@ -76,14 +93,14 @@ export const Lofi = ({ color, input }: LofiProps) => {
             max={100}
             title={'Balance'}
             defaultValue={wowDepthDefault}
-            onValueChange={(value) => setWowDepth(value)}
+            onValueChange={(value) => LofiFX.set({ depth: value / 100 })}
           />
           <Knob
             min={1}
             max={16}
             title={'Broken'}
             defaultValue={brokenDefault}
-            onValueChange={(value) => setBroken(value)}
+            onValueChange={(value) => BitCrushFX.set({ bits: value })}
           />
         </Stack>
       </Stack>
