@@ -8,13 +8,10 @@ import { ANode } from '../pages/Flow';
 import { Compressor } from '../FX/Compressor';
 import { Lofi } from '../FX/Lofi';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  FXProps,
-  InstrumentProps,
-  SoundSourceProps,
-} from '../types/componentProps';
+import { Piano } from '@tonejs/piano';
+import { FXProps, InstrumentProps } from '../types/componentProps';
 import { Theremin } from '../Instruments/Theremin';
-import { Synthesizer, synthProps } from '../Instruments/Synthesizer';
+import { Synthesizer } from '../Instruments/Synthesizer';
 import { MonoSynth } from '../Instruments/MonoSynth';
 import { DoodlerPage } from '../pages/DoodlerPage';
 
@@ -93,13 +90,18 @@ export const FlowContext = ({ addNode, ...menuProps }: FlowContextProps) => {
     });
   };
 
-  const addSoundSource = (label: 'Monosynth' | 'PolySynth' | 'Piano') => {
+  const addSoundSource = (label: 'MonoSynth' | 'PolySynth' | 'Piano') => {
     addNode({
       id: uuidv4(),
       type: 'soundSource',
       data: {
         label: label,
-        soundEngine: new Tone.PolySynth(),
+        soundEngine:
+          label === 'Piano'
+            ? new Piano({
+                velocities: 5,
+              })
+            : new Tone[label](),
         output: new Tone.Signal(),
       },
       dragHandle: '.custom-drag-handle',

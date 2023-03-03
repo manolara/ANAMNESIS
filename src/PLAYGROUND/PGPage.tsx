@@ -1,20 +1,30 @@
 import { Stack } from '@mui/system';
-import { Planets } from '../Instruments/Planets';
+import { useMemo } from 'react';
+import { APiano } from '../Instruments/APiano';
 import { Theremin } from '../Instruments/Theremin';
-import { MasterNode } from '../Nodes/MasterNode';
 import { DoodlerPage } from '../pages/DoodlerPage';
 import { Metronome } from '../pages/Metronome';
-
+import { Piano } from '@tonejs/piano';
+import * as Tone from 'tone';
 import { PlayButton } from '../playbackCtrl/PlayButton';
 import { StopButton } from '../playbackCtrl/StopButton';
 import { Playground } from './Playground';
 
 export const PGPage = () => {
+  const piano = useMemo(
+    () =>
+      new Piano({
+        velocities: 5,
+      }),
+    []
+  );
+  const pianoOutput = useMemo(() => new Tone.Signal(), []);
   return (
     <>
       <Stack direction="row" spacing={4}>
         <DoodlerPage />
-        <Planets />
+        {/* <Planets /> */}
+        <APiano piano={piano} output={pianoOutput} />
       </Stack>
       <Playground />
       <Metronome />
@@ -22,8 +32,7 @@ export const PGPage = () => {
       <PlayButton />
 
       <Theremin />
-      <Theremin />
-      <MasterNode />
+      {/* <Theremin /> */}
     </>
   );
 };

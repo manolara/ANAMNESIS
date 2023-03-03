@@ -6,7 +6,7 @@ import { Box, Icon, Stack } from '@mui/material';
 import EastIcon from '@mui/icons-material/East';
 import WestIcon from '@mui/icons-material/West';
 // import { Reverb, ReverbOut } from '../../FX/Reverb';
-import { AButton, APalette } from '../../theme';
+import { AButton } from '../../theme';
 import { Delay } from '../../FX/Delay';
 import { Compressor } from '../../FX/Compressor';
 import { useFX } from '../useFX';

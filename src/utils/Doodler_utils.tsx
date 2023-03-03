@@ -42,8 +42,8 @@ export const flutterAndWow = (
   wow.start();
 };
 
-export const setupLeadSynth = (leadSynth: Tone.MonoSynth) => {
-  leadSynth.set({
+export const setupDefaultSynth = (synth: Tone.MonoSynth) => {
+  synth.set({
     oscillator: {
       type: 'sawtooth', //
     },

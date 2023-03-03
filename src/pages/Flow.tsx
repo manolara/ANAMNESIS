@@ -10,7 +10,6 @@ import ReactFlow, {
   applyNodeChanges,
   EdgeChange,
   applyEdgeChanges,
-  useNodes,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { FlowContext } from '../PLAYGROUND/FlowContext';
@@ -24,6 +23,7 @@ import { InstrumentProps } from '../types/componentProps';
 import { v4 as uuidv4 } from 'uuid';
 import { MasterNode } from '../Nodes/MasterNode';
 import { Reverb } from '../FX/Reverb';
+import { Piano } from '@tonejs/piano';
 
 export interface InstrumentDataProps {
   label: 'Doodler' | 'Theremin';
@@ -44,8 +44,8 @@ export interface FXDataProps {
 }
 
 export interface SoundSourceDataProps {
-  label: string;
-  soundEngine: Tone.MonoSynth | Tone.PolySynth | undefined;
+  label: 'PolySynth' | 'MonoSynth' | 'Piano';
+  soundEngine: Tone.MonoSynth | Tone.PolySynth | Piano | undefined;
   output: Tone.Signal;
 }
 
@@ -236,7 +236,7 @@ export const Flow = () => {
       id: uuidv4(),
       type: 'soundSource',
       data: {
-        label: 'synth',
+        label: 'PolySynth',
         soundEngine: new Tone.PolySynth(),
         output: new Tone.Signal(),
       },

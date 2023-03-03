@@ -6,6 +6,7 @@ import {
   SketchProps,
 } from 'react-p5-wrapper';
 import { useStore } from 'reactflow';
+import { Piano } from '@tonejs/piano';
 
 import * as Tone from 'tone';
 // eslint-disable-next-line import/no-cycle
@@ -18,7 +19,7 @@ import {
   lastCell,
   setBackground,
   setupBassSynth,
-  setupLeadSynth,
+  setupDefaultSynth,
 } from '../utils/Doodler_utils';
 import { startLoop } from '../utils/utils';
 
@@ -42,7 +43,7 @@ const doodlerPalette = {
 function sketch(p: P5CanvasInstance<DoodlerProps>) {
   let defaultSynth: Tone.PolySynth | Tone.MonoSynth = new Tone.MonoSynth();
   let loopLengthBars = 2;
-  setupLeadSynth(defaultSynth as Tone.MonoSynth);
+  setupDefaultSynth(defaultSynth as Tone.MonoSynth);
   const bassSynth = new Tone.MonoSynth({ volume: -3 }).toDestination();
   setupBassSynth(bassSynth);
   const gridOn = false;
@@ -69,7 +70,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
   let sc_mouseY: number;
   let sc_pmouseX: number;
   let sc_pmouseY: number;
-  let leadSynth: Tone.PolySynth | Tone.MonoSynth;
+  let leadSound: Tone.PolySynth | Tone.MonoSynth | Piano;
 
   const loopBeat = new Tone.Loop(song, '4n');
   function redLine(p: P5CanvasInstance<DoodlerProps>) {
@@ -118,11 +119,21 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
         songCounter >= firstCell(xCoordinatesLine) &&
         songCounter <= lastCell(xCoordinatesLine)
       ) {
-        leadSynth.triggerAttackRelease(
-          cellToPitch(noteTriggered + 1) ?? 'C3',
-          '6n',
-          time
-        );
+        if (
+          leadSound instanceof Tone.MonoSynth ||
+          leadSound instanceof Tone.PolySynth
+        ) {
+          leadSound.triggerAttackRelease(
+            cellToPitch(noteTriggered + 1) ?? 'C3',
+            '6n',
+            time
+          );
+        } else if (leadSound instanceof Piano) {
+          leadSound.keyDown({
+            note: cellToPitch(noteTriggered + 1) ?? 'C3',
+            time: time,
+          });
+        }
 
         noteTriggered += 1;
         if (songCounter === lastCell(xCoordinatesLine)) {
@@ -165,7 +176,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
       ? flutterAndWow(defaultSynth, 9, 6, 1.6, 20)
       : null;
 
-    leadSynth = defaultSynth;
+    leadSound = defaultSynth;
   };
   p.updateWithProps = (props: any) => {
     if (bassNote !== undefined) {
@@ -179,13 +190,13 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     if (props.soundSource)
       if (
         props.soundSource() !== undefined &&
-        props.soundSource() !== leadSynth
+        props.soundSource() !== leadSound
       ) {
-        leadSynth = props.soundSource();
-        console.log('leadSynth what the flick', props.soundSource());
+        leadSound = props.soundSource();
+        console.log('leadSound what the flick', props.soundSource());
         //check the type of props.soundSource()
       } else if (props.soundSource() === undefined) {
-        leadSynth = defaultSynth;
+        leadSound = defaultSynth;
       }
   };
   p.draw = () => {

@@ -11,5 +11,6 @@ export interface FXProps {
 
 export interface SoundSourceProps {
   soundEngine: Tone.MonoSynth | Tone.PolySynth;
+
   output: Tone.Signal;
 }
