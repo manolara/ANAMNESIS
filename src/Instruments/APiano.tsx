@@ -8,11 +8,12 @@ export const APiano = ({ soundEngine, output }: SoundSourceProps<Piano>) => {
   useEffect(() => {
     const piano = soundEngine;
     piano.load().then(() => {
-      piano.keyDown({ note: 'C4', time: '+1' });
-      piano.keyDown({ note: 'E4', time: '+2' });
+      piano.connect(output);
     });
-
-    piano.toDestination();
+    return () => {
+      piano.dispose();
+      output.dispose();
+    };
   }, []);
 
   return (

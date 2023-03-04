@@ -129,10 +129,15 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
             time
           );
         } else if (leadSound instanceof Piano) {
-          leadSound.keyDown({
-            note: cellToPitch(noteTriggered + 1) ?? 'C3',
-            time: time,
-          });
+          leadSound
+            .keyDown({
+              note: cellToPitch(noteTriggered + 1) ?? 'C3',
+              time: time,
+            })
+            .keyUp({
+              note: cellToPitch(noteTriggered + 1) ?? 'C3',
+              time: time + 1,
+            });
         }
 
         noteTriggered += 1;
