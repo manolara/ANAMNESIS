@@ -14,6 +14,8 @@ import { Theremin } from '../Instruments/Theremin';
 import { Synthesizer } from '../Instruments/Synthesizer';
 import { MonoSynth } from '../Instruments/MonoSynth';
 import { DoodlerPage } from '../pages/DoodlerPage';
+import { APiano } from '../Instruments/APiano';
+import { SoundSourceNode } from '../Nodes/SoundSourceNode';
 
 ///object to hold all the components
 const components = {
@@ -90,25 +92,6 @@ export const FlowContext = ({ addNode, ...menuProps }: FlowContextProps) => {
     });
   };
 
-  const addSoundSource = (label: 'MonoSynth' | 'PolySynth' | 'Piano') => {
-    addNode({
-      id: uuidv4(),
-      type: 'soundSource',
-      data: {
-        label: label,
-        soundEngine:
-          label === 'Piano'
-            ? new Piano({
-                velocities: 5,
-              })
-            : new Tone[label](),
-        output: new Tone.Signal(),
-      },
-      dragHandle: '.custom-drag-handle',
-      position: { x: mousePosition.x, y: mousePosition.y },
-    });
-  };
-
   const menuItems = [
     {
       label: 'Instrument',
@@ -132,7 +115,36 @@ export const FlowContext = ({ addNode, ...menuProps }: FlowContextProps) => {
         },
         {
           label: 'PolySynth',
-          onClick: () => addSoundSource('PolySynth'),
+          onClick: () =>
+            addNode({
+              id: uuidv4(),
+              type: 'soundSource',
+              data: {
+                label: 'PolySynth',
+                component: Synthesizer,
+                soundEngine: new Tone.PolySynth(),
+                output: new Tone.Signal(),
+              },
+              dragHandle: '.custom-drag-handle',
+              position: { x: mousePosition.x, y: mousePosition.y },
+            }),
+        },
+        {
+          label: 'Piano',
+          onClick: () =>
+            addNode({
+              id: uuidv4(),
+              type: 'soundSource',
+              data: {
+                label: 'Piano',
+                component: APiano,
+                soundEngine: new Piano(),
+
+                output: new Tone.Signal(),
+              },
+              dragHandle: '.custom-drag-handle',
+              position: { x: 200, y: 200 },
+            }),
         },
       ],
     },

@@ -2,13 +2,11 @@ import { Stack } from '@mui/material';
 import { Piano } from '@tonejs/piano';
 import { useEffect } from 'react';
 import * as Tone from 'tone';
+import { SoundSourceProps } from '../types/componentProps';
 
-interface APianoProps {
-  piano: Piano;
-  output: Tone.Signal;
-}
-export const APiano = ({ piano, output }: APianoProps) => {
+export const APiano = ({ soundEngine, output }: SoundSourceProps<Piano>) => {
   useEffect(() => {
+    const piano = soundEngine;
     piano.load().then(() => {
       piano.keyDown({ note: 'C4', time: '+1' });
       piano.keyDown({ note: 'E4', time: '+2' });

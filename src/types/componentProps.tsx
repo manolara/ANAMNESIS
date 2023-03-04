@@ -1,4 +1,5 @@
 import * as Tone from 'tone';
+import { Piano } from '@tonejs/piano';
 
 export interface InstrumentProps {
   soundSource?: Tone.PolySynth;
@@ -9,8 +10,10 @@ export interface FXProps {
   output: Tone.Signal;
 }
 
-export interface SoundSourceProps {
-  soundEngine: Tone.MonoSynth | Tone.PolySynth;
+export interface SoundSourceProps<
+  SE extends Tone.MonoSynth | Tone.PolySynth | Piano
+> {
+  soundEngine: SE;
 
   output: Tone.Signal;
 }

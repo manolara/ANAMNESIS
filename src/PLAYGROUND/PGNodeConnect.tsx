@@ -25,7 +25,7 @@ export const PGNodeConnect = () => {
       engine: initSynth,
       output: initSynthOutput,
       component: (
-        <Synthesizer key={0} synth={initSynth} output={initSynthOutput} />
+        <Synthesizer key={0} soundEngine={initSynth} output={initSynthOutput} />
       ),
     },
   };
@@ -41,7 +41,7 @@ export const PGNodeConnect = () => {
         component: (
           <Synthesizer
             key={Object.keys(soundSources).length}
-            synth={tmpSynth}
+            soundEngine={tmpSynth}
             output={tmpSynthOutput}
           />
         ),

@@ -17,11 +17,12 @@ import waveTriangle from '@iconify/icons-ph/wave-triangle';
 import waveSawtooth from '@iconify/icons-ph/wave-sawtooth';
 import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import { synthLFO } from './SynthLFO';
+import { SoundSourceProps } from '../types/componentProps';
 
 type OmitMonophonicOptions<T> = Omit<T, 'context' | 'onsilence'>;
 
 export interface synthProps {
-  synth: Tone.PolySynth;
+  soundEngine: Tone.PolySynth;
   output: Tone.ToneAudioNode;
 }
 
@@ -56,7 +57,7 @@ const HPF_ENVELOPE: Partial<Tone.FrequencyEnvelopeOptions> = {
   octaves: 3,
 };
 
-export const Synthesizer = memo(({ synth, output }: synthProps) => {
+export const Synthesizer = ({ soundEngine, output }: synthProps) => {
   //setup audio nodes, refs are used to avoid re-rendering
   const outLevel = useMemo(() => new Tone.Gain(), []);
   const HPF = useMemo(() => new Tone.Filter(20, 'highpass'), []);
@@ -73,7 +74,7 @@ export const Synthesizer = memo(({ synth, output }: synthProps) => {
   //   () => new Tone.PolySynth(Tone.Synth, defaultSynthOptions),
   //   []
   // );
-  const poly = synth.set(defaultSynthOptions);
+  const poly = soundEngine.set(defaultSynthOptions);
 
   //setup stuff
   poly.maxPolyphony = 8;
@@ -275,4 +276,4 @@ export const Synthesizer = memo(({ synth, output }: synthProps) => {
       </Stack>
     </>
   );
-});
+};

@@ -19,11 +19,13 @@ import { InstrumentNode } from '../Nodes/InstrumentNode';
 import { DoodlerPage } from './DoodlerPage';
 import { SynthNode } from '../Nodes/SynthNode';
 import { Theremin } from '../Instruments/Theremin';
-import { InstrumentProps } from '../types/componentProps';
+import { InstrumentProps, SoundSourceProps } from '../types/componentProps';
 import { v4 as uuidv4 } from 'uuid';
 import { MasterNode } from '../Nodes/MasterNode';
 import { Reverb } from '../FX/Reverb';
 import { Piano } from '@tonejs/piano';
+import { SoundSourceNode } from '../Nodes/SoundSourceNode';
+import { Synthesizer } from '../Instruments/Synthesizer';
 
 export interface InstrumentDataProps {
   label: 'Doodler' | 'Theremin';
@@ -43,11 +45,17 @@ export interface FXDataProps {
   }) => JSX.Element;
 }
 
-export interface SoundSourceDataProps {
-  label: 'PolySynth' | 'MonoSynth' | 'Piano';
-  soundEngine: Tone.MonoSynth | Tone.PolySynth | Piano | undefined;
+type soundEngine = Tone.PolySynth | Tone.MonoSynth | Piano;
+export interface SoundSourceBase<L extends string, SE extends soundEngine> {
+  label: L;
+  component: ({ soundEngine, output }: SoundSourceProps<SE>) => JSX.Element;
+  soundEngine: SE;
   output: Tone.Signal;
 }
+type MonoSynthNode = SoundSourceBase<'MonoSynth', Tone.MonoSynth>;
+type PolySynthNode = SoundSourceBase<'PolySynth', Tone.PolySynth>;
+type PianoNode = SoundSourceBase<'Piano', Piano>;
+export type SoundSourceDataProps = MonoSynthNode | PolySynthNode | PianoNode;
 
 interface MasterNodeDataProps {
   input: Tone.Signal;
@@ -155,7 +163,7 @@ export const Flow = () => {
     () => ({
       instrument: InstrumentNode,
       FX: FXNode,
-      soundSource: SynthNode,
+      soundSource: SoundSourceNode,
       master: MasterNode,
     }),
     []
@@ -237,6 +245,7 @@ export const Flow = () => {
       type: 'soundSource',
       data: {
         label: 'PolySynth',
+        component: Synthesizer,
         soundEngine: new Tone.PolySynth(),
         output: new Tone.Signal(),
       },
