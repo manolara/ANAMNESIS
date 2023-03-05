@@ -111,7 +111,20 @@ export const FlowContext = ({ addNode, ...menuProps }: FlowContextProps) => {
       children: [
         {
           label: 'MonoSynth',
-          onClick: () => console.log('MonoSynth'),
+          onClick: () => {
+            addNode({
+              id: uuidv4(),
+              type: 'soundSource',
+              data: {
+                label: 'MonoSynth',
+                component: MonoSynth,
+                soundEngine: new Tone.MonoSynth(),
+                output: new Tone.Signal(),
+              },
+              dragHandle: '.custom-drag-handle',
+              position: { x: mousePosition.x, y: mousePosition.y },
+            });
+          },
         },
         {
           label: 'PolySynth',

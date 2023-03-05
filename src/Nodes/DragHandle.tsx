@@ -1,5 +1,6 @@
 import { APalette } from '../theme';
-import { Stack } from '@mui/material';
+import { Icon, Stack } from '@mui/material';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 export const DragHandle = () => {
   return (

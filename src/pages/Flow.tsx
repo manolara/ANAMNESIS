@@ -16,16 +16,13 @@ import { FlowContext } from '../PLAYGROUND/FlowContext';
 import { FXNode } from '../Nodes/FXNode';
 import * as Tone from 'tone';
 import { InstrumentNode } from '../Nodes/InstrumentNode';
-import { DoodlerPage } from './DoodlerPage';
-import { SynthNode } from '../Nodes/SynthNode';
-import { Theremin } from '../Instruments/Theremin';
 import { InstrumentProps, SoundSourceProps } from '../types/componentProps';
 import { v4 as uuidv4 } from 'uuid';
 import { MasterNode } from '../Nodes/MasterNode';
-import { Reverb } from '../FX/Reverb';
 import { Piano } from '@tonejs/piano';
 import { SoundSourceNode } from '../Nodes/SoundSourceNode';
 import { Synthesizer } from '../Instruments/Synthesizer';
+import { initialNodes } from '../Nodes/defaultNodes';
 
 export interface InstrumentDataProps {
   label: 'Doodler' | 'Theremin';
@@ -71,51 +68,6 @@ export type ANode =
   | SoundSourceNodeType
   | MasterNodeType;
 
-const initialNodes: ANode[] = [
-  {
-    id: uuidv4(),
-    type: 'instrument',
-    data: {
-      label: 'Doodler',
-      component: DoodlerPage,
-      soundSource: undefined,
-    },
-    dragHandle: '.custom-drag-handle',
-    position: { x: -500, y: 5 },
-  },
-  {
-    id: uuidv4(),
-    type: 'instrument',
-    data: {
-      label: 'Theremin',
-      component: Theremin,
-      soundSource: undefined,
-    },
-    dragHandle: '.custom-drag-handle',
-    position: { x: 1000, y: 1000 },
-  },
-  {
-    id: uuidv4(),
-    type: 'FX',
-    data: {
-      label: 'Reverb',
-      input: new Tone.Signal(),
-      output: new Tone.Signal(),
-      component: Reverb,
-    },
-    dragHandle: '.custom-drag-handle',
-    position: { x: 650, y: 250 },
-  },
-  {
-    id: uuidv4(),
-    type: 'master',
-    data: {
-      input: new Tone.Signal(),
-    },
-    dragHandle: '.custom-drag-handle',
-    position: { x: 1000, y: 200 },
-  },
-];
 const initialEdges: Edge[] = [];
 
 export const Flow = () => {

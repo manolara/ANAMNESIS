@@ -9,6 +9,7 @@ import * as Tone from 'tone';
 import { PlayButton } from '../playbackCtrl/PlayButton';
 import { StopButton } from '../playbackCtrl/StopButton';
 import { Playground } from './Playground';
+import { Planets } from '../Instruments/Planets';
 
 export const PGPage = () => {
   const piano = useMemo(
@@ -23,8 +24,8 @@ export const PGPage = () => {
     <>
       <Stack direction="row" spacing={4}>
         <DoodlerPage />
-        {/* <Planets /> */}
-        <APiano piano={piano} output={pianoOutput} />
+        <Planets />
+        <APiano soundEngine={piano} output={pianoOutput} />
       </Stack>
       <Playground />
       <Metronome />

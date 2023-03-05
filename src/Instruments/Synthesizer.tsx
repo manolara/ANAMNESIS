@@ -8,7 +8,7 @@ import {
 import { Knob } from '../FX/Knob';
 import { AButton, APalette } from '../theme';
 import * as Tone from 'tone';
-import { useMemo, useRef, memo } from 'react';
+import { useMemo, useRef, memo, useEffect } from 'react';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import { Icon } from '@iconify/react';
 import waveSine from '@iconify/icons-ph/wave-sine';
@@ -74,13 +74,22 @@ export const Synthesizer = ({ soundEngine, output }: synthProps) => {
   //   () => new Tone.PolySynth(Tone.Synth, defaultSynthOptions),
   //   []
   // );
-  const poly = soundEngine.set(defaultSynthOptions);
+  const poly = useMemo(() => soundEngine.set(defaultSynthOptions), []);
 
   //setup stuff
-  poly.maxPolyphony = 8;
   const LFO = useRef(new synthLFO()).current;
-  poly.chain(HPF, LPF, outLevel, output);
-  console.log(HPF.frequency.value, 'HPF');
+  useEffect(() => {
+    poly.maxPolyphony = 8;
+    poly.chain(HPF, LPF, outLevel, output);
+    return () => {
+      poly.dispose();
+      outLevel.dispose();
+      HPF.dispose();
+      LPF.dispose();
+      LPFEnvelope.dispose();
+      HPFEnvelope.dispose();
+    };
+  }, []);
 
   return (
     <>

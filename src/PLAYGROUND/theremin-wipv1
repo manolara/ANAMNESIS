@@ -38,7 +38,6 @@ const canvasHeight = 500;
 const canvasWidth = 700;
 
 const sketch = (p: P5CanvasInstance<ThereminProps>) => {
-  let isMousePressedAndOnCanvas = false;
   let notes = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
   let outVol = 0.5;
   let vol = -60;
@@ -110,9 +109,8 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     showOrb(sequence.x[sequenceCounter], sequence.y[sequenceCounter]);
     let prev =
       sequenceCounter !== 0 ? sequenceCounter - 1 : sequence.mouseOn.length - 1;
-
     if (sequence.mouseOn[sequenceCounter] && !sequence.mouseOn[prev]) {
-      synth.triggerAttack(pitch, '+0.01');
+      synth.triggerAttack(pitch);
     }
     if (!sequence.mouseOn[sequenceCounter] && sequence.mouseOn[prev]) {
       synth.triggerRelease();
@@ -226,13 +224,12 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
   };
 
   const canvasPressed = () => {
-    synth.triggerAttack(pitch);
+    if (synth.envelope.sustain !== 0) synth.triggerAttack(pitch);
+    else synth.triggerAttackRelease(pitch, '8n');
     playTheremin(sc_mouseX, sc_mouseY);
-    isMousePressedAndOnCanvas = true;
   };
 
   const releaseNote = () => {
-    isMousePressedAndOnCanvas = false;
     if (thereminState !== 'playback') synth.triggerRelease();
   };
   const playTheremin = (x: number, y: number) => {
@@ -246,10 +243,13 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
       pitch = notes[cellNum];
       if (synth.envelope.sustain !== 0) synth.frequency.rampTo(pitch, 0.3);
       else if (
-        isMousePressedAndOnCanvas ||
-        (thereminState === 'playback' && sequence.mouseOn[sequenceCounter])
+        x < p.width / zoomFactor &&
+        x > 0 &&
+        y < p.height / zoomFactor &&
+        y > 0 &&
+        p.mouseIsPressed
       ) {
-        synth.triggerAttackRelease(pitch, '8n', '+0.02');
+        synth.triggerAttackRelease(pitch, '8n');
       }
     }
     if (!prevCell) {

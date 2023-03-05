@@ -8,7 +8,7 @@ import {
 import { Knob } from '../FX/Knob';
 import { AButton, APalette } from '../theme';
 import * as Tone from 'tone';
-import { useMemo, useRef, memo } from 'react';
+import { useMemo, useRef, memo, useEffect } from 'react';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import { Icon } from '@iconify/react';
 import waveSine from '@iconify/icons-ph/wave-sine';
@@ -17,6 +17,7 @@ import waveTriangle from '@iconify/icons-ph/wave-triangle';
 import waveSawtooth from '@iconify/icons-ph/wave-sawtooth';
 import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import { synthLFO } from './SynthLFO';
+import { SoundSourceProps } from '../types/componentProps';
 
 interface synthProps {
   synth: Tone.MonoSynth;
@@ -31,6 +32,14 @@ const defaultSynthOptions: RecursivePartial<Tone.MonoSynthOptions> = {
     decay: 1,
     sustain: 0.5,
     release: 1,
+  },
+
+  filterEnvelope: {
+    attack: 0.001,
+    decay: 0.7,
+    sustain: 0.5,
+    release: 1,
+    octaves: 4,
   },
 };
 
@@ -51,35 +60,38 @@ const HPF_ENVELOPE: Partial<Tone.FrequencyEnvelopeOptions> = {
   octaves: 3,
 };
 
-export const MonoSynth = memo(({ synth }: synthProps) => {
+export const MonoSynth = ({
+  soundEngine,
+  output,
+}: SoundSourceProps<Tone.MonoSynth>) => {
   //setup audio nodes, refs are used to avoid re-rendering
-  const outLevel = useMemo(() => new Tone.Gain().toDestination(), []);
+  const outLevel = useMemo(() => new Tone.Gain(), []);
   const HPF = useMemo(() => new Tone.Filter(20, 'highpass'), []);
-  const LPF = useMemo(() => new Tone.Filter(3000, 'lowpass'), []);
-  const LPFEnvelope = useMemo(
-    () => new Tone.FrequencyEnvelope(defaultFrequencyEnvelopeOptions),
-    []
-  ).connect(LPF.frequency);
   const HPFEnvelope = useMemo(
     () => new Tone.FrequencyEnvelope(HPF_ENVELOPE),
     []
   ).connect(HPF.frequency);
-  // const poly = useMemo(
-  //   () => new Tone.PolySynth(Tone.Synth, defaultSynthOptions),
-  //   []
-  // );
-  const poly = synth.set(defaultSynthOptions);
+
+  const mono = useMemo(() => soundEngine.set(defaultSynthOptions), []);
 
   //setup stuff
   const LFO = useRef(new synthLFO()).current;
-  poly.chain(HPF, LPF, outLevel);
+  useEffect(() => {
+    mono.chain(HPF, outLevel, output);
+
+    return () => {
+      mono.dispose();
+      outLevel.dispose();
+      HPFEnvelope.dispose();
+      HPF.dispose();
+    };
+  }, []);
 
   return (
     <>
       <AButton
         onClick={() => {
-          poly.triggerAttackRelease('C4', '4n');
-          LPFEnvelope.triggerAttackRelease('4n');
+          mono.triggerAttackRelease('C4', '4n');
         }}
       ></AButton>
       <Stack
@@ -116,8 +128,7 @@ export const MonoSynth = memo(({ synth }: synthProps) => {
             max={20000}
             isExp
             onValueChange={(value) => {
-              LPFEnvelope.baseFrequency = value;
-              console.log(LPF.frequency.value, 'LPF cutoff');
+              mono.filterEnvelope.baseFrequency = value;
               LFO.updateLFO();
             }}
           />
@@ -138,10 +149,10 @@ export const MonoSynth = memo(({ synth }: synthProps) => {
             defaultValue={0.001}
             max={10}
             onValueChange={(value) => {
-              poly.set({
+              mono.set({
                 envelope: { attack: value },
               });
-              LPFEnvelope.attack = value;
+              mono.filterEnvelope.attack = value;
             }}
           />
           <Knob
@@ -152,19 +163,19 @@ export const MonoSynth = memo(({ synth }: synthProps) => {
             defaultValue={0.401}
             max={10}
             onValueChange={(value) => {
-              poly.set({
+              mono.set({
                 envelope: { decay: value },
               });
-              LPFEnvelope.decay = value;
+              mono.filterEnvelope.decay = value;
             }}
           />
           <Knob
             title="Sustain"
             onValueChange={(value) => {
-              poly.set({
+              mono.set({
                 envelope: { sustain: value / 100 },
               });
-              LPFEnvelope.set({ sustain: value / 100 });
+              mono.filterEnvelope.set({ sustain: value / 100 });
             }}
           />
           <Knob
@@ -175,10 +186,11 @@ export const MonoSynth = memo(({ synth }: synthProps) => {
             defaultValue={1.0001}
             max={20}
             onValueChange={(value) => {
-              poly.set({
+              mono.set({
                 envelope: { release: value },
               });
-              LPFEnvelope.release = value;
+              mono.filterEnvelope.release = value;
+              console.log(mono.filterEnvelope.release, 'release');
             }}
           />
         </Stack>
@@ -195,7 +207,7 @@ export const MonoSynth = memo(({ synth }: synthProps) => {
               label="OSC"
               defaultValue={'sawtooth'}
               onChange={(e) =>
-                poly.set({
+                mono.set({
                   oscillator: {
                     type: e.target.value as NonCustomOscillatorType,
                   },
@@ -240,7 +252,7 @@ export const MonoSynth = memo(({ synth }: synthProps) => {
                   LFO.assignTo(outLevel);
                 }
                 if (e.target.value === 'Cut-Off') {
-                  LFO.assignTo(LPF, LPFEnvelope);
+                  LFO.assignTo(mono.filter, mono.filterEnvelope);
                 }
                 if (e.target.value === 'HPF') {
                   LFO.assignTo(HPF, HPFEnvelope);
@@ -268,4 +280,4 @@ export const MonoSynth = memo(({ synth }: synthProps) => {
       </Stack>
     </>
   );
-});
+};
