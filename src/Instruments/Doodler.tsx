@@ -22,6 +22,7 @@ import {
   setupDefaultSynth,
 } from '../utils/Doodler_utils';
 import { startLoop } from '../utils/utils';
+import { FormatStrikethroughTwoTone } from '@mui/icons-material';
 
 export interface InputDoodlerProps {
   bassNoteProp: string;
@@ -209,6 +210,14 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     sc_mouseY = p.mouseY / zoomFactor;
     sc_pmouseX = p.pmouseX / zoomFactor;
     sc_pmouseY = p.pmouseY / zoomFactor;
+    if (Tone.Transport.position === '0:0:0') {
+      songCounter = 0;
+      counter = 0;
+      bcounter = 0;
+      j = 0;
+      bj = 0;
+      noteTriggered = 0;
+    }
   };
 
   const doodlerPressed = () => {

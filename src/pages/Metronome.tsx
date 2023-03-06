@@ -2,6 +2,7 @@ import * as Tone from 'tone';
 import p5 from 'p5';
 import { ReactP5Wrapper, Sketch } from 'react-p5-wrapper';
 import { getCurrentBeat, startLoop } from '../utils/utils';
+import { Box } from '@mui/material';
 let cnv: p5.Renderer;
 
 let metronomeColor = {
@@ -21,7 +22,7 @@ const sketch: Sketch = (p) => {
   }, '4n').start(0);
   metronomeLoop.stop();
   p.setup = () => {
-    cnv = p.createCanvas(60, 35);
+    cnv = p.createCanvas(60, 40);
     cnv.mouseClicked(metronomeClicked);
     cnv.mouseOver(() => p.cursor(p.HAND));
     p.background(curColor);
@@ -40,7 +41,8 @@ const sketch: Sketch = (p) => {
   p.draw = () => {};
   const metronomeClicked = () => {
     if (metronomeLoop.state === 'stopped') {
-      startLoop(metronomeLoop, 'n');
+      Tone.start();
+      startLoop(metronomeLoop, '+n');
       curColor = metronomeColor.on;
     } else {
       metronomeLoop.stop();
@@ -50,7 +52,11 @@ const sketch: Sketch = (p) => {
 };
 
 export const Metronome = () => {
-  return <ReactP5Wrapper sketch={sketch} />;
+  return (
+    <Box maxHeight="35px">
+      <ReactP5Wrapper sketch={sketch} />
+    </Box>
+  );
 };
 const handleAnimation = (p: p5) => {
   p.background(curColor);

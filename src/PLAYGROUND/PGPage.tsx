@@ -25,6 +25,7 @@ export const PGPage = () => {
       <Stack direction="row" spacing={4}>
         <DoodlerPage />
         <Planets />
+        {/* <Planets /> */}
         <APiano soundEngine={piano} output={pianoOutput} />
       </Stack>
       <Playground />

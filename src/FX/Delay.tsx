@@ -1,5 +1,5 @@
-import { Stack, Typography, useTheme } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Stack, Typography } from '@mui/material';
+import { useEffect, useMemo } from 'react';
 import { APalette } from '../theme';
 
 import * as Tone from 'tone';

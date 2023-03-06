@@ -185,6 +185,11 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
       showOrb(sc_mouseX, sc_mouseY);
       playTheremin(sc_mouseX, sc_mouseY);
     }
+
+    if (Tone.Transport.position === '0:0:0' && thereminState === 'playback') {
+      sequenceCounter = 0;
+      synth.triggerRelease();
+    }
   };
   p.updateWithProps = (props: ThereminProps) => {
     if (props.notes) {

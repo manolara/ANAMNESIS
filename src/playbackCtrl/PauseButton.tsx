@@ -10,7 +10,6 @@ export const PauseButton = () => {
     <AButton
       onClick={() => {
         Tone.getTransport().stop();
-        //set transport to 0
 
         console.log('yo');
       }}

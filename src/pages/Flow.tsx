@@ -10,6 +10,7 @@ import ReactFlow, {
   applyNodeChanges,
   EdgeChange,
   applyEdgeChanges,
+  Panel,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { FlowContext } from '../PLAYGROUND/FlowContext';
@@ -23,6 +24,12 @@ import { Piano } from '@tonejs/piano';
 import { SoundSourceNode } from '../Nodes/SoundSourceNode';
 import { Synthesizer } from '../Instruments/Synthesizer';
 import { initialNodes } from '../Nodes/defaultNodes';
+import { Metronome } from './Metronome';
+import { StopButton } from '../playbackCtrl/StopButton';
+import { PlayButton } from '../playbackCtrl/PlayButton';
+import { Divider, Stack } from '@mui/material';
+import { useTheme } from '@emotion/react';
+import { PauseButton } from '../playbackCtrl/PauseButton';
 
 export interface InstrumentDataProps {
   label: 'Doodler' | 'Theremin';
@@ -71,6 +78,7 @@ export type ANode =
 const initialEdges: Edge[] = [];
 
 export const Flow = () => {
+  const theme = useTheme();
   const addNode = (node: ANode) => {
     setNodes((nodes) => [...nodes, node]);
   };
@@ -226,6 +234,24 @@ export const Flow = () => {
           console.log('context menu', e);
         }}
       >
+        <Panel position="top-left">
+          <Metronome />
+        </Panel>
+        <Panel position="top-center">
+          <Stack
+            divider={<Divider orientation="vertical" flexItem />}
+            p={0.5}
+            border="1px "
+            borderColor="#E0E0E0"
+            borderRadius={1}
+            direction="row"
+            spacing={1}
+          >
+            <PlayButton />
+            <PauseButton />
+            <StopButton />
+          </Stack>
+        </Panel>
         <FlowContext addNode={addNode} open={openContext} />
         <Background />
         <Controls />
