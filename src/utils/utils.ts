@@ -7,7 +7,7 @@ export const startLoop = (
   time: string = Tone.now().toString()
 ) => {
   console.log(time, 'time inside startLoop');
-  if (Tone.Transport.state === 'stopped') {
+  if (Tone.Transport.state !== 'started') {
     loop.start(0);
     Tone.Transport.start();
   } else {

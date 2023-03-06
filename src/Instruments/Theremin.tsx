@@ -99,6 +99,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     sequenceCounter = 0;
     mainLoop.stop();
     mainLoop.start();
+    console.log(getCurrentBar());
   };
 
   const playbackTheremin = (
@@ -175,6 +176,8 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     p.pop();
   };
 
+  let releaseTriggeredAfterStopping = false; // Add this variable outside the draw function
+
   p.draw = () => {
     //zoom in and out
     sc_mouseX = p.mouseX / zoomFactor;
@@ -188,8 +191,26 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
 
     if (Tone.Transport.position === '0:0:0' && thereminState === 'playback') {
       sequenceCounter = 0;
-      synth.triggerRelease();
+      if (!releaseTriggeredAfterStopping) {
+        synth.triggerRelease();
+        releaseTriggeredAfterStopping = true;
+      }
     }
+    if (Tone.Transport.state === 'paused' && thereminState === 'playback') {
+      synth.triggerRelease();
+      releaseTriggeredAfterStopping = true;
+    }
+    if (
+      Tone.Transport.state === 'started' &&
+      thereminState === 'playback' &&
+      releaseTriggeredAfterStopping
+    ) {
+      if (sequence.mouseOn[sequenceCounter])
+        synth.triggerAttack(pitch, '+0.01');
+      releaseTriggeredAfterStopping = false;
+    }
+
+    console.log(thereminState);
   };
   p.updateWithProps = (props: ThereminProps) => {
     if (props.notes) {
@@ -378,18 +399,18 @@ export const Theremin = ({ soundSource }: InstrumentProps) => {
         <AButton
           sx={{ ml: 'auto' }}
           onClick={() => {
-            if (Tone.Transport.state === 'stopped') {
+            if (Tone.Transport.state !== 'started') {
               Tone.Transport.start();
             }
 
             let start = getCurrentBar() + 1;
             let end = start + recordingLength;
 
-            Tone.Transport.schedule(() => {
+            Tone.Transport.scheduleOnce(() => {
               setThereminState('recording');
             }, `${start}:0:0`);
 
-            Tone.Transport.schedule(() => {
+            Tone.Transport.scheduleOnce(() => {
               setThereminState('playback');
             }, `${end}:0:0`);
           }}

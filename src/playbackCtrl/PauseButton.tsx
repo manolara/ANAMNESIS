@@ -9,7 +9,7 @@ export const PauseButton = () => {
   return (
     <AButton
       onClick={() => {
-        Tone.getTransport().stop();
+        Tone.getTransport().pause();
 
         console.log('yo');
       }}

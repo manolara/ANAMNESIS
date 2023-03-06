@@ -373,7 +373,7 @@ export const Theremin = ({ soundSource }: InstrumentProps) => {
         <AButton
           sx={{ ml: 'auto' }}
           onClick={() => {
-            if (Tone.Transport.state === 'stopped') {
+            if (Tone.Transport.state !== 'started') {
               Tone.Transport.start();
             }
 

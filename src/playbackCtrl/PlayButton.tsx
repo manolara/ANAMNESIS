@@ -9,7 +9,7 @@ export const PlayButton = () => {
   return (
     <AButton
       onClick={() => {
-        if (Tone.Transport.state === 'stopped') {
+        if (Tone.Transport.state !== 'started') {
           Tone.getTransport().start();
         }
       }}
