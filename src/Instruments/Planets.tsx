@@ -1,5 +1,4 @@
 import { P5CanvasInstance, ReactP5Wrapper } from 'react-p5-wrapper';
-import { l } from 'vitest/dist/index-ea17aa0c';
 import { APalette } from '../theme';
 import * as Tone from 'tone';
 
@@ -49,7 +48,7 @@ const sketch = (p: P5CanvasInstance) => {
     p.frameRate(framerate);
     p.angleMode(p.DEGREES);
     //push 5 planets at random positions
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 5; i++) {
       let radius = 10;
       let orbitRadius = p.random(50, 100);
       let orbitSpeed = p.random(

@@ -10,6 +10,7 @@ export const DoodlerPage = ({ soundSource }: InstrumentProps) => {
   return (
     <Stack direction="column">
       <Doodler soundSource={soundSource} bassNoteProp={bassNote} />
+
       <BassnotesBar setBassNote={setBassNote} />
     </Stack>
   );

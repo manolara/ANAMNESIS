@@ -1,5 +1,5 @@
 import p5 from 'p5';
-import { memo, useCallback } from 'react';
+import { useCallback } from 'react';
 import {
   P5CanvasInstance,
   ReactP5Wrapper,
@@ -22,7 +22,7 @@ import {
   setupDefaultSynth,
 } from '../utils/Doodler_utils';
 import { startLoop } from '../utils/utils';
-import { FormatStrikethroughTwoTone } from '@mui/icons-material';
+import { Box } from '@mui/material';
 
 export interface InputDoodlerProps {
   bassNoteProp: string;
@@ -289,11 +289,13 @@ export const Doodler = ({ bassNoteProp, soundSource }: InputDoodlerProps) => {
   }
 
   return (
-    <ReactP5Wrapper
-      sketch={sketch}
-      bassNoteProp={bassNoteProp}
-      zoomFactor={zoomFactor}
-      soundSource={soundSourceFn}
-    />
+    <Box sx={{ cursor: 'crosshair' }}>
+      <ReactP5Wrapper
+        sketch={sketch}
+        bassNoteProp={bassNoteProp}
+        zoomFactor={zoomFactor}
+        soundSource={soundSourceFn}
+      />
+    </Box>
   );
 };

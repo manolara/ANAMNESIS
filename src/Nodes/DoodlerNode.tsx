@@ -1,4 +1,4 @@
-import { Handle, Position, useStore } from 'reactflow';
+<Box className="pen-icon">import { Handle, Position, useStore } from 'reactflow';
 
 import { DoodlerPage } from '../pages/DoodlerPage';
 import { DragHandle } from './DragHandle';

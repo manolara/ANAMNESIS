@@ -11,7 +11,6 @@ import {
 } from 'react-p5-wrapper';
 import { useStore } from 'reactflow';
 import * as Tone from 'tone';
-import { Abs } from 'tone';
 
 import { AButton, APalette } from '../theme';
 import { InstrumentProps } from '../types/componentProps';
@@ -335,7 +334,7 @@ export const Theremin = ({ soundSource }: InstrumentProps) => {
   }
 
   return (
-    <Stack width={`${canvasWidth}px`}>
+    <Stack sx={{ cursor: 'none' }} width={`${canvasWidth}px`}>
       <ReactP5Wrapper
         sketch={sketch}
         thereminState={thereminState}

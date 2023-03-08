@@ -12,6 +12,10 @@ import { Compressor } from '../../FX/Compressor';
 import { useFX } from '../useFX';
 import { Reverb } from '../../FX/Reverb';
 import { Lofi } from '../../FX/Lofi';
+import { Flow } from '../../pages/Flow';
+import { ReactFlowProvider } from 'reactflow';
+import { SpectralAnalyzer } from '../../Processing_Page/SpectralAnalyzer';
+import { Oscilloscope } from '../../Processing_Page/Osciloscope';
 
 const testSynth = new Tone.Synth({
   oscillator: {
@@ -34,11 +38,15 @@ export const Horizontal3 = () => {
   const delay = useFX(Delay);
   const compressor = useFX(Compressor);
   const lofi = useFX(Lofi);
+  const spectralAnalyzer = useFX(SpectralAnalyzer);
+  const oscilloscope = useFX(Oscilloscope);
   testSynth.connect(reverb.input);
   reverb.output.connect(delay.input);
   delay.output.connect(compressor.input);
   compressor.output.connect(lofi.input);
-  lofi.output.toDestination();
+  lofi.output.connect(spectralAnalyzer.input);
+  spectralAnalyzer.output.connect(oscilloscope.input);
+  spectralAnalyzer.output.connect(Tone.Destination);
 
   return (
     <Stack
@@ -47,21 +55,30 @@ export const Horizontal3 = () => {
       sx={{ scrollSnapType: 'x mandatory' }}
       overflow="auto"
     >
-      <Stack
-        justifyContent={'center'}
-        alignItems="end"
-        height="100vh"
-        minWidth="100vw"
-        id="page1"
-        sx={{ scrollSnapAlign: 'start' }}
-        ref={page1Ref}
-      >
-        <Box mr={3}>
-          <Icon onClick={() => handleScroll(page2Ref)}>
-            <EastIcon />
-          </Icon>
-        </Box>
-      </Stack>
+      <ReactFlowProvider>
+        <Stack
+          direction={'row'}
+          height="100vh"
+          minWidth="100vw"
+          id="page1"
+          sx={{ scrollSnapAlign: 'start' }}
+          ref={page1Ref}
+        >
+          <Box width="100%">
+            <Flow />
+          </Box>
+          <Box
+            justifyContent={'center'}
+            flexDirection="column"
+            display="flex"
+            mr={3}
+          >
+            <Icon onClick={() => handleScroll(page2Ref)}>
+              <EastIcon />
+            </Icon>
+          </Box>
+        </Stack>
+      </ReactFlowProvider>
       {/* page 2 */}
       <Stack
         direction="row"
@@ -90,7 +107,6 @@ export const Horizontal3 = () => {
             {compressor.component}
             {lofi.component}
           </Stack>
-
           <AButton
             onClick={() => {
               testSynth.triggerAttack('C4', Tone.now(), 0.2);
@@ -107,6 +123,8 @@ export const Horizontal3 = () => {
           >
             Release
           </AButton>
+          {spectralAnalyzer.component}
+          {oscilloscope.component}
         </Stack>
       </Stack>
     </Stack>

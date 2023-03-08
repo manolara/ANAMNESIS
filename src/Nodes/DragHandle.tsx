@@ -1,10 +1,10 @@
 import { APalette } from '../theme';
-import { Icon, Stack } from '@mui/material';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import { Stack } from '@mui/material';
 
 export const DragHandle = () => {
   return (
     <Stack
+      sx={{ cursor: 'move' }}
       height={18}
       width={18}
       className="custom-drag-handle"
