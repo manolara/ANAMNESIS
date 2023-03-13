@@ -62,7 +62,11 @@ type PianoNode = SoundSourceBase<'Piano', Piano>;
 export type SoundSourceDataProps = MonoSynthNode | PolySynthNode | PianoNode;
 
 interface MasterNodeDataProps {
-  input: Tone.Signal;
+  input1: Tone.Channel;
+  input2: Tone.Channel;
+  input3: Tone.Channel;
+  input4: Tone.Channel;
+  input5: Tone.Channel;
 }
 
 type InstrumentNodeType = Node<InstrumentDataProps, 'instrument'>;
@@ -190,10 +194,16 @@ export const Flow = () => {
         sourceNode.data.output.connect(targetNode.data.input);
       }
       if (sourceNode?.type === 'FX' && targetNode?.type === 'master') {
-        sourceNode.data.output.connect(targetNode.data.input);
+        sourceNode.data.output.connect(
+          //@ts-ignore
+          targetNode.data[`input${parseInt(connection.targetHandle) + 1}`]
+        );
       }
       if (sourceNode?.type === 'soundSource' && targetNode?.type === 'master') {
-        sourceNode.data.output.connect(targetNode.data.input);
+        sourceNode.data.output.connect(
+          //@ts-ignore
+          targetNode.data[`input${parseInt(connection.targetHandle) + 1}`]
+        );
       }
     },
 

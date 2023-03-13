@@ -1,14 +1,19 @@
 import { Stack, Typography } from '@mui/material';
-import { Handle, Position } from 'reactflow';
+import { Handle, Position, useUpdateNodeInternals } from 'reactflow';
 import { AButton } from '../theme';
 import { DragHandle } from './DragHandle';
 import * as Tone from 'tone';
 import { useEffect, useLayoutEffect, useState } from 'react';
 
 export const MasterNode = ({ data }: any) => {
+  const updateNodeInternals = useUpdateNodeInternals();
   useEffect(() => {
     const mixer = new Tone.Channel();
-    data?.input?.toDestination();
+    data?.input1?.toDestination();
+    data?.input2?.toDestination();
+    data?.input3?.toDestination();
+    data?.input4?.toDestination();
+    data?.input5?.toDestination();
     return () => {
       mixer.dispose();
     };
@@ -35,6 +40,7 @@ export const MasterNode = ({ data }: any) => {
   const handleComponents = handlePositions.map((position, i) => {
     return (
       <Handle
+        id={`${i}`}
         key={i}
         type="target"
         position={Position.Left}
@@ -42,6 +48,11 @@ export const MasterNode = ({ data }: any) => {
       />
     );
   });
+
+  useEffect(() => {
+    console.log(data.id);
+    updateNodeInternals('master-node-id');
+  }, [handleComponents]);
 
   const addHandle = () => {
     numHandles < 5
