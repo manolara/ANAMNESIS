@@ -246,6 +246,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
       props.soundSource() &&
       props.soundSource() !== synth
     ) {
+      synth.triggerRelease();
       synth = props.soundSource();
     }
   };

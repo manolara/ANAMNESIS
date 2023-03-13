@@ -289,7 +289,7 @@ export const Doodler = ({ bassNoteProp, soundSource }: InputDoodlerProps) => {
   }
 
   return (
-    <Box sx={{ cursor: 'crosshair' }}>
+    <Box sx={{ cursor: 'default' }}>
       <ReactP5Wrapper
         sketch={sketch}
         bassNoteProp={bassNoteProp}

@@ -18,6 +18,7 @@ import { APiano } from '../Instruments/APiano';
 import { SoundSourceNode } from '../Nodes/SoundSourceNode';
 
 ///object to hold all the components
+
 const components = {
   Instrument: {
     Doodler: DoodlerPage,
