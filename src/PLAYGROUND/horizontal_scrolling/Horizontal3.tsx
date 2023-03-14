@@ -16,6 +16,7 @@ import { Flow } from '../../pages/Flow';
 import { ReactFlowProvider } from 'reactflow';
 import { SpectralAnalyzer } from '../../Processing_Page/SpectralAnalyzer';
 import { Oscilloscope } from '../../Processing_Page/Osciloscope';
+import { VolumePanSliders } from '../../playbackCtrl/VolumePanSliders';
 
 const testSynth = new Tone.Synth({
   oscillator: {
@@ -125,6 +126,7 @@ export const Horizontal3 = () => {
           </AButton>
           {spectralAnalyzer.component}
           {oscilloscope.component}
+          <VolumePanSliders />
         </Stack>
       </Stack>
     </Stack>
