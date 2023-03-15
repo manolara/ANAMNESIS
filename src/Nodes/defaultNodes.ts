@@ -45,13 +45,7 @@ export const initialNodes: ANode[] = [
   {
     id: 'master-node-id',
     type: 'master',
-    data: {
-      input1: new Tone.Channel(),
-      input2: new Tone.Channel(),
-      input3: new Tone.Channel(),
-      input4: new Tone.Channel(),
-      input5: new Tone.Channel(),
-    },
+    data: undefined,
     dragHandle: '.custom-drag-handle',
     position: { x: 1000, y: 200 },
   },

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import ReactFlow, {
   Controls,
   Background,
@@ -30,6 +30,7 @@ import { PlayButton } from '../playbackCtrl/PlayButton';
 import { Divider, Stack } from '@mui/material';
 import { useTheme } from '@emotion/react';
 import { PauseButton } from '../playbackCtrl/PauseButton';
+import { GlobalOutputsContext } from '../GlobalOutputsContext.tsx';
 
 export interface InstrumentDataProps {
   label: 'Doodler' | 'Theremin';
@@ -61,18 +62,10 @@ type PolySynthNode = SoundSourceBase<'PolySynth', Tone.PolySynth>;
 type PianoNode = SoundSourceBase<'Piano', Piano>;
 export type SoundSourceDataProps = MonoSynthNode | PolySynthNode | PianoNode;
 
-interface MasterNodeDataProps {
-  input1: Tone.Channel;
-  input2: Tone.Channel;
-  input3: Tone.Channel;
-  input4: Tone.Channel;
-  input5: Tone.Channel;
-}
-
 type InstrumentNodeType = Node<InstrumentDataProps, 'instrument'>;
 type FXNodeType = Node<FXDataProps, 'FX'>;
 type SoundSourceNodeType = Node<SoundSourceDataProps, 'soundSource'>;
-type MasterNodeType = Node<MasterNodeDataProps, 'master'>;
+type MasterNodeType = Node<undefined, 'master'>;
 export type ANode =
   | InstrumentNodeType
   | FXNodeType
@@ -83,6 +76,7 @@ const initialEdges: Edge[] = [];
 
 export const Flow = () => {
   const theme = useTheme();
+  const globalOutputs = useContext(GlobalOutputsContext);
   const addNode = (node: ANode) => {
     setNodes((nodes) => [...nodes, node]);
   };
@@ -194,15 +188,17 @@ export const Flow = () => {
         sourceNode.data.output.connect(targetNode.data.input);
       }
       if (sourceNode?.type === 'FX' && targetNode?.type === 'master') {
+        console.log('connection.targetHandle', connection.targetHandle);
+
         sourceNode.data.output.connect(
           //@ts-ignore
-          targetNode.data[`input${parseInt(connection.targetHandle) + 1}`]
+          globalOutputs[parseInt(connection.targetHandle)]
         );
       }
       if (sourceNode?.type === 'soundSource' && targetNode?.type === 'master') {
         sourceNode.data.output.connect(
           //@ts-ignore
-          targetNode.data[`input${parseInt(connection.targetHandle) + 1}`]
+          globalOutputs[parseInt(connection.targetHandle)]
         );
       }
     },

@@ -24,6 +24,11 @@ import { PGNodeConnect } from './PLAYGROUND/PGNodeConnect';
 import { PGFXChainTest } from './PLAYGROUND/PGFXChainTest';
 import { UseReverbTests } from './PLAYGROUND/useReverbTests';
 import { ReactFlowProvider } from 'reactflow';
+import {
+  FixedLengthArray,
+  GlobalOutputsContext,
+} from './GlobalOutputsContext.tsx';
+import { useMemo } from 'react';
 
 export const App = () => {
   return (
@@ -64,13 +69,18 @@ export const App = () => {
 export function WrappedApp() {
   Tone.Transport.bpm.value = 80;
   Tone.Transport.stop();
-  // Tone.Transport.loop = true;
-  // Tone.Transport.loopEnd = '8m';
+  const globalOutputs: FixedLengthArray<Tone.Channel[]> = useMemo(
+    () => Array.from({ length: 5 }, () => new Tone.Channel().toDestination()),
+    []
+  );
+
   return (
     <ThemeProvider theme={customTheme}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <GlobalOutputsContext.Provider value={globalOutputs}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </GlobalOutputsContext.Provider>
     </ThemeProvider>
   );
 }

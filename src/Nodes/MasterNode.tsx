@@ -2,22 +2,10 @@ import { Stack, Typography } from '@mui/material';
 import { Handle, Position, useUpdateNodeInternals } from 'reactflow';
 import { AButton } from '../theme';
 import { DragHandle } from './DragHandle';
-import * as Tone from 'tone';
 import { useEffect, useLayoutEffect, useState } from 'react';
 
-export const MasterNode = ({ data }: any) => {
+export const MasterNode = () => {
   const updateNodeInternals = useUpdateNodeInternals();
-  useEffect(() => {
-    const mixer = new Tone.Channel();
-    data?.input1?.toDestination();
-    data?.input2?.toDestination();
-    data?.input3?.toDestination();
-    data?.input4?.toDestination();
-    data?.input5?.toDestination();
-    return () => {
-      mixer.dispose();
-    };
-  }, []);
   let center = 115;
   const offset = 20;
   const [numHandles, setNumHandles] = useState(1);
@@ -50,7 +38,6 @@ export const MasterNode = ({ data }: any) => {
   });
 
   useEffect(() => {
-    console.log(data.id);
     updateNodeInternals('master-node-id');
   }, [handleComponents]);
 
