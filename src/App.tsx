@@ -24,10 +24,7 @@ import { PGNodeConnect } from './PLAYGROUND/PGNodeConnect';
 import { PGFXChainTest } from './PLAYGROUND/PGFXChainTest';
 import { UseReverbTests } from './PLAYGROUND/useReverbTests';
 import { ReactFlowProvider } from 'reactflow';
-import {
-  FixedLengthArray,
-  GlobalOutputsContext,
-} from './GlobalOutputsContext.tsx';
+import { FixedLengthArray, GlobalOutputsContext } from './GlobalOutputsContext';
 import { useMemo } from 'react';
 
 export const App = () => {
@@ -73,7 +70,7 @@ export function WrappedApp() {
     () => Array.from({ length: 5 }, () => new Tone.Channel().toDestination()),
     []
   );
-
+  const track1 = globalOutputs[0];
   return (
     <ThemeProvider theme={customTheme}>
       <GlobalOutputsContext.Provider value={globalOutputs}>

@@ -30,7 +30,7 @@ import { PlayButton } from '../playbackCtrl/PlayButton';
 import { Divider, Stack } from '@mui/material';
 import { useTheme } from '@emotion/react';
 import { PauseButton } from '../playbackCtrl/PauseButton';
-import { GlobalOutputsContext } from '../GlobalOutputsContext.tsx';
+import { GlobalOutputsContext } from '../GlobalOutputsContext';
 
 export interface InstrumentDataProps {
   label: 'Doodler' | 'Theremin';

@@ -17,7 +17,7 @@ import { ReactFlowProvider } from 'reactflow';
 import { SpectralAnalyzer } from '../../Processing_Page/SpectralAnalyzer';
 import { Oscilloscope } from '../../Processing_Page/Osciloscope';
 import { VolumePanSliders } from '../../playbackCtrl/VolumePanSliders';
-import { GlobalOutputsContext } from '../../GlobalOutputsContext.tsx';
+import { GlobalOutputsContext } from '../../GlobalOutputsContext';
 
 const testSynth = new Tone.Synth({
   oscillator: {
@@ -27,7 +27,6 @@ const testSynth = new Tone.Synth({
 
 export const Horizontal3 = () => {
   // LofiOut.toDestination();
-  const globalOutputs = useContext(GlobalOutputsContext);
   const page1Ref = useRef<HTMLDivElement>(null);
   const page2Ref = useRef<HTMLDivElement>(null);
   const handleScroll = (ref: RefObject<HTMLDivElement>) => {
