@@ -130,3 +130,32 @@ export const map_range = (
 ) => {
   return low2 + ((high2 - low2) * (value - low1)) / (high1 - low1);
 };
+
+export const darkenColor = (hexCode: string): string => {
+  // Remove the # prefix if it exists
+  const cleanHexCode = hexCode.replace('#', '');
+
+  // Convert the hex code to RGB
+  const hexToRgb = (hex: string) =>
+    hex
+      .substring(0, 2)
+      .match(/[0-9a-f]{2}/gi)
+      ?.map((x) => parseInt(x, 16));
+
+  const rgbColor = hexToRgb(cleanHexCode);
+
+  if (!rgbColor) {
+    throw new Error('Invalid hex color code.');
+  }
+
+  // Make the color slightly darker
+  const darkerRgb = rgbColor.map((c) => Math.floor(c * 0.8));
+
+  // Convert the darker RGB back to hex code
+  const darkerHex = darkerRgb.reduce((acc, val) => {
+    const hex = val.toString(16);
+    return acc + (hex.length === 1 ? '0' + hex : hex);
+  }, '#');
+
+  return darkerHex;
+};

@@ -1,12 +1,9 @@
 import { Stack, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as Tone from 'tone';
 import { APalette } from '../theme';
+import { FXProps } from '../types/componentProps';
 import { Knob } from './Knob';
-
-interface CompressorProps {
-  input: Tone.ToneAudioNode;
-}
 
 export const EQOut = new Tone.Signal();
 
@@ -18,8 +15,18 @@ const EQ = new Tone.EQ3({
   highFrequency: 2000,
 });
 
-export const EQ3 = ({ input }: CompressorProps) => {
-  input.chain(EQ, EQOut);
+export const EQ3 = ({ input, output }: FXProps) => {
+  useEffect(() => {
+    input.chain(EQ, output);
+
+    return () => {
+      input.disconnect(EQ);
+      EQ.disconnect(output);
+      EQ.dispose();
+      input.dispose();
+      output.dispose();
+    };
+  }, []);
 
   return (
     <>
@@ -29,7 +36,7 @@ export const EQ3 = ({ input }: CompressorProps) => {
         sx={{ p: 1, backgroundColor: APalette.pink, minWidth: 'fit-content' }}
       >
         <Typography width="100%" className="unselectable" mb={1}>
-          Compressor
+          EQ3
         </Typography>
         <Stack className="unselectable" direction="row" spacing={3}>
           <Knob

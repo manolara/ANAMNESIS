@@ -197,7 +197,9 @@ export const Knob = ({
 
   return (
     <Stack justifyContent="center" alignItems="center">
-      <Typography variant="subtitle2">{title}</Typography>
+      <Typography className="unselectable" variant="subtitle2">
+        {title}
+      </Typography>
       <ReactP5Wrapper
         sketch={sketch}
         onValueChange={

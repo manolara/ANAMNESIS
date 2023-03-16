@@ -1,19 +1,19 @@
-import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
 import * as Tone from 'tone';
 import { useContext, useMemo } from 'react';
 import { GlobalOutputsContext } from '../GlobalOutputsContext';
 import { Stack } from '@mui/system';
+import { darken } from '@mui/material';
+import { Knob } from '../FX/Knob';
 
 const CustomSliderStyles = {
   '& .MuiSlider-thumb': {
-    color: '#749761',
+    color: '#f8abab',
+    boxShadow: 'none !important',
   },
-  '& .MuiSlider-thumb:hover': {
-    boxShadow: 'none',
-  },
+
   '& .MuiSlider-track': {
-    color: '#749761',
+    color: darken('#D3A9C9', 0.2),
   },
   '& .MuiSlider-rail': {
     color: '#acc4e4',
@@ -25,20 +25,32 @@ const CustomSliderStyles = {
 
 export const VolumePanSliders = () => {
   const globalOutputs = useContext(GlobalOutputsContext);
-  const track1 = globalOutputs?.[0] as Tone.Channel;
 
   const sliders = useMemo(() => {
     return globalOutputs?.map((track, i) => {
       return (
-        <Slider
-          sx={CustomSliderStyles}
-          orientation="vertical"
-          defaultValue={100}
-          valueLabelDisplay="auto"
-          onChange={(e, value) => {
-            track.set({ volume: Tone.gainToDb((value as number) / 100) });
-          }}
-        />
+        <Stack justifyContent="center" alignItems="center">
+          <Slider
+            key={i}
+            sx={CustomSliderStyles}
+            orientation="vertical"
+            defaultValue={100}
+            valueLabelDisplay="auto"
+            onChange={(e, value) => {
+              track.set({ volume: Tone.gainToDb((value as number) / 100) });
+            }}
+          />
+          <Knob
+            key={i}
+            title="Pan"
+            defaultValue={0}
+            min={-50}
+            max={50}
+            onValueChange={(value) => {
+              track.set({ pan: value / 50 });
+            }}
+          />
+        </Stack>
       );
     });
   }, [globalOutputs]);

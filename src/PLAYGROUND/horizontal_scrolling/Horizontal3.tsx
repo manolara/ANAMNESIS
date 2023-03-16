@@ -13,6 +13,7 @@ import { useFX } from '../useFX';
 import { Reverb } from '../../FX/Reverb';
 import { Lofi } from '../../FX/Lofi';
 import { Flow } from '../../pages/Flow';
+import { EQ3 } from '../../FX/EQ3';
 import { ReactFlowProvider } from 'reactflow';
 import { SpectralAnalyzer } from '../../Processing_Page/SpectralAnalyzer';
 import { Oscilloscope } from '../../Processing_Page/Osciloscope';
@@ -40,13 +41,15 @@ export const Horizontal3 = () => {
   const delay = useFX(Delay);
   const compressor = useFX(Compressor);
   const lofi = useFX(Lofi);
+  const eq = useFX(EQ3);
   const spectralAnalyzer = useFX(SpectralAnalyzer);
   const oscilloscope = useFX(Oscilloscope);
   testSynth.connect(reverb.input);
   reverb.output.connect(delay.input);
   delay.output.connect(compressor.input);
   compressor.output.connect(lofi.input);
-  lofi.output.connect(spectralAnalyzer.input);
+  lofi.output.connect(eq.input);
+  eq.output.connect(spectralAnalyzer.input);
   spectralAnalyzer.output.connect(oscilloscope.input);
   spectralAnalyzer.output.connect(Tone.Destination);
 
@@ -108,6 +111,7 @@ export const Horizontal3 = () => {
             {delay.component}
             {compressor.component}
             {lofi.component}
+            {eq.component}
           </Stack>
           <AButton
             onClick={() => {
