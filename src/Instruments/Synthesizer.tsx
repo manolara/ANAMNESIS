@@ -8,7 +8,7 @@ import {
 import { Knob } from '../FX/Knob';
 import { AButton, APalette } from '../theme';
 import * as Tone from 'tone';
-import { useMemo, useRef, memo, useEffect } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import { Icon } from '@iconify/react';
 import waveSine from '@iconify/icons-ph/wave-sine';
@@ -17,7 +17,6 @@ import waveTriangle from '@iconify/icons-ph/wave-triangle';
 import waveSawtooth from '@iconify/icons-ph/wave-sawtooth';
 import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import { synthLFO } from './SynthLFO';
-import { SoundSourceProps } from '../types/componentProps';
 
 type OmitMonophonicOptions<T> = Omit<T, 'context' | 'onsilence'>;
 
@@ -61,7 +60,7 @@ export const Synthesizer = ({ soundEngine, output }: synthProps) => {
   //setup audio nodes, refs are used to avoid re-rendering
   const outLevel = useMemo(() => new Tone.Gain(), []);
   const HPF = useMemo(() => new Tone.Filter(20, 'highpass'), []);
-  const LPF = useMemo(() => new Tone.Filter(3000, 'lowpass'), []);
+  const LPF = useMemo(() => new Tone.Filter(300, 'lowpass'), []);
   const LPFEnvelope = useMemo(
     () => new Tone.FrequencyEnvelope(defaultFrequencyEnvelopeOptions),
     []

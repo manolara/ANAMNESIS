@@ -8,7 +8,7 @@ import {
 import { Knob } from '../FX/Knob';
 import { AButton, APalette } from '../theme';
 import * as Tone from 'tone';
-import { useMemo, useRef, memo, useEffect } from 'react';
+import { useMemo, useRef, useEffect, useState } from 'react';
 import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
 import { Icon } from '@iconify/react';
 import waveSine from '@iconify/icons-ph/wave-sine';
@@ -19,9 +19,8 @@ import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/Oscill
 import { synthLFO } from './SynthLFO';
 import { SoundSourceProps } from '../types/componentProps';
 
-interface synthProps {
-  synth: Tone.MonoSynth;
-}
+import { MonoSynthPresets } from '../Presets/MonoSynthPresets';
+import { MonoSynthPresetHandler } from './PresetHandler';
 
 const defaultSynthOptions: RecursivePartial<Tone.MonoSynthOptions> = {
   oscillator: {
@@ -43,15 +42,6 @@ const defaultSynthOptions: RecursivePartial<Tone.MonoSynthOptions> = {
   },
 };
 
-const defaultFrequencyEnvelopeOptions: Partial<Tone.FrequencyEnvelopeOptions> =
-  {
-    attack: 0.001,
-    decay: 0.7,
-    sustain: 0.5,
-    release: 1,
-    octaves: 4,
-  };
-
 const HPF_ENVELOPE: Partial<Tone.FrequencyEnvelopeOptions> = {
   attack: 0.001,
   decay: 1,
@@ -65,6 +55,9 @@ export const MonoSynth = ({
   output,
 }: SoundSourceProps<Tone.MonoSynth>) => {
   //setup audio nodes, refs are used to avoid re-rendering
+  const [preset, setPreset] = useState(MonoSynthPresets.Default);
+  console.log(preset);
+
   const outLevel = useMemo(() => new Tone.Gain(), []);
   const HPF = useMemo(() => new Tone.Filter(20, 'highpass'), []);
   const HPFEnvelope = useMemo(
@@ -84,8 +77,12 @@ export const MonoSynth = ({
       outLevel.dispose();
       HPFEnvelope.dispose();
       HPF.dispose();
+      LFO.disconnect();
     };
   }, []);
+  useEffect(() => {
+    mono.set(preset);
+  }, [preset]);
 
   return (
     <>
@@ -123,7 +120,7 @@ export const MonoSynth = ({
           />
           <Knob
             title="Cut-off"
-            defaultValue={301}
+            defaultValue={preset.filterEnvelope?.baseFrequency as number}
             min={20}
             max={20000}
             isExp
@@ -146,7 +143,7 @@ export const MonoSynth = ({
             isExp
             hasDecimals={3}
             min={0.001}
-            defaultValue={0.001}
+            defaultValue={preset.envelope?.attack as number}
             max={10}
             onValueChange={(value) => {
               mono.set({
@@ -160,7 +157,7 @@ export const MonoSynth = ({
             isExp
             hasDecimals={3}
             min={0.1}
-            defaultValue={0.401}
+            defaultValue={preset.envelope?.decay as number}
             max={10}
             onValueChange={(value) => {
               mono.set({
@@ -171,6 +168,7 @@ export const MonoSynth = ({
           />
           <Knob
             title="Sustain"
+            defaultValue={(preset.envelope?.sustain as number) * 100}
             onValueChange={(value) => {
               mono.set({
                 envelope: { sustain: value / 100 },
@@ -183,7 +181,7 @@ export const MonoSynth = ({
             isExp
             hasDecimals={3}
             min={0.1}
-            defaultValue={1.0001}
+            defaultValue={preset.envelope?.release as number}
             max={20}
             onValueChange={(value) => {
               mono.set({
@@ -229,6 +227,7 @@ export const MonoSynth = ({
               </MenuItem>
             </Select>
           </FormControl>
+          <MonoSynthPresetHandler setPreset={setPreset} />
           <FormControl size="small">
             <InputLabel
               sx={{

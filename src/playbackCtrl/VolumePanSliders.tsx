@@ -29,9 +29,8 @@ export const VolumePanSliders = () => {
   const sliders = useMemo(() => {
     return globalOutputs?.map((track, i) => {
       return (
-        <Stack justifyContent="center" alignItems="center">
+        <Stack justifyContent="center" alignItems="center" key={i}>
           <Slider
-            key={i}
             sx={CustomSliderStyles}
             orientation="vertical"
             defaultValue={100}
@@ -41,7 +40,6 @@ export const VolumePanSliders = () => {
             }}
           />
           <Knob
-            key={i}
             title="Pan"
             defaultValue={0}
             min={-50}
