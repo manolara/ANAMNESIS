@@ -1,12 +1,39 @@
 import * as Tone from 'tone';
-import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
+import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
+
+// export type MonoSynthPresetsType = {
+//   [key: string]: RecursivePartial<Tone.MonoSynthOptions>;
+// };
+
+export interface MonoSynthPresetType {
+  name: string;
+  user?: boolean;
+  oscillator: {
+    type: NonCustomOscillatorType;
+  };
+  envelope: {
+    attack: Tone.Unit.Time;
+    decay: Tone.Unit.Time;
+    sustain: number;
+    release: Tone.Unit.Time;
+  };
+  filterEnvelope: {
+    attack: Tone.Unit.Time;
+    decay: Tone.Unit.Time;
+    sustain: number;
+    release: Tone.Unit.Time;
+    baseFrequency: Tone.Unit.Frequency;
+    octaves?: number;
+  };
+}
 
 export type MonoSynthPresetsType = {
-  [key: string]: RecursivePartial<Tone.MonoSynthOptions>;
+  [key: string]: MonoSynthPresetType;
 };
 
 export const MonoSynthPresets: MonoSynthPresetsType = {
   Default: {
+    name: 'Default',
     oscillator: {
       type: 'sawtooth',
     },
@@ -27,6 +54,7 @@ export const MonoSynthPresets: MonoSynthPresetsType = {
   },
 
   'Moog Bass': {
+    name: 'Moog Bass',
     oscillator: {
       type: 'sawtooth',
     },
@@ -45,6 +73,7 @@ export const MonoSynthPresets: MonoSynthPresetsType = {
     },
   },
   'Simple Sine': {
+    name: 'Simple Sine',
     oscillator: {
       type: 'sine',
     },

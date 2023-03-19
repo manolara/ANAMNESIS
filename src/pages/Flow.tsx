@@ -66,6 +66,13 @@ type InstrumentNodeType = Node<InstrumentDataProps, 'instrument'>;
 type FXNodeType = Node<FXDataProps, 'FX'>;
 type SoundSourceNodeType = Node<SoundSourceDataProps, 'soundSource'>;
 type MasterNodeType = Node<undefined, 'master'>;
+
+type ANodeData =
+  | InstrumentDataProps
+  | FXDataProps
+  | SoundSourceDataProps
+  | undefined;
+
 export type ANode =
   | InstrumentNodeType
   | FXNodeType
@@ -86,8 +93,7 @@ export const Flow = () => {
   const [openContext, setOpenContext] = useState(false);
   const onNodesChange = useCallback(
     (changes: NodeChange[]) =>
-      //@ts-ignore
-      setNodes((nds) => applyNodeChanges(changes, nds)),
+      setNodes((nds) => applyNodeChanges<ANodeData>(changes, nds) as ANode[]),
     [setNodes]
   );
   const onEdgesChange = useCallback(

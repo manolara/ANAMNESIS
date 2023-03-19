@@ -1,14 +1,19 @@
-import * as Tone from 'tone';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
-import { RecursivePartial } from 'tone/build/esm/core/util/Interface';
-import { MonoSynthPresets } from '../Presets/MonoSynthPresets';
+import {
+  MonoSynthPresets,
+  MonoSynthPresetType,
+} from '../Presets/MonoSynthPresets';
 
 interface PresetHandlerProps {
-  setPreset: Dispatch<SetStateAction<RecursivePartial<Tone.MonoSynthOptions>>>;
+  setPreset: Dispatch<SetStateAction<MonoSynthPresetType>>;
+  preset: string;
 }
 
-export const MonoSynthPresetHandler = ({ setPreset }: PresetHandlerProps) => {
+export const MonoSynthPresetHandler = ({
+  setPreset,
+  preset,
+}: PresetHandlerProps) => {
   const defaultPreset = 'Default';
 
   const presetsInMenu = Object.keys(MonoSynthPresets).map((presetName, i) => (
@@ -28,6 +33,7 @@ export const MonoSynthPresetHandler = ({ setPreset }: PresetHandlerProps) => {
           '& .MuiSelect-input': { fontSize: '0.7rem' },
         }}
         label="Preset"
+        value={preset}
         defaultValue={defaultPreset}
         onChange={(e) => {
           setPreset(MonoSynthPresets[e.target.value]);
