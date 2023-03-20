@@ -121,7 +121,7 @@ export const Synthesizer = ({ soundEngine, output }: synthProps) => {
             isExp
             onValueChange={(value) => {
               HPFEnvelope.baseFrequency = value;
-              console.log(HPF.frequency.value, 'HPF cutoff');
+
               LFO.updateLFO();
             }}
           />
@@ -133,7 +133,7 @@ export const Synthesizer = ({ soundEngine, output }: synthProps) => {
             isExp
             onValueChange={(value) => {
               LPFEnvelope.baseFrequency = value;
-              console.log(LPF.frequency.value, 'LPF cutoff');
+
               LFO.updateLFO();
             }}
           />

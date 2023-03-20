@@ -145,8 +145,6 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
       }
     }
     newLine = false;
-
-    console.log(currentBar);
   }
   p.setup = () => {
     curColor = doodlerPalette.lightBlue;

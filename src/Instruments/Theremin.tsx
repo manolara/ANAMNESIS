@@ -98,7 +98,6 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     sequenceCounter = 0;
     mainLoop.stop();
     mainLoop.start();
-    console.log(getCurrentBar());
   };
 
   const playbackTheremin = (
@@ -208,8 +207,6 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
         synth.triggerAttack(pitch, '+0.01');
       releaseTriggeredAfterStopping = false;
     }
-
-    console.log(thereminState);
   };
   p.updateWithProps = (props: ThereminProps) => {
     if (props.notes) {

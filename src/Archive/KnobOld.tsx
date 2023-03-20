@@ -88,13 +88,12 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
   p.mousePressed = () => {
     if (p.dist(p.mouseX, p.mouseY, p.width / 2, p.height / 2) < r) {
       isDragging = true;
-      console.log(isDragging);
+
       prevY = -1;
     }
   };
   p.mouseReleased = () => {
     isDragging = false;
-    console.log(isDragging);
   };
 };
 

@@ -26,7 +26,7 @@ export class synthLFO {
 
   updateLFO = (value?: number) => {
     this.value = value ?? this.value;
-    console.log('LFO assigned to: ', this.assignedTo);
+
     ///LPF
     if (
       this.assignedTo instanceof Tone.Filter &&
@@ -49,7 +49,7 @@ export class synthLFO {
     ) {
       const knobToOctave = map_range(this.value, 0, 100, 0, 4);
       const center = +this.HPFEvelope?.baseFrequency;
-      console.log('center', center);
+
       const min = center * Math.pow(2, -knobToOctave);
       const max = center * Math.pow(2, knobToOctave);
       console.log('min', min, 'max', max);

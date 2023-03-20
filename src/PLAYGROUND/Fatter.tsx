@@ -18,7 +18,6 @@ export const Fatter = () => {
   function sketch(p: P5CanvasInstance) {
     p.setup = () => {
       p.createCanvas(600, 400);
-      console.log('setup');
     };
 
     p.draw = () => {

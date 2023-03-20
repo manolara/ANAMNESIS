@@ -96,7 +96,7 @@ const sketch = (p: P5CanvasInstance) => {
         p.floor(p.atan2(-planet.y, planet.x)) < 0
           ? p.floor(p.atan2(-planet.y, planet.x)) + 360
           : p.floor(p.atan2(-planet.y, planet.x));
-      //console.log('planetAngle', planetAngle, 'lineAngle', lineAngle);
+
       if (p.abs(lineAngle - planetAngle) < 2) {
         //map orbit angle to midi note
         let note =

@@ -20,10 +20,11 @@ import waveSawtooth from '@iconify/icons-ph/wave-sawtooth';
 import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import { synthLFO } from './SynthLFO';
 import { SoundSourceProps } from '../types/componentProps';
-import axios from 'axios';
+import axios, { all } from 'axios';
 
 import {
   MonoSynthPresets,
+  MonoSynthPresetsType,
   MonoSynthPresetType,
 } from '../Presets/MonoSynthPresets';
 import { MonoSynthPresetHandler } from './PresetHandler';
@@ -63,8 +64,28 @@ export const MonoSynth = ({
   soundEngine,
   output,
 }: SoundSourceProps<Tone.MonoSynth>) => {
-  //setup audio nodes, refs are used to avoid re-rendering
+  const [allMonoPresets, setAllMonoPresets] =
+    useState<MonoSynthPresetsType>(MonoSynthPresets);
+  let tmpSynthName = '';
+
   const [preset, setPreset] = useState(MonoSynthPresets.Default);
+
+  const updateLocalPresets = async () => {
+    const res = await axios.get(`${serverURL}/get`);
+    const data = res.data;
+    const newPresets: MonoSynthPresetsType = {};
+    data.forEach((preset: MonoSynthPresetType) => {
+      newPresets[preset.name] = preset;
+    });
+    if (newPresets) {
+      setAllMonoPresets(newPresets);
+    }
+  };
+
+  useEffect(() => {
+    updateLocalPresets();
+  }, []);
+
   console.log(preset);
 
   const outLevel = useMemo(() => new Tone.Gain(), []);
@@ -89,6 +110,7 @@ export const MonoSynth = ({
       LFO.disconnect();
     };
   }, []);
+
   useEffect(() => {
     mono.set(preset);
   }, [preset]);
@@ -116,12 +138,27 @@ export const MonoSynth = ({
           type: mono.oscillator.type as NonCustomOscillatorType,
         },
       };
+      const newMonoSynthPresets = {
+        ...allMonoPresets,
+        [presetName]: newPreset,
+      };
       MonoSynthPresets[presetName] = newPreset;
       axios.post(`${serverURL}/create`, newPreset).then((res) => {
+        setAllMonoPresets(newMonoSynthPresets);
+        updateLocalPresets();
+      });
+
+      setPreset(newPreset);
+    }
+  };
+
+  const postDefaultPresets = () => {
+    const presets = Object.values(MonoSynthPresets);
+    presets.forEach((preset) => {
+      axios.post(`${serverURL}/create`, preset).then((res) => {
         console.log(res, 'res');
       });
-      setPreset(MonoSynthPresets[presetName]);
-    }
+    });
   };
 
   const loadAllPresets = () => {
@@ -134,14 +171,26 @@ export const MonoSynth = ({
     axios.delete(`${serverURL}/delete/${id}`).then((res) => {
       console.log(res, 'res');
     });
+    updateLocalPresets();
+    setPreset(allMonoPresets.Default);
+  };
+
+  const deleteAllUserPresets = () => {
+    axios.delete(`${serverURL}/deleteAll`).then((res) => {
+      console.log(res, 'res');
+      updateLocalPresets();
+      setPreset(allMonoPresets.Default);
+    });
   };
 
   return (
     <>
+      <button onClick={postDefaultPresets}>post</button>
       <button
         onClick={() => deletePresetById('6417bb95ce17850f1b5725e5')}
       ></button>
       <button onClick={loadAllPresets}></button>
+      <button onClick={deleteAllUserPresets}>del all</button>
       <AButton
         onClick={() => {
           mono.triggerAttackRelease('C4', '4n');
@@ -300,6 +349,7 @@ export const MonoSynth = ({
               direction="row"
             >
               <MonoSynthPresetHandler
+                monoSynthPresets={allMonoPresets}
                 preset={preset.name}
                 setPreset={setPreset}
               />

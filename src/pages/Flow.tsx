@@ -112,7 +112,6 @@ export const Flow = () => {
           ) {
             edgeSourceNode.data.output.disconnect();
           } else if (edgeSourceNode?.type === 'instrument') {
-            debugger;
             changeSoundSource(edgeSourceNode, undefined);
           }
         }
@@ -243,7 +242,6 @@ export const Flow = () => {
         onConnect={onConnect}
         onContextMenu={(e) => {
           e.preventDefault();
-          console.log('context menu', e);
         }}
       >
         <Panel position="top-left">

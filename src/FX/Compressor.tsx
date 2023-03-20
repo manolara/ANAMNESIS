@@ -32,7 +32,7 @@ export const Compressor = ({ input, output }: FXProps) => {
   }, []);
 
   CompressorFX.set({ threshold: thresholdDefault, ratio: ratioDefault });
-  console.log('wetness', CompressorFX.get().ratio);
+
   return (
     <>
       <Stack

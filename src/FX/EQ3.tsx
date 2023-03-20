@@ -44,7 +44,6 @@ export const EQ3 = ({ input, output }: FXProps) => {
             defaultValue={0}
             onValueChange={(value) => {
               EQ.set({ low: value });
-              console.log(EQ.get());
             }}
             min={-60}
             max={6}

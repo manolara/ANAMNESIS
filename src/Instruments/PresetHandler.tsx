@@ -1,22 +1,25 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import {
-  MonoSynthPresets,
+  MonoSynthPresetsType,
   MonoSynthPresetType,
 } from '../Presets/MonoSynthPresets';
 
 interface PresetHandlerProps {
+  monoSynthPresets: MonoSynthPresetsType;
   setPreset: Dispatch<SetStateAction<MonoSynthPresetType>>;
   preset: string;
 }
 
 export const MonoSynthPresetHandler = ({
+  monoSynthPresets,
   setPreset,
   preset,
 }: PresetHandlerProps) => {
   const defaultPreset = 'Default';
+  console.log('rendering preset handler', monoSynthPresets);
 
-  const presetsInMenu = Object.keys(MonoSynthPresets).map((presetName, i) => (
+  const presetsInMenu = Object.keys(monoSynthPresets).map((presetName, i) => (
     <MenuItem sx={{ fontSize: '0.8rem' }} key={i} value={presetName}>
       {presetName}
     </MenuItem>
@@ -36,7 +39,7 @@ export const MonoSynthPresetHandler = ({
         value={preset}
         defaultValue={defaultPreset}
         onChange={(e) => {
-          setPreset(MonoSynthPresets[e.target.value]);
+          setPreset(monoSynthPresets[e.target.value]);
         }}
       >
         {presetsInMenu}

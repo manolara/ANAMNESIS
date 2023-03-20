@@ -16,7 +16,7 @@ export const Reverb = ({ input, output }: FXProps) => {
 
   useEffect(() => {
     input.chain(reverbEngine, output);
-    console.log('new input');
+
     return () => {
       input.disconnect(reverbEngine);
       reverbEngine.disconnect(output);

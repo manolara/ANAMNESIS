@@ -10,9 +10,8 @@ const zoomSelector = (s: any) => s.transform[2];
 
 export const SynthNode = ({ data }: any) => {
   const zoom = useStore(zoomSelector);
-  console.log({ zoom });
+
   const synth = useMemo(() => new Tone.PolySynth(), []);
-  console.log(data.soundEngine);
 
   return (
     <>

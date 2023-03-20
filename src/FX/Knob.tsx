@@ -162,7 +162,6 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
       : Math.floor(outValue);
 
     if (prevOut !== outValue) {
-      console.log('change', outValue);
       onValueChange(outValue);
     }
 

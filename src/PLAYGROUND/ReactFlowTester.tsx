@@ -85,7 +85,7 @@ export const ReactFlowTester = () => {
 
       const sourceEngine = nodes.find((node) => node.id === connection.source)
         ?.data.soundEngine;
-      console.log({ sourceEngine });
+
       setNodes((nodes) =>
         nodes.map((node) => {
           if (node.id === connection.target) {

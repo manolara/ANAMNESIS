@@ -8,6 +8,7 @@ import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/Oscill
 export interface MonoSynthPresetType {
   name: string;
   userPreset?: boolean;
+  _id?: string;
   oscillator: {
     type: NonCustomOscillatorType;
   };
@@ -34,6 +35,7 @@ export type MonoSynthPresetsType = {
 export const MonoSynthPresets: MonoSynthPresetsType = {
   Default: {
     name: 'Default',
+    userPreset: false,
     oscillator: {
       type: 'sawtooth',
     },
@@ -55,6 +57,7 @@ export const MonoSynthPresets: MonoSynthPresetsType = {
 
   'Moog Bass': {
     name: 'Moog Bass',
+    userPreset: false,
     oscillator: {
       type: 'sawtooth',
     },
@@ -74,6 +77,7 @@ export const MonoSynthPresets: MonoSynthPresetsType = {
   },
   'Simple Sine': {
     name: 'Simple Sine',
+    userPreset: false,
     oscillator: {
       type: 'sine',
     },

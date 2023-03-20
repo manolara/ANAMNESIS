@@ -10,7 +10,7 @@ const sketch = (p: P5CanvasInstance) => {
   const song = (time: number) => {
     metronome.triggerAttackRelease('c2', '8n', time, 0.08);
     // MERCYYY.autostart = true;
-    console.log(Tone.Transport.position);
+
     Tone.Draw.schedule(() => {
       p.background(p.random(100));
     }, 100);

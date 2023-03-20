@@ -35,7 +35,6 @@ export const Horizontal3 = () => {
       block: 'end',
       behavior: 'smooth',
     });
-    console.log('scrolling');
   };
   const reverb = useFX(Reverb);
   const delay = useFX(Delay);

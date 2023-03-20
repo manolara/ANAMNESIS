@@ -161,8 +161,6 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
       }
     }
     newLine = false;
-
-    console.log(currentBar);
   }
   p.setup = () => {
     curColor = doodlerPalette.lightBlue;
@@ -199,7 +197,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
         props.soundSource() !== leadSound
       ) {
         leadSound = props.soundSource();
-        console.log('leadSound what the flick', props.soundSource());
+
         //check the type of props.soundSource()
       } else if (props.soundSource() === undefined) {
         leadSound = defaultSynth;
