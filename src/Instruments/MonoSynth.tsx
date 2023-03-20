@@ -20,6 +20,7 @@ import waveSawtooth from '@iconify/icons-ph/wave-sawtooth';
 import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import { synthLFO } from './SynthLFO';
 import { SoundSourceProps } from '../types/componentProps';
+import axios from 'axios';
 
 import {
   MonoSynthPresets,
@@ -27,6 +28,8 @@ import {
 } from '../Presets/MonoSynthPresets';
 import { MonoSynthPresetHandler } from './PresetHandler';
 import SaveIcon from '@mui/icons-material/Save';
+
+const serverURL = 'http://localhost:3000/monosynth';
 
 const defaultSynthOptions: RecursivePartial<Tone.MonoSynthOptions> = {
   oscillator: {
@@ -95,7 +98,7 @@ export const MonoSynth = ({
     if (presetName) {
       const newPreset: MonoSynthPresetType = {
         name: presetName,
-        user: true,
+        userPreset: true,
         envelope: {
           attack: mono.envelope.attack,
           decay: mono.envelope.decay,
@@ -114,12 +117,31 @@ export const MonoSynth = ({
         },
       };
       MonoSynthPresets[presetName] = newPreset;
+      axios.post(`${serverURL}/create`, newPreset).then((res) => {
+        console.log(res, 'res');
+      });
       setPreset(MonoSynthPresets[presetName]);
     }
   };
 
+  const loadAllPresets = () => {
+    axios.get(`${serverURL}/get`).then((res) => {
+      console.log(res, 'res');
+    });
+  };
+
+  const deletePresetById = (id: string) => {
+    axios.delete(`${serverURL}/delete/${id}`).then((res) => {
+      console.log(res, 'res');
+    });
+  };
+
   return (
     <>
+      <button
+        onClick={() => deletePresetById('6417bb95ce17850f1b5725e5')}
+      ></button>
+      <button onClick={loadAllPresets}></button>
       <AButton
         onClick={() => {
           mono.triggerAttackRelease('C4', '4n');

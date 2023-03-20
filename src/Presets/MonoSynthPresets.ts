@@ -7,7 +7,7 @@ import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/Oscill
 
 export interface MonoSynthPresetType {
   name: string;
-  user?: boolean;
+  userPreset?: boolean;
   oscillator: {
     type: NonCustomOscillatorType;
   };
@@ -92,3 +92,5 @@ export const MonoSynthPresets: MonoSynthPresetsType = {
     },
   },
 };
+
+export const defaultMonoSynthPreset = MonoSynthPresets;
