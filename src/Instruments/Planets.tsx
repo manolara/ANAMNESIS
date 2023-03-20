@@ -1,8 +1,19 @@
-import { P5CanvasInstance, ReactP5Wrapper } from 'react-p5-wrapper';
+import {
+  P5CanvasInstance,
+  ReactP5Wrapper,
+  SketchProps,
+} from 'react-p5-wrapper';
 import { APalette } from '../theme';
 import * as Tone from 'tone';
+import { darken, Slider, Stack } from '@mui/material';
+import { useState } from 'react';
 
-const sketch = (p: P5CanvasInstance) => {
+interface PlanetProps extends SketchProps {
+  viscosity: number;
+}
+
+const sketch = (p: P5CanvasInstance<PlanetProps>) => {
+  let viscosity = 1;
   // define a planet class
   class Planet {
     constructor(
@@ -21,7 +32,7 @@ const sketch = (p: P5CanvasInstance) => {
       p.circle(this.x, this.y, this.radius);
     }
     orbit() {
-      this.orbitAngle += this.orbitSpeed * this.orbitDirection;
+      this.orbitAngle += this.orbitSpeed * viscosity * this.orbitDirection;
       this.x = this.orbitRadius * p.cos(this.orbitAngle);
       this.y = this.orbitRadius * p.sin(this.orbitAngle);
     }
@@ -42,8 +53,15 @@ const sketch = (p: P5CanvasInstance) => {
   let y = 0;
   let framerate = 60;
   let planets: Planet[] = [];
+
+  p.updateWithProps = (props: PlanetProps) => {
+    if (props.viscosity !== undefined) viscosity = props.viscosity;
+  };
+
   p.setup = () => {
-    p.createCanvas(300, 300);
+    const cnv = p.createCanvas(300, 300);
+    cnv.mouseClicked(canvasClicked);
+
     p.background('#fbe0ca');
     p.frameRate(framerate);
     p.angleMode(p.DEGREES);
@@ -108,8 +126,69 @@ const sketch = (p: P5CanvasInstance) => {
       planet.orbit();
     });
   };
+
+  const canvasClicked = () => {
+    //push a new planet at mouse position
+    let radius = 10;
+    let orbitRadius = p.dist(p.width / 2, p.height / 2, p.mouseX, p.mouseY);
+    let orbitSpeed = p.random((0.01 * 180) / p.TWO_PI, (0.1 * 180) / p.TWO_PI);
+    //calculate orbit angle from mouse position
+    let orbitAngle = p.atan2(p.mouseY - p.height / 2, p.mouseX - p.width / 2);
+    let orbitDirection = p.random([-1, 1]);
+    let color = APalette.lofi;
+    let x = p.mouseX - p.width / 2;
+    let y = p.mouseY - p.height / 2;
+    planets.push(
+      new Planet(
+        x,
+        y,
+        radius,
+        color,
+        orbitRadius,
+        orbitSpeed,
+        orbitAngle,
+        orbitDirection
+      )
+    );
+  };
 };
 
 export const Planets = () => {
-  return <ReactP5Wrapper sketch={sketch} />;
+  //MUI slider controls viscosity from 0 to 1
+  const defaultViscosity = 1;
+  const [viscosity, setViscosity] = useState(defaultViscosity);
+  const CustomSliderStyles = {
+    '& .MuiSlider-thumb': {
+      color: '#ffb8b8',
+      boxShadow: 'none !important',
+    },
+
+    '& .MuiSlider-track': {
+      color: APalette.lofi,
+    },
+    '& .MuiSlider-rail': {
+      color: '#acc4e4',
+    },
+    '& .MuiSlider-active': {
+      color: '#f5e278',
+    },
+  };
+
+  return (
+    <Stack>
+      <ReactP5Wrapper sketch={sketch} viscosity={viscosity} />
+      <Slider
+        value={viscosity}
+        aria-label="Default"
+        min={0}
+        step={0.01}
+        max={2}
+        sx={CustomSliderStyles}
+        valueLabelDisplay="off"
+        onChange={(e, value) => {
+          setViscosity(value as number);
+        }}
+      />
+    </Stack>
+  );
 };

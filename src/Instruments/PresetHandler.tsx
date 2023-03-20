@@ -4,7 +4,6 @@ import {
   MonoSynthPresetsType,
   MonoSynthPresetType,
 } from '../Presets/MonoSynthPresets';
-
 interface PresetHandlerProps {
   monoSynthPresets: MonoSynthPresetsType;
   setPreset: Dispatch<SetStateAction<MonoSynthPresetType>>;

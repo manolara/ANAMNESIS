@@ -87,6 +87,11 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
           decimator = Math.pow(10, numDecimals);
         }
       }
+      if (props.defaultValue || props.defaultValue === 0) {
+        value = isExp
+          ? mapLogInv(props.defaultValue, 0, 100, min, max)
+          : p.map(props.defaultValue, min, max, 0, 100);
+      }
       defaultsSet = true;
     }
     if (
@@ -108,6 +113,10 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
     cnv = p.createCanvas(canvasWidth, canvasHeight);
     p.textAlign(p.CENTER, p.CENTER);
     p.frameRate(30);
+    cnv.mousePressed(() => {
+      isDragging = true;
+      prevY = -1;
+    });
   };
 
   p.draw = () => {
@@ -168,12 +177,7 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
     p.text(outValue, x, y + 35);
     prevOut = outValue;
   };
-  p.mousePressed = () => {
-    if (p.dist(sc_mouseX, sc_mouseY, p.width / 2, p.height / 2) < r) {
-      isDragging = true;
-      prevY = -1;
-    }
-  };
+
   p.mouseReleased = () => {
     isDragging = false;
   };

@@ -1,6 +1,6 @@
 import * as Tone from 'tone';
 
-import { RefObject, useContext, useRef } from 'react';
+import { RefObject, useRef } from 'react';
 
 import { Box, Icon, Stack } from '@mui/material';
 import EastIcon from '@mui/icons-material/East';
@@ -18,7 +18,6 @@ import { ReactFlowProvider } from 'reactflow';
 import { SpectralAnalyzer } from '../../Processing_Page/SpectralAnalyzer';
 import { Oscilloscope } from '../../Processing_Page/Osciloscope';
 import { VolumePanSliders } from '../../playbackCtrl/VolumePanSliders';
-import { GlobalOutputsContext } from '../../GlobalOutputsContext';
 
 const testSynth = new Tone.Synth({
   oscillator: {

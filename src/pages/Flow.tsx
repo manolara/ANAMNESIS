@@ -17,7 +17,11 @@ import { FlowContext } from '../PLAYGROUND/FlowContext';
 import { FXNode } from '../Nodes/FXNode';
 import * as Tone from 'tone';
 import { InstrumentNode } from '../Nodes/InstrumentNode';
-import { InstrumentProps, SoundSourceProps } from '../types/componentProps';
+import {
+  FXProps,
+  InstrumentProps,
+  SoundSourceProps,
+} from '../types/componentProps';
 import { v4 as uuidv4 } from 'uuid';
 import { MasterNode } from '../Nodes/MasterNode';
 import { Piano } from '@tonejs/piano';
@@ -41,13 +45,7 @@ export interface FXDataProps {
   label: string;
   input: Tone.Signal;
   output: Tone.Signal;
-  component: ({
-    input,
-    output,
-  }: {
-    input: Tone.Signal;
-    output: Tone.Signal;
-  }) => JSX.Element;
+  component: ({ input, output }: FXProps) => JSX.Element;
 }
 
 type soundEngine = Tone.PolySynth | Tone.MonoSynth | Piano;
@@ -193,8 +191,6 @@ export const Flow = () => {
         sourceNode.data.output.connect(targetNode.data.input);
       }
       if (sourceNode?.type === 'FX' && targetNode?.type === 'master') {
-        console.log('connection.targetHandle', connection.targetHandle);
-
         sourceNode.data.output.connect(
           //@ts-ignore
           globalOutputs[parseInt(connection.targetHandle)]

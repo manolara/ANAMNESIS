@@ -120,7 +120,7 @@ export const MasterNode = () => {
             textOrientation: 'upright',
           }}
         >
-          MASTER
+          MIXER
         </Typography>
         {/* Button to add new handle */}
         {addRemoveButtons()}
