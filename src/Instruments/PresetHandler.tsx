@@ -1,10 +1,17 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import {
+  FormControl,
+  Icon,
+  Input,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import {
   MonoSynthPresetsType,
   MonoSynthPresetType,
 } from '../Presets/MonoSynthPresets';
-
+import DeleteIcon from '@mui/icons-material/Delete';
 interface PresetHandlerProps {
   monoSynthPresets: MonoSynthPresetsType;
   setPreset: Dispatch<SetStateAction<MonoSynthPresetType>>;
@@ -20,6 +27,8 @@ export const MonoSynthPresetHandler = ({
   console.log('rendering preset handler', monoSynthPresets);
 
   const presetsInMenu = Object.keys(monoSynthPresets).map((presetName, i) => (
+    //add adornment
+
     <MenuItem sx={{ fontSize: '0.8rem' }} key={i} value={presetName}>
       {presetName}
     </MenuItem>

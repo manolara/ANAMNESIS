@@ -87,6 +87,11 @@ const sketch = (p: P5CanvasInstance<KnobProps>) => {
           decimator = Math.pow(10, numDecimals);
         }
       }
+      if (props.defaultValue || props.defaultValue === 0) {
+        value = isExp
+          ? mapLogInv(props.defaultValue, 0, 100, min, max)
+          : p.map(props.defaultValue, min, max, 0, 100);
+      }
       defaultsSet = true;
     }
     if (

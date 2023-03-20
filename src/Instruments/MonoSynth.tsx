@@ -2,6 +2,7 @@ import {
   FormControl,
   IconButton,
   InputLabel,
+  Menu,
   MenuItem,
   Select,
   Stack,
@@ -21,6 +22,8 @@ import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/Oscill
 import { synthLFO } from './SynthLFO';
 import { SoundSourceProps } from '../types/componentProps';
 import axios, { all } from 'axios';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   MonoSynthPresets,
@@ -66,7 +69,10 @@ export const MonoSynth = ({
 }: SoundSourceProps<Tone.MonoSynth>) => {
   const [allMonoPresets, setAllMonoPresets] =
     useState<MonoSynthPresetsType>(MonoSynthPresets);
-  let tmpSynthName = '';
+
+  const [presetOptionAnchorEl, setPresetOptionAnchorEl] =
+    useState<null | HTMLElement>(null);
+  const openPresetOptions = Boolean(presetOptionAnchorEl);
 
   const [preset, setPreset] = useState(MonoSynthPresets.Default);
 
@@ -96,6 +102,7 @@ export const MonoSynth = ({
   ).connect(HPF.frequency);
 
   const mono = useMemo(() => soundEngine.set(defaultSynthOptions), []);
+  console.log(allMonoPresets, 'all presets');
 
   //setup stuff
   const LFO = useRef(new synthLFO()).current;
@@ -146,9 +153,9 @@ export const MonoSynth = ({
       axios.post(`${serverURL}/create`, newPreset).then((res) => {
         setAllMonoPresets(newMonoSynthPresets);
         updateLocalPresets();
+        console.log(res.data._id, 'res');
+        setPreset({ ...newPreset, _id: res.data._id });
       });
-
-      setPreset(newPreset);
     }
   };
 
@@ -170,9 +177,9 @@ export const MonoSynth = ({
   const deletePresetById = (id: string) => {
     axios.delete(`${serverURL}/delete/${id}`).then((res) => {
       console.log(res, 'res');
+      updateLocalPresets();
+      setPreset(allMonoPresets.Default);
     });
-    updateLocalPresets();
-    setPreset(allMonoPresets.Default);
   };
 
   const deleteAllUserPresets = () => {
@@ -182,14 +189,27 @@ export const MonoSynth = ({
       setPreset(allMonoPresets.Default);
     });
   };
+  const renamePresetById = (id: string) => {
+    const newName = prompt('Enter new name');
+    const newPresets = { ...allMonoPresets, [newName!]: preset };
+
+    axios.patch(`${serverURL}/rename/${id}`, { name: newName }).then((res) => {
+      console.log(res, 'res');
+
+      setPreset({ ...preset, name: newName! });
+      updateLocalPresets();
+    });
+  };
+
+  const handlePresetOptionOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setPresetOptionAnchorEl(event.currentTarget);
+  };
+  const handlePresetOptionClose = () => {
+    setPresetOptionAnchorEl(null);
+  };
 
   return (
     <>
-      <button onClick={postDefaultPresets}>post</button>
-      <button
-        onClick={() => deletePresetById('6417bb95ce17850f1b5725e5')}
-      ></button>
-      <button onClick={loadAllPresets}></button>
       <button onClick={deleteAllUserPresets}>del all</button>
       <AButton
         onClick={() => {
@@ -357,6 +377,34 @@ export const MonoSynth = ({
               <IconButton sx={{ height: '100%' }} onClick={savePreset}>
                 <SaveIcon sx={{ transform: 'scale(1.2)', pl: '0' }} />
               </IconButton>
+              {preset.userPreset ? (
+                <IconButton onClick={handlePresetOptionOpen} sx={{ p: '0' }}>
+                  <MoreVertIcon />
+                </IconButton>
+              ) : null}
+              <Menu
+                open={openPresetOptions}
+                anchorEl={presetOptionAnchorEl}
+                onClose={handlePresetOptionClose}
+              >
+                <MenuItem
+                  onClick={() => {
+                    renamePresetById(preset._id!);
+                    handlePresetOptionClose();
+                  }}
+                >
+                  Rename Preset
+                </MenuItem>
+                <MenuItem
+                  sx={{ color: 'red' }}
+                  onClick={() => {
+                    deletePresetById(preset._id!);
+                    handlePresetOptionClose();
+                  }}
+                >
+                  Delete Preset
+                </MenuItem>
+              </Menu>
             </Stack>
 
             <FormControl size="small">
