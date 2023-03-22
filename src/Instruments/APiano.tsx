@@ -6,10 +6,7 @@ import { Knob } from '../FX/Knob';
 import { SoundSourceProps } from '../types/componentProps';
 
 export const APiano = ({ soundEngine, output }: SoundSourceProps<Piano>) => {
-  const filter = useMemo(
-    () => new Tone.Filter(20000, 'lowpass').toDestination(),
-    []
-  );
+  const filter = useMemo(() => new Tone.Filter(20000, 'lowpass'), []);
   useEffect(() => {
     const piano = soundEngine;
     piano.load().then(() => {

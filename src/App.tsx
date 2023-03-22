@@ -66,8 +66,11 @@ export const App = () => {
 export function WrappedApp() {
   Tone.Transport.bpm.value = 80;
   Tone.Transport.stop();
+  const mixerOut = useMemo(() => new Tone.Channel().send('mixerOutput'), []);
   const globalOutputs: FixedLengthArray<Tone.Channel[]> = useMemo(
-    () => Array.from({ length: 5 }, () => new Tone.Channel().toDestination()),
+    () => [
+      ...Array.from({ length: 5 }, () => new Tone.Channel().connect(mixerOut)),
+    ],
     []
   );
   const track1 = globalOutputs[0];

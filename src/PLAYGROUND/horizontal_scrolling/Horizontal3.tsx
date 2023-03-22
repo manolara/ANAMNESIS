@@ -1,6 +1,6 @@
 import * as Tone from 'tone';
 
-import { RefObject, useRef } from 'react';
+import { RefObject, useEffect, useMemo, useRef } from 'react';
 
 import { Box, Icon, Stack } from '@mui/material';
 import EastIcon from '@mui/icons-material/East';
@@ -26,7 +26,12 @@ const testSynth = new Tone.Synth({
 });
 
 export const Horizontal3 = () => {
-  // LofiOut.toDestination();
+  const masterFXIn = useMemo(
+    () => new Tone.Channel().receive('mixerOutput'),
+    []
+  );
+  const masterFXOut = useMemo(() => new Tone.Channel().send('masterFXOut'), []);
+
   const page1Ref = useRef<HTMLDivElement>(null);
   const page2Ref = useRef<HTMLDivElement>(null);
   const handleScroll = (ref: RefObject<HTMLDivElement>) => {
@@ -42,15 +47,16 @@ export const Horizontal3 = () => {
   const eq = useFX(EQ3);
   const spectralAnalyzer = useFX(SpectralAnalyzer);
   const oscilloscope = useFX(Oscilloscope);
-  testSynth.connect(reverb.input);
-  reverb.output.connect(delay.input);
-  delay.output.connect(compressor.input);
-  compressor.output.connect(lofi.input);
-  lofi.output.connect(eq.input);
-  eq.output.connect(spectralAnalyzer.input);
-  spectralAnalyzer.output.connect(oscilloscope.input);
-  spectralAnalyzer.output.connect(Tone.Destination);
-
+  useEffect(() => {
+    masterFXIn.connect(reverb.input);
+    reverb.output.connect(delay.input);
+    delay.output.connect(compressor.input);
+    compressor.output.connect(lofi.input);
+    lofi.output.connect(eq.input);
+    eq.output.connect(spectralAnalyzer.input);
+    spectralAnalyzer.output.connect(oscilloscope.input);
+    oscilloscope.output.fan(masterFXOut, Tone.Destination);
+  }, []);
   return (
     <Stack
       minWidth="100vw"
@@ -89,7 +95,11 @@ export const Horizontal3 = () => {
         height="100vh"
         id="page2"
         ref={page2Ref}
-        sx={{ position: 'relative', scrollSnapAlign: 'start' }}
+        sx={{
+          position: 'relative',
+          scrollSnapAlign: 'start',
+          backgroundColor: '#b4ddff',
+        }}
       >
         <Stack height="100%" width="100%" direction="row">
           {/* arrow */}
@@ -127,7 +137,9 @@ export const Horizontal3 = () => {
           >
             Release
           </AButton>
-          {spectralAnalyzer.component}
+          <Box position="absolute" top="50%" left="50%">
+            {spectralAnalyzer.component}
+          </Box>
           {oscilloscope.component}
           <VolumePanSliders />
         </Stack>

@@ -13,7 +13,7 @@ interface OscilloscopeProps extends SketchProps {
 
 const sketch = (p: P5CanvasInstance<SketchProps>) => {
   const wave = new Tone.Waveform(2048);
-  const testSynth = new Tone.Synth().connect(wave).toDestination();
+
   let cnv: p5.Renderer;
 
   p.updateWithProps = (props: any) => {
@@ -22,10 +22,6 @@ const sketch = (p: P5CanvasInstance<SketchProps>) => {
 
   p.setup = () => {
     cnv = p.createCanvas(500, 300);
-    const button = p.createButton('play');
-    button.mousePressed(() => {
-      testSynth.triggerAttackRelease('C4', '8n', '+0.1');
-    });
   };
 
   p.draw = () => {

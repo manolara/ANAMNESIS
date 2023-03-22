@@ -1,10 +1,11 @@
 import Slider from '@mui/material/Slider';
 import * as Tone from 'tone';
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { GlobalOutputsContext } from '../GlobalOutputsContext';
 import { Stack } from '@mui/system';
 import { darken } from '@mui/material';
 import { Knob } from '../FX/Knob';
+import { AButton } from '../theme';
 
 const CustomSliderStyles = {
   '& .MuiSlider-thumb': {
@@ -25,6 +26,40 @@ const CustomSliderStyles = {
 
 export const VolumePanSliders = () => {
   const globalOutputs = useContext(GlobalOutputsContext);
+
+  const masterOutput = useMemo(
+    () => new Tone.Channel().receive('masterFXOut'),
+    []
+  );
+  const recorder = useMemo(() => new Tone.Recorder(), []);
+  masterOutput.connect(recorder);
+  const [isRecording, setIsRecording] = useState(false);
+
+  const RecordButton = () => {
+    return (
+      <AButton
+        onClick={() => {
+          setIsRecording(true);
+          recorder.start();
+        }}
+      >
+        Record
+      </AButton>
+    );
+  };
+  const StopButton = () => {
+    const handleStop = async () => {
+      setIsRecording(false);
+      const recording = await recorder.stop();
+      const url = URL.createObjectURL(recording);
+      const anchor = document.createElement('a');
+      anchor.download = 'recording.webm';
+      anchor.href = url;
+      anchor.click();
+    };
+
+    return <AButton onClick={handleStop}>Stop</AButton>;
+  };
 
   const sliders = useMemo(() => {
     return globalOutputs?.map((track, i) => {
@@ -52,9 +87,13 @@ export const VolumePanSliders = () => {
       );
     });
   }, [globalOutputs]);
+  console.log;
   return (
-    <Stack pt={2} spacing={1} height={300} direction="row">
-      {sliders}
+    <Stack>
+      <Stack pt={2} spacing={1} height={300} direction="row">
+        {sliders}
+      </Stack>
+      {isRecording ? <StopButton /> : <RecordButton />}
     </Stack>
   );
 };

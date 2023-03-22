@@ -5,7 +5,8 @@ import {
 } from 'react-p5-wrapper';
 import p5 from 'p5';
 import * as Tone from 'tone';
-import { mapLog, mapLogInv } from '../utils/utils';
+import { mapLogInv } from '../utils/utils';
+import { APalette } from '../theme';
 
 interface SpectralAnalyzerProps extends SketchProps {
   input: Tone.Signal;
@@ -25,7 +26,7 @@ const sketch = (p: P5CanvasInstance<SpectralAnalyzerProps>) => {
   };
 
   p.draw = () => {
-    p.background('#FF928B');
+    p.background('#bdd0c4');
     let spectrum = fft.getValue();
     p.noFill();
     p.stroke('#ffcc8b');
