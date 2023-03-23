@@ -58,7 +58,19 @@ export const VolumePanSliders = () => {
       anchor.click();
     };
 
-    return <AButton onClick={handleStop}>Stop</AButton>;
+    return (
+      <AButton
+        sx={{
+          backgroundColor: darken('#bdd0c4', 0.05),
+          '&:hover': {
+            boxShadow: ` inset 100rem 0 0 0 ${darken('#bdd0c4', 0.15)}`,
+          },
+        }}
+        onClick={handleStop}
+      >
+        Stop
+      </AButton>
+    );
   };
 
   const sliders = useMemo(() => {
@@ -89,7 +101,7 @@ export const VolumePanSliders = () => {
   }, [globalOutputs]);
   console.log;
   return (
-    <Stack>
+    <Stack border="2px solid #8bb6da" p={1}>
       <Stack pt={2} spacing={1} height={300} direction="row">
         {sliders}
       </Stack>

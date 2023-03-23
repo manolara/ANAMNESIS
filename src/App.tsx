@@ -5,7 +5,7 @@ import NotFound from './pages/NotFound';
 import { DoodlerPage } from './pages/DoodlerPage';
 import { MySketchPage } from './pages/MySketchPage';
 import { Playground } from './PLAYGROUND/Playground';
-import { APalette, customTheme } from './theme';
+import { customTheme } from './theme';
 
 import { PGPage } from './PLAYGROUND/PGPage';
 import * as Tone from 'tone';
@@ -13,7 +13,6 @@ import { ChatGPT } from './PLAYGROUND/ChatGPT';
 import { Fatter } from './PLAYGROUND/Fatter';
 
 import { Theremin } from './Instruments/Theremin';
-
 import { Horizontal3 } from './PLAYGROUND/horizontal_scrolling/Horizontal3';
 import { Knob } from './FX/Knob';
 import { SynthesizerPage } from './pages/SynthesizerPage';
