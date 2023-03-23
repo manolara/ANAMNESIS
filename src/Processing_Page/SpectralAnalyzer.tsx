@@ -6,7 +6,7 @@ import {
 import p5 from 'p5';
 import * as Tone from 'tone';
 import { mapLogInv } from '../utils/utils';
-import { APalette } from '../theme';
+import { Box, darken } from '@mui/material';
 
 interface SpectralAnalyzerProps extends SketchProps {
   input: Tone.Signal;
@@ -29,7 +29,8 @@ const sketch = (p: P5CanvasInstance<SpectralAnalyzerProps>) => {
     p.background('#bdd0c4');
     let spectrum = fft.getValue();
     p.noFill();
-    p.stroke('#ffcc8b');
+    p.stroke(darken('#d0bdc9', 0.05));
+    p.strokeWeight(1.3);
     p.beginShape();
     for (let i = 0; i < spectrum.length; i++) {
       let freq = mapLogInv(i, 0, spectrum.length, 20, 20000);
@@ -42,5 +43,13 @@ const sketch = (p: P5CanvasInstance<SpectralAnalyzerProps>) => {
 };
 
 export const SpectralAnalyzer = ({ input, output }: SpectralAnalyzerProps) => {
-  return <ReactP5Wrapper sketch={sketch} input={input} output={output} />;
+  return (
+    <Box
+      zIndex={3}
+      maxHeight="300px"
+      border={`2px solid ${darken('#bdd0c4', 0.3)} `}
+    >
+      <ReactP5Wrapper sketch={sketch} input={input} output={output} />
+    </Box>
+  );
 };

@@ -2,7 +2,7 @@ import * as Tone from 'tone';
 
 import { RefObject, useEffect, useMemo, useRef } from 'react';
 
-import { Box, Icon, Stack } from '@mui/material';
+import { Box, darken, Icon, Stack } from '@mui/material';
 import EastIcon from '@mui/icons-material/East';
 import WestIcon from '@mui/icons-material/West';
 // import { Reverb, ReverbOut } from '../../FX/Reverb';
@@ -113,35 +113,57 @@ export const Horizontal3 = () => {
               <WestIcon />
             </Icon>
           </Stack>
-          {/* FX */}
-          <Stack>
-            {reverb.component}
-            {delay.component}
-            {compressor.component}
-            {lofi.component}
-            {eq.component}
+          {/* add border color */}
+
+          <Stack pl={4} pt={10}>
+            <Box border={`2px solid ${darken('#b4ddff', 0.2)}`}>
+              {reverb.component}
+              {delay.component}
+              {compressor.component}
+              {lofi.component}
+              {eq.component}
+            </Box>
           </Stack>
-          <AButton
-            onClick={() => {
-              testSynth.triggerAttack('C4', Tone.now(), 0.2);
-            }}
-            sx={{ maxHeight: '10%' }}
+
+          <Stack
+            direction="row"
+            spacing={40}
+            position="absolute"
+            bottom="10%"
+            left="24%"
+            alignItems={'end'}
           >
-            Attack
-          </AButton>
-          <AButton
-            onClick={() => {
-              testSynth.triggerRelease();
-            }}
-            sx={{ maxHeight: '10%' }}
-          >
-            Release
-          </AButton>
-          <Box position="absolute" top="50%" left="50%">
+            <VolumePanSliders />
+            {oscilloscope.component}
+          </Stack>
+          <Box position="absolute" top="15%" left="20%">
             {spectralAnalyzer.component}
           </Box>
-          {oscilloscope.component}
-          <VolumePanSliders />
+          <Box position="absolute" top="50%" left="20%"></Box>
+          {/* set image to original size */}
+          <img
+            src="assets/water_1.gif"
+            style={{
+              position: 'absolute',
+              top: '3%',
+              left: '65%',
+
+              border: '1.5px solid #73ad21',
+              width: '450px',
+              height: 'auto',
+            }}
+          />
+          <img
+            src="assets/water_2.gif"
+            style={{
+              position: 'absolute',
+              top: '33%',
+              left: '52%',
+              border: '1.5px solid #f5c990',
+              width: '342px',
+              height: 'auto',
+            }}
+          />
         </Stack>
       </Stack>
     </Stack>
