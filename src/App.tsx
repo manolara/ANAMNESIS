@@ -25,6 +25,8 @@ import { UseReverbTests } from './PLAYGROUND/useReverbTests';
 import { ReactFlowProvider } from 'reactflow';
 import { FixedLengthArray, GlobalOutputsContext } from './GlobalOutputsContext';
 import { useMemo } from 'react';
+import { MIDI } from './PLAYGROUND/MIDI/midi';
+import { MidiComm } from './PLAYGROUND/MIDI/MidiComm';
 
 export const App = () => {
   return (
@@ -47,6 +49,9 @@ export const App = () => {
       <Route path="synth" element={<SynthesizerPage />} />
       <Route path="synthToTestLFO" element={<SynthToTestLFO />} />
       <Route path="reactFlowTest" element={<ReactFlowWrapperTest />} />
+      {/* make midi rout */}
+      <Route path="midi" element={<MIDI />} />
+      <Route path="midiWrite" element={<MidiComm />} />
       <Route
         path="flow"
         element={
@@ -65,6 +70,7 @@ export const App = () => {
 export function WrappedApp() {
   Tone.Transport.bpm.value = 80;
   Tone.Transport.stop();
+  Tone.Transport.PPQ = 192;
   const mixerOut = useMemo(() => new Tone.Channel().send('mixerOutput'), []);
   const globalOutputs: FixedLengthArray<Tone.Channel[]> = useMemo(
     () => [
