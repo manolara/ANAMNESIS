@@ -7,7 +7,8 @@ import {
 } from 'react-p5-wrapper';
 import { useStore } from 'reactflow';
 import { Piano } from '@tonejs/piano';
-
+import WebMidi from 'webmidi';
+import { Output } from 'webmidi';
 import * as Tone from 'tone';
 // eslint-disable-next-line import/no-cycle
 import {
@@ -41,6 +42,24 @@ const doodlerPalette = {
   orange: '#FEC89A',
   purple: '#d5c6e0',
 };
+
+const setupMidi = (): Promise<Output | undefined> => {
+  return new Promise((resolve) => {
+    WebMidi.enable((err) => {
+      if (err) {
+        console.error('WebMidi could not be enabled', err);
+        resolve(undefined);
+      } else {
+        //find midi output with name IAC Driver
+        const IACDriver = WebMidi.outputs.find(
+          (output) => output.name === 'IAC Driver Bus 1'
+        );
+        resolve(IACDriver);
+      }
+    });
+  });
+};
+
 function sketch(p: P5CanvasInstance<DoodlerProps>) {
   let defaultSynth: Tone.PolySynth | Tone.MonoSynth = new Tone.MonoSynth();
   let loopLengthBars = 2;
@@ -72,6 +91,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
   let sc_pmouseX: number;
   let sc_pmouseY: number;
   let leadSound: Tone.PolySynth | Tone.MonoSynth | Piano;
+  let IACDriver: Output | undefined;
 
   const loopBeat = new Tone.Loop(song, '4n');
   function redLine(p: P5CanvasInstance<DoodlerProps>) {
@@ -141,6 +161,19 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
             });
         }
 
+        //send MIDI message to IAC bus 1 using webMIDI
+        if (IACDriver) {
+          console.log('yo');
+          IACDriver.playNote(
+            cellToPitch(noteTriggered + 1) ?? 'C3',
+            //channel param
+            undefined,
+            {
+              duration: Tone.Time('6n').toMilliseconds(),
+            }
+          );
+        }
+
         noteTriggered += 1;
         if (songCounter === lastCell(xCoordinatesLine)) {
           noteTriggered = 0;
@@ -162,7 +195,10 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     }
     newLine = false;
   }
-  p.setup = () => {
+  p.setup = async () => {
+    IACDriver = (await setupMidi()) ?? undefined;
+    console.log('IACDriver', IACDriver);
+
     curColor = doodlerPalette.lightBlue;
     const gainLead = new Tone.Gain(0.6).toDestination();
     const postFilter = new Tone.Filter(2200, 'lowpass').connect(gainLead);
