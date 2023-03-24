@@ -5,31 +5,41 @@ import {
   ReactP5Wrapper,
   SketchProps,
 } from 'react-p5-wrapper';
-import { Box } from '@mui/material';
+import { Box, darken } from '@mui/material';
 import p5 from 'p5';
 import { getCurrentBeat } from '../../utils/utils';
+import { useState } from 'react';
+import { AButton } from '../../theme';
+import { Stack } from '@mui/system';
 
 interface MidiAnimationProps extends SketchProps {
   midi: Midi;
   durationTicks: number;
+  gridOn?: boolean;
 }
 
 //midi grid for midi sequence
 
-const drawBackground = (p: P5CanvasInstance<MidiAnimationProps>) => {
+const drawBackground = (
+  p: P5CanvasInstance<MidiAnimationProps>,
+  gridOn: boolean
+) => {
   let spacing = p.width / 16;
 
-  p.background(255);
-  for (let i = 0; i < 16; i++) {
-    p.push();
+  p.background(pallette.background);
+  if (gridOn) {
+    for (let i = 0; i < 16; i++) {
+      p.push();
+      p.stroke(100);
 
-    if (i % 4 === 0) {
-      p.strokeWeight(0.5);
-    } else {
-      p.strokeWeight(0.1);
+      if (i % 4 === 0) {
+        p.strokeWeight(0.2);
+      } else {
+        p.strokeWeight(0.1);
+      }
+      p.line(i * spacing + 0.5, 0, i * spacing + 0.5, p.height);
+      p.pop();
     }
-    p.line(i * spacing, 0, i * spacing, p.height);
-    p.pop();
   }
 };
 
@@ -49,13 +59,14 @@ const drawNotes = (
       p.width
     );
     const noteHeight = p.map(note.midi, 0, 127, p.height, 0);
-    pg.fill(0);
+    pg.fill(pallette.notes);
     pg.noStroke();
     pg.rect(startPos, noteHeight, endPos - startPos, 10);
   });
 };
 
 const sketch = (p: P5CanvasInstance<MidiAnimationProps>) => {
+  let gridOn = false;
   let resetLine = false;
   let numTicks = Tone.Transport.PPQ * 4;
   let midi: Midi | null = null;
@@ -68,19 +79,16 @@ const sketch = (p: P5CanvasInstance<MidiAnimationProps>) => {
     pg = p.createGraphics(p.width, p.height);
     pgLine = p.createGraphics(p.width, p.height);
     pgLine.frameRate(30);
-    drawBackground(p);
+    drawBackground(p, gridOn);
   };
   p.updateWithProps = (props) => {
-    if (midi !== undefined) {
+    if (props.midi !== undefined) {
       midi = props.midi;
       timeToCoverWidth = Tone.Ticks(numTicks).toSeconds();
       console.log(midi.durationTicks, 'midi.durationTicks');
-
-      const track = midi.tracks[0];
-      const durationTicks = midi?.durationTicks;
-      //map notes to grid and draw them
-      // drawNotes(p, track, durationTicks, pg);
-      linePos = 0;
+    }
+    if (props.gridOn !== undefined) {
+      gridOn = props.gridOn;
     }
 
     //draw a grid for every 4th tick
@@ -93,24 +101,15 @@ const sketch = (p: P5CanvasInstance<MidiAnimationProps>) => {
     pg.fill(0);
     //@ts-ignore
     pgLine.clear();
-    drawBackground(p);
+    drawBackground(p, gridOn);
     if (midi) drawNotes(p, midi.tracks[0], numTicks, pg);
 
-    pg.rect(19, 10, 100, 100);
     p.image(pg, 0, 0);
     let increment = p.width / (timeToCoverWidth * p.frameRate());
     linePos += increment;
-    console.log(
-      linePos,
-      'linePos',
-      timeToCoverWidth,
-      'timeToCoverWidth',
-      increment,
-      'increment'
-    );
     if (midi) {
-      pgLine.stroke(0);
-      pgLine.strokeWeight(0.5);
+      pgLine.stroke(pallette.line);
+      pgLine.strokeWeight(1);
       pgLine.line(linePos, 0, linePos, p.height);
     }
     p.image(pgLine, 0, 0);
@@ -120,13 +119,48 @@ const sketch = (p: P5CanvasInstance<MidiAnimationProps>) => {
   };
 };
 export const MidiAnimation = ({ midi, durationTicks }: MidiAnimationProps) => {
+  const [gridOn, setGridOn] = useState(false);
   return (
-    <Box p={'30px'}>
-      <ReactP5Wrapper
-        sketch={sketch}
-        midi={midi}
-        duratioTicks={durationTicks}
-      />
-    </Box>
+    <Stack m={1} width={'403px'}>
+      <Box
+        sx={{
+          border: `2px solid ${pallette.line}`,
+          width: '400px',
+          height: '400px',
+        }}
+      >
+        <ReactP5Wrapper
+          sketch={sketch}
+          midi={midi}
+          duratioTicks={durationTicks}
+          gridOn={gridOn}
+        />
+      </Box>
+      <AButton
+        sx={{
+          ml: 'auto',
+          width: 'fit-content',
+          mt: 1,
+          fontSize: 10,
+          padding: 1,
+          backgroundColor: pallette.button,
+          '&:hover': {
+            boxShadow: `inset 100rem 0 0 0 ${darken(pallette.button, 0.1)}`,
+          },
+        }}
+        onClick={() => setGridOn((prev) => !prev)}
+      >
+        {gridOn ? 'Grid Off' : 'Grid On'}
+      </AButton>
+    </Stack>
   );
+};
+
+const pallette = {
+  notes: '#CCD5AE',
+  lightGreen: '#E9EDC9',
+  background: '#F5F1E0',
+  between: '#FAEDCD',
+  line: darken('#FAEDCD', 0.2),
+  button: '#CCD5AE',
 };
