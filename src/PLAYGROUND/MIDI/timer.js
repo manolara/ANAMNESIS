@@ -1,6 +1,6 @@
 var lastTick = 0;
-var ppq = 24;
-var bpm = 90;
+var ppq = 48;
+var bpm = 100;
 var tickRate = 60000 / (bpm * ppq);
 function tick() {
   let now = performance.now();
@@ -12,6 +12,7 @@ function tick() {
   var offset = now - lastTick - tickRate;
   timeout -= offset;
   setTimeout(tick, timeout);
+
   lastTick = now;
 }
 tick();

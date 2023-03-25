@@ -1,10 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /// <reference types="vitest" />
 /// <reference types="vite/client" />
-import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
-import { NgmiPolyfill } from 'vite-plugin-ngmi-polyfill';
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';

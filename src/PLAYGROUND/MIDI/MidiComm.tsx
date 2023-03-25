@@ -1,5 +1,5 @@
 import { Midi, Track } from '@tonejs/midi';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Input, InputEventNoteon, InputEventNoteoff } from 'webmidi';
 import * as Tone from 'tone';
 
@@ -7,7 +7,31 @@ import WebMidi from 'webmidi';
 import { getCurrentBar } from '../../utils/utils';
 import { Metronome } from '../../pages/Metronome';
 import { MidiAnimation } from './MidiAnimation';
-import { Note } from '@tonejs/midi/dist/Note';
+
+//
+// import Buffer
+
+function exportMidiToBlob(midi: Midi) {
+  debugger;
+  const midiBuffer = Buffer.from(midi.toArray());
+
+  const fileData = new Blob([midiBuffer], {
+    type: 'audio/mid',
+  });
+
+  return fileData;
+}
+
+function downloadFile(fileName: string, fileContent: Blob) {
+  const url = window.URL.createObjectURL(fileContent);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${fileName}`;
+  a.click();
+  debugger;
+  window.URL.revokeObjectURL(url);
+}
+
 const PolySynth = new Tone.PolySynth().toDestination();
 
 const notesCurrentlyPlaying: { [key: number]: number } = {};
@@ -172,6 +196,9 @@ export const MidiComm = () => {
             setRecordingState(midiInstrumentState.playback);
             recordingStateRef.current = midiInstrumentState.playback;
             startPlayback();
+            console.log('wtf');
+            const midiBlob = exportMidiToBlob(midi);
+            downloadFile(`my-midi-file.mid`, midiBlob);
           }, `${end}:0:0`);
         }}
       >
