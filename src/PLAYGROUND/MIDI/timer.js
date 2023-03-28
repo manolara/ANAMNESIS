@@ -1,5 +1,5 @@
 var lastTick = 0;
-var ppq = 48;
+var ppq = 24;
 var bpm = 100;
 var tickRate = 60000 / (bpm * ppq);
 function tick() {

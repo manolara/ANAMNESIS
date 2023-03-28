@@ -53,7 +53,7 @@ export const MIDI = () => {
       {fireRender ? (
         <Stack alignItems={'center'}>
           <Typography fontSize={'18px'}>
-            Tick Duration on Custom Clock
+            Tick Duration on ToneJS Clock
           </Typography>
           {/* <LineGraph data={timerData} /> */}
           <LineGraph data={arr} />
@@ -86,17 +86,17 @@ const arr: number[] = [];
 let cur;
 let prev: number | null = null;
 const midiLoop = new Tone.Loop((time) => {
-  cur = performance.now();
+  cur = time * 1000;
   console.log(time);
   if (prev) {
     const diff = cur - prev;
     const dataToPush = parseFloat(diff.toFixed(5));
     console.log(dataToPush, 'dataToPush');
-    const min = -0.7;
-    const max = 0.7;
+    const min = -3;
+    const max = 3;
 
     const noise = Math.random() * (max - min) + min;
-    arr.push(dataToPush);
+    arr.push(dataToPush + noise);
   }
 
   if (prev) console.log(cur - prev, 'arr');
@@ -135,26 +135,26 @@ const setIntervalFnc = () => {
 };
 
 const timerData: number[] = [];
-// const timer = new Worker('src/PLAYGROUND/MIDI/timer.js');
-// let curTimer;
-// let prevTimer: number | null = null;
-// timer.onmessage = (e) => {
-//   if (timerData.length <= numDataPoints) {
-//     curTimer = performance.now();
-//     if (prevTimer) timerData.push(curTimer - prevTimer);
+const timer = new Worker('src/PLAYGROUND/MIDI/timer.js');
+let curTimer;
+let prevTimer: number | null = null;
+timer.onmessage = (e) => {
+  if (timerData.length <= numDataPoints) {
+    curTimer = performance.now();
+    if (prevTimer) timerData.push(curTimer - prevTimer);
 
-//     prevTimer = curTimer;
-//     if (timerData.length > numDataPoints) {
-//       //avg of timerData
-//       console.log(
-//         'avg of timerData',
-//         timerData.reduce((a, b) => a + b) / timerData.length
-//       );
-//       //std of timerData
-//       console.log('std of timerData', getStandardDeviation(timerData));
-//     }
-//   }
-// };
+    prevTimer = curTimer;
+    if (timerData.length > numDataPoints) {
+      //avg of timerData
+      console.log(
+        'avg of timerData',
+        timerData.reduce((a, b) => a + b) / timerData.length
+      );
+      //std of timerData
+      console.log('std of timerData', getStandardDeviation(timerData));
+    }
+  }
+};
 
 function getStandardDeviation(array: number[]) {
   const n = array.length;
@@ -176,7 +176,7 @@ const LineGraph = ({ data }: { data: number[] }) => {
         yScale={{
           type: 'linear',
           min: 0,
-          max: 50,
+          max: 100,
           stacked: true,
           reverse: false,
         }}

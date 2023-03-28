@@ -10,6 +10,8 @@ import { PlayButton } from '../playbackCtrl/PlayButton';
 import { StopButton } from '../playbackCtrl/StopButton';
 import { Playground } from './Playground';
 import { Planets } from '../Instruments/Planets';
+import { Distortion } from '../FX/Distortion';
+import { AButton } from '../theme';
 
 export const PGPage = () => {
   const piano = useMemo(
@@ -32,6 +34,16 @@ export const PGPage = () => {
       <Metronome />
       <StopButton />
       <PlayButton />
+      <Distortion
+        input={pianoOutput}
+        output={new Tone.Signal().toDestination()}
+      />
+      <AButton
+        onClick={() => {
+          piano.keyDown({ note: 'C3', time: Tone.now() });
+          piano.keyUp({ note: 'C3', time: Tone.now() + 0.1 });
+        }}
+      />
 
       <Theremin />
       {/* <Theremin /> */}
