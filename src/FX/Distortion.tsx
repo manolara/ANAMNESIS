@@ -36,8 +36,8 @@ export const Distortion = ({ input, output }: FXProps) => {
         height="fit-content"
         sx={{
           p: 1,
-          backgroundColor: '#f5f5f5',
-          minWidth: 'fit-content',
+          backgroundColor: '#BA4D44',
+          width: 'fit-content',
         }}
       >
         <Typography width="100%" className="unselectable" mb={1}>
@@ -47,7 +47,7 @@ export const Distortion = ({ input, output }: FXProps) => {
           <Knob
             min={0}
             max={10}
-            title={'Distortion'}
+            title={'Drive'}
             hasDecimals={true}
             defaultValue={distortionDefault}
             onValueChange={(value) =>
