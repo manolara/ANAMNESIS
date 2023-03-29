@@ -4,6 +4,7 @@ import {
   MenuItem,
   Select,
   Stack,
+  Typography,
 } from '@mui/material';
 import { Knob } from '../FX/Knob';
 import { AButton, APalette } from '../theme';
@@ -106,6 +107,7 @@ export const Synthesizer = ({ soundEngine, output }: synthProps) => {
           p: 1,
         }}
       >
+        <Typography>POLY</Typography>
         <Stack spacing={3} direction="row">
           <Knob
             title="LFO"

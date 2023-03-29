@@ -78,7 +78,6 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
 
   volKnob.connect(thereminOut);
 
-  let oct = 4;
   let recordingLength = 1;
   let thereminState: 'idle' | 'playback' | 'recording' = 'idle';
 
@@ -87,6 +86,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
 
     if (thereminState === 'recording') {
       drawBackground();
+
       recordTheremin(p, playTheremin);
     }
     if (thereminState === 'playback') {
@@ -121,9 +121,9 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     p: p5,
     playTheremin: (x: number, y: number) => void
   ) => {
-    sequence.x = [...sequence.x, sc_mouseX];
-    sequence.y = [...sequence.y, sc_mouseY];
-    sequence.mouseOn = [...sequence.mouseOn, p.mouseIsPressed];
+    sequence.x.push(sc_mouseX);
+    sequence.y.push(sc_mouseY);
+    sequence.mouseOn.push(isMousePressedAndOnCanvas);
     playTheremin(sc_mouseX, sc_mouseY);
     showOrb(sc_mouseX, sc_mouseY);
   };
@@ -188,6 +188,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
     }
 
     if (Tone.Transport.position === '0:0:0' && thereminState === 'playback') {
+      console.log('weird shit');
       sequenceCounter = 0;
       if (!releaseTriggeredAfterStopping) {
         synth.triggerRelease();
@@ -246,6 +247,7 @@ const sketch = (p: P5CanvasInstance<ThereminProps>) => {
       synth.triggerRelease();
       synth = props.soundSource();
     }
+    console.log('yo');
   };
 
   const canvasPressed = () => {

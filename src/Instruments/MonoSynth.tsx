@@ -1,10 +1,12 @@
 import {
+  Box,
   FormControl,
   IconButton,
   InputLabel,
   Menu,
   MenuItem,
   Select,
+  Slider,
   Stack,
   Typography,
 } from '@mui/material';
@@ -21,9 +23,8 @@ import waveSawtooth from '@iconify/icons-ph/wave-sawtooth';
 import { NonCustomOscillatorType } from 'tone/build/esm/source/oscillator/OscillatorInterface';
 import { synthLFO } from './SynthLFO';
 import { SoundSourceProps } from '../types/componentProps';
-import axios, { all } from 'axios';
+import axios from 'axios';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { v4 as uuidv4 } from 'uuid';
 
 import {
   MonoSynthPresets,
@@ -32,6 +33,14 @@ import {
 } from '../Presets/MonoSynthPresets';
 import { MonoSynthPresetHandler } from './PresetHandler';
 import SaveIcon from '@mui/icons-material/Save';
+
+const sliderStyle = {
+  color: APalette.pink,
+  //no halo
+  '& .MuiSlider-thumb': {
+    boxShadow: 'none !important',
+  },
+};
 
 const serverURL = 'http://localhost:3000/monosynth';
 
@@ -211,7 +220,7 @@ export const MonoSynth = ({
 
   return (
     <>
-      <button onClick={deleteAllUserPresets}>del all</button>
+      {/* <button onClick={deleteAllUserPresets}>del all</button> */}
       <AButton
         onClick={() => {
           mono.triggerAttackRelease('C4', '4n');
@@ -264,6 +273,7 @@ export const MonoSynth = ({
                 LFO.updateLFO();
               }}
             />
+
             <Knob
               title="Level"
               onValueChange={(value) => {
@@ -272,7 +282,49 @@ export const MonoSynth = ({
               }}
             />
           </Stack>
-          <Stack spacing={3} direction="row">
+          <Stack spacing={3} direction="row" m={0} p={0} width={'25px'}>
+            {/* make the slider smaller in terms of height */}
+            <Stack padding={0} margin="0px" width={'25px'}>
+              <Typography
+                className="unselectable"
+                variant="subtitle2"
+                fontSize={'10px'}
+                pt={0.2}
+                ml="-3px"
+                sx={{
+                  overflow: 'visible',
+                  //nowrap
+                  whiteSpace: 'nowrap',
+                  //without pushing things
+                  width: 'fit-content',
+                }}
+              >
+                LFO Freq.
+              </Typography>
+              <Box
+                sx={{
+                  pt: '8px',
+                  paddingBottom: '8px',
+                  width: '25px',
+                  height: '100%',
+                }}
+              >
+                <Slider
+                  sx={sliderStyle}
+                  size="small"
+                  orientation="vertical"
+                  aria-label="LFO Frequency"
+                  defaultValue={3}
+                  min={0.1}
+                  max={20}
+                  step={0.1}
+                  valueLabelDisplay="auto"
+                  onChange={(event, value) => {
+                    LFO.setFrequency(value as number);
+                  }}
+                />
+              </Box>
+            </Stack>
             <Knob
               title="Attack"
               isExp

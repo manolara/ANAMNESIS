@@ -93,6 +93,10 @@ export class synthLFO {
     this.updateLFO();
   };
 
+  setFrequency = (value: number) => {
+    this.lfo.frequency.value = value;
+  };
+
   disconnect = () => {
     this.updateLFO(0);
     this.lfo.disconnect();

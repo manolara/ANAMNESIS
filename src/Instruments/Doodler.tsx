@@ -45,18 +45,25 @@ const doodlerPalette = {
 
 const setupMidi = (): Promise<Output | undefined> => {
   return new Promise((resolve) => {
-    WebMidi.enable((err) => {
-      if (err) {
-        console.error('WebMidi could not be enabled', err);
-        resolve(undefined);
-      } else {
-        //find midi output with name IAC Driver
-        const IACDriver = WebMidi.outputs.find(
-          (output) => output.name === 'IAC Driver Bus 1'
-        );
-        resolve(IACDriver);
-      }
-    });
+    if (!WebMidi.enabled) {
+      WebMidi.enable((err) => {
+        if (err) {
+          console.error('WebMidi could not be enabled', err);
+          resolve(undefined);
+        } else {
+          //find midi output with name IAC Driver
+          const IACDriver = WebMidi.outputs.find(
+            (output) => output.name === 'IAC Driver Bus 1'
+          );
+          resolve(IACDriver);
+        }
+      });
+    } else {
+      const IACDriver = WebMidi.outputs.find(
+        (output) => output.name === 'IAC Driver Bus 1'
+      );
+      resolve(IACDriver);
+    }
   });
 };
 
@@ -196,9 +203,7 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
     newLine = false;
   }
   p.setup = async () => {
-    IACDriver = (await setupMidi()) ?? undefined;
-    console.log('IACDriver', IACDriver);
-
+    console.log('hello');
     curColor = doodlerPalette.lightBlue;
     const gainLead = new Tone.Gain(0.6).toDestination();
     const postFilter = new Tone.Filter(2200, 'lowpass').connect(gainLead);
@@ -217,6 +222,8 @@ function sketch(p: P5CanvasInstance<DoodlerProps>) {
       : null;
 
     leadSound = defaultSynth;
+    IACDriver = (await setupMidi()) ?? undefined;
+    console.log('IACDriver', IACDriver);
   };
   p.updateWithProps = (props: any) => {
     if (bassNote !== undefined) {
