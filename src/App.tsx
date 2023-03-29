@@ -70,7 +70,6 @@ export const App = () => {
 export function WrappedApp() {
   Tone.Transport.bpm.value = 80;
   Tone.Transport.stop();
-  Tone.Transport.PPQ = 12;
   const mixerOut = useMemo(() => new Tone.Channel().send('mixerOutput'), []);
   const globalOutputs: FixedLengthArray<Tone.Channel[]> = useMemo(
     () => [

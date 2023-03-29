@@ -1,8 +1,6 @@
 import { Stack } from '@mui/material';
-import { useCallback } from 'react';
-import { Handle, Position, useStore } from 'reactflow';
+import { Handle, Position } from 'reactflow';
 import { Theremin } from '../Instruments/Theremin';
-import { DoodlerPage } from '../pages/DoodlerPage';
 import { APalette } from '../theme';
 
 const handleStyle = { left: 10 };

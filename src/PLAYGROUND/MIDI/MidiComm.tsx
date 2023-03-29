@@ -7,6 +7,9 @@ import WebMidi from 'webmidi';
 import { getCurrentBar } from '../../utils/utils';
 import { Metronome } from '../../pages/Metronome';
 import { MidiAnimation } from './MidiAnimation';
+import { AButton } from '../../theme';
+import { Icon } from '@mui/material';
+import { FiberManualRecord } from '@mui/icons-material';
 
 //
 // import Buffer
@@ -49,8 +52,8 @@ const midiInstrumentState = {
   recording: 'recording',
   playback: 'playback',
 } as const;
-type ImidiInstrumentState =
-  typeof midiInstrumentState[keyof typeof midiInstrumentState];
+
+type ImidiInstrumentState = keyof typeof midiInstrumentState;
 
 export const MidiComm = () => {
   const [recordingState, setRecordingState] = useState<ImidiInstrumentState>(
@@ -159,6 +162,11 @@ export const MidiComm = () => {
     []
   );
 
+  const clearMidi = () => {
+    midi.tracks = [];
+    setTrackProp(midi.addTrack());
+  };
+
   //the track also has a channel and instrument
   //track.instrument.name
 
@@ -173,39 +181,63 @@ export const MidiComm = () => {
       >
         start
       </button>
-      <button
-        style={{
-          backgroundColor:
-            recordingState === midiInstrumentState.recording ? 'red' : 'white',
-        }}
-        onClick={() => {
-          if (Tone.Transport.state !== 'started') {
-            Tone.Transport.start();
-          }
 
-          let start = getCurrentBar() + 1;
-          let end = start + 1;
-
-          Tone.Transport.scheduleOnce(() => {
-            startingTick = Tone.Transport.ticks;
-            setRecordingState(midiInstrumentState.recording);
-            recordingStateRef.current = midiInstrumentState.recording;
-          }, `${start}:0:0`);
-
-          Tone.Transport.scheduleOnce(() => {
-            setRecordingState(midiInstrumentState.playback);
-            recordingStateRef.current = midiInstrumentState.playback;
-            startPlayback();
-            console.log('wtf');
-            const midiBlob = exportMidiToBlob(midi);
-            downloadFile(`my-midi-file.mid`, midiBlob);
-          }, `${end}:0:0`);
-        }}
-      >
-        record
-      </button>
       <button onClick={() => console.log(track)}> print</button>
-      <MidiAnimation midi={midi} durationTicks={midi.durationTicks} />
+      <MidiAnimation midi={midi} durationTicks={midi.durationTicks}>
+        <AButton
+          sx={{
+            p: 0.6,
+          }}
+          onClick={() => {
+            if (Tone.Transport.state !== 'started') {
+              Tone.Transport.start();
+            }
+
+            let start = getCurrentBar() + 1;
+            let end = start + 1;
+
+            Tone.Transport.scheduleOnce(() => {
+              startingTick = Tone.Transport.ticks;
+              setRecordingState(midiInstrumentState.recording);
+              recordingStateRef.current = midiInstrumentState.recording;
+            }, `${start}:0:0`);
+
+            Tone.Transport.scheduleOnce(() => {
+              setRecordingState(midiInstrumentState.playback);
+              recordingStateRef.current = midiInstrumentState.playback;
+              startPlayback();
+              console.log('wtf');
+              const midiBlob = exportMidiToBlob(midi);
+              downloadFile(`my-midi-file.mid`, midiBlob);
+            }, `${end}:0:0`);
+          }}
+        >
+          <Icon>
+            <FiberManualRecord
+              sx={{
+                fill:
+                  recordingState === midiInstrumentState.recording ? 'red' : '',
+                transform: 'scale(0.6)',
+                m: 0,
+              }}
+            />
+          </Icon>
+        </AButton>
+        <AButton
+          sx={{
+            width: 'fit-content',
+            fontSize: 10,
+            ml: 'auto',
+          }}
+          onClick={() => {
+            setRecordingState(midiInstrumentState.idle);
+            recordingStateRef.current = midiInstrumentState.idle;
+            clearMidi();
+          }}
+        >
+          Clear
+        </AButton>
+      </MidiAnimation>
     </>
   );
 };

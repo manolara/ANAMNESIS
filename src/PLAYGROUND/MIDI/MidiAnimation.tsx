@@ -16,6 +16,7 @@ interface MidiAnimationProps extends SketchProps {
   midi: Midi;
   durationTicks: number;
   gridOn?: boolean;
+  children?: React.ReactNode;
 }
 
 //midi grid for midi sequence
@@ -33,7 +34,7 @@ const drawBackground = (
       p.stroke(100);
 
       if (i % 4 === 0) {
-        p.strokeWeight(0.2);
+        p.strokeWeight(0.1);
       } else {
         p.strokeWeight(0.1);
       }
@@ -118,7 +119,11 @@ const sketch = (p: P5CanvasInstance<MidiAnimationProps>) => {
     }
   };
 };
-export const MidiAnimation = ({ midi, durationTicks }: MidiAnimationProps) => {
+export const MidiAnimation = ({
+  midi,
+  durationTicks,
+  children,
+}: MidiAnimationProps) => {
   const [gridOn, setGridOn] = useState(false);
   return (
     <Stack m={1} width={'403px'}>
@@ -136,22 +141,24 @@ export const MidiAnimation = ({ midi, durationTicks }: MidiAnimationProps) => {
           gridOn={gridOn}
         />
       </Box>
-      <AButton
-        sx={{
-          ml: 'auto',
-          width: 'fit-content',
-          mt: 1,
-          fontSize: 10,
-          padding: 1,
-          backgroundColor: pallette.button,
-          '&:hover': {
-            boxShadow: `inset 100rem 0 0 0 ${darken(pallette.button, 0.1)}`,
-          },
-        }}
-        onClick={() => setGridOn((prev) => !prev)}
-      >
-        {gridOn ? 'Grid Off' : 'Grid On'}
-      </AButton>
+      <Stack direction={'row'} alignItems={'center'} pt={1}>
+        {children}
+        <AButton
+          sx={{
+            ml: 'auto',
+            width: 'fit-content',
+            fontSize: 10,
+
+            backgroundColor: pallette.button,
+            '&:hover': {
+              boxShadow: `inset 100rem 0 0 0 ${darken(pallette.button, 0.1)}`,
+            },
+          }}
+          onClick={() => setGridOn((prev) => !prev)}
+        >
+          {gridOn ? 'Grid Off' : 'Grid On'}
+        </AButton>
+      </Stack>
     </Stack>
   );
 };
