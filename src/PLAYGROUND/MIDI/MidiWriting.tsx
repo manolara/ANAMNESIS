@@ -10,14 +10,13 @@ const notesCurrentlyPlaying: { [key: number]: number } = {};
 const startingTick = 0;
 
 const onNoteOn = (event: InputEventNoteon) => {
-  const freq = Tone.Frequency(event.note.number, 'midi').toNote();
-  PolySynth.triggerAttack(freq, Tone.now(), event.velocity);
-  console.log(freq);
+  const note = Tone.Frequency(event.note.number, 'midi').toNote();
+  PolySynth.triggerAttack(note, Tone.now(), event.velocity);
+  console.log(note);
   //assign ticks when triggered to the note
   notesCurrentlyPlaying[event.note.number] =
     Tone.Transport.ticks - startingTick;
-  PolySynth.triggerAttack(freq, Tone.now(), event.velocity);
-  console.log(freq);
+  PolySynth.triggerAttack(note, Tone.now(), event.velocity);
 
   WebMidi.outputs[0].playNote(
     event.note.name + event.note.octave,

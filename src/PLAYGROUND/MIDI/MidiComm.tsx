@@ -2,7 +2,6 @@ import { Midi, Track } from '@tonejs/midi';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Input, InputEventNoteon, InputEventNoteoff } from 'webmidi';
 import * as Tone from 'tone';
-
 import WebMidi from 'webmidi';
 import { getCurrentBar } from '../../utils/utils';
 import { Metronome } from '../../pages/Metronome';
@@ -15,7 +14,7 @@ import { FiberManualRecord } from '@mui/icons-material';
 // import Buffer
 
 function exportMidiToBlob(midi: Midi) {
-  debugger;
+  // debugger;
   const midiBuffer = Buffer.from(midi.toArray());
 
   const fileData = new Blob([midiBuffer], {
@@ -31,7 +30,7 @@ function downloadFile(fileName: string, fileContent: Blob) {
   a.href = url;
   a.download = `${fileName}`;
   a.click();
-  debugger;
+  // debugger;
   window.URL.revokeObjectURL(url);
 }
 
@@ -45,8 +44,6 @@ const setDevicesByName = () => {
   });
 };
 
-//make enum for instrument state (idle, recording, playback) using object as const
-
 const midiInstrumentState = {
   idle: 'idle',
   recording: 'recording',
@@ -59,24 +56,66 @@ export const MidiComm = () => {
   const [recordingState, setRecordingState] = useState<ImidiInstrumentState>(
     midiInstrumentState.idle
   );
-  let startingTick = 0;
+  const startingTick = useRef<number>(0);
   // const midiData = fs.readFileSync('test.mid');
   // fs.writeFileSync('output.mid', Buffer.from(midi.toArray()));
   const midi = useMemo(() => new Midi(), []);
-  const track = useMemo(() => midi.addTrack(), []);
-  const [trackProp, setTrackProp] = useState<Track>(track);
+  const [track, setTrack] = useState<Track>(midi.addTrack());
+  const trackRef = useRef<Track>(track);
 
   const recordingStateRef = useRef<ImidiInstrumentState>(
     midiInstrumentState.idle
   );
 
+  const onNoteOn = (event: InputEventNoteon) => {
+    const note = Tone.Frequency(event.note.number, 'midi').toNote();
+    const relativeTick = Tone.Transport.ticks - startingTick.current;
+    console.log(Tone.Transport.ticks, 'ticks');
+    console.log(startingTick, 'starting tick');
+    console.log(relativeTick, 'relative tick');
+    if (recordingStateRef.current === midiInstrumentState.recording) {
+      notesCurrentlyPlaying[event.note.number] = relativeTick;
+    }
+    console.log('trigger Ticks', Tone.Transport.ticks);
+    PolySynth.triggerAttack(note, Tone.now(), event.velocity);
+  };
+
+  const onNoteOff = (event: InputEventNoteoff) => {
+    if (recordingStateRef.current === midiInstrumentState.recording) {
+      const currTrack = trackRef.current;
+      const relativeTick = Tone.Transport.ticks - startingTick.current;
+      console.log('release Ticks', relativeTick);
+
+      currTrack.addNote({
+        midi: event.note.number,
+        ticks: notesCurrentlyPlaying[event.note.number],
+        durationTicks: relativeTick - notesCurrentlyPlaying[event.note.number],
+      });
+    }
+    console.log('received Ticks', notesCurrentlyPlaying[event.note.number]);
+    console.log(
+      'duration Ticks',
+      Tone.Transport.ticks -
+        notesCurrentlyPlaying[event.note.number] -
+        startingTick.current
+    );
+
+    const freq = Tone.Frequency(event.note.number, 'midi').toNote();
+
+    PolySynth.triggerRelease(freq, Tone.now()),
+      //remove the note from the currently playing notes
+      delete notesCurrentlyPlaying[event.note.number];
+  };
+
   useEffect(() => {
     WebMidi.enable((err) => {
-      WebMidi.inputs.forEach(function (input, key) {
+      WebMidi.inputs.forEach((input, key) => {
         addInputListeners(input);
+        console.log('attached to', input.name);
       });
-      WebMidi.addListener('connected', function (e) {
+      WebMidi.addListener('connected', (e) => {
         if (e.port.type === 'input') {
+          console.log(track);
           addInputListeners(e.port);
         }
         setDevicesByName();
@@ -91,84 +130,65 @@ export const MidiComm = () => {
       input.addListener('noteon', 'all', onNoteOn);
       input.addListener('noteoff', 'all', onNoteOff);
     };
+  }, [track]); // TODO: check if i actully need the track as a dependency
 
-    // input.addListener('controlchange', 'all', onControlChange);
-  }, []);
-
-  const onNoteOn = (event: InputEventNoteon) => {
-    const freq = Tone.Frequency(event.note.number, 'midi').toNote();
-    const relativeTick = Tone.Transport.ticks - startingTick;
-    if (recordingStateRef.current === midiInstrumentState.recording) {
-      notesCurrentlyPlaying[event.note.number] = relativeTick;
-    }
-    console.log('trigger Ticks', Tone.Transport.ticks);
-    PolySynth.triggerAttack(freq, Tone.now(), event.velocity);
-    console.log(freq);
-  };
-
-  const onNoteOff = (event: InputEventNoteoff) => {
-    if (recordingStateRef.current === midiInstrumentState.recording) {
-      const relativeTick = Tone.Transport.ticks - startingTick;
-      console.log(recordingStateRef.current);
-      console.log('release Ticks', relativeTick);
-      track.addNote({
-        midi: event.note.number,
-        ticks: notesCurrentlyPlaying[event.note.number],
-        durationTicks: relativeTick - notesCurrentlyPlaying[event.note.number],
-      });
-    }
-    console.log('received Ticks', notesCurrentlyPlaying[event.note.number]);
-    console.log(
-      'duration Ticks',
-      Tone.Transport.ticks -
-        notesCurrentlyPlaying[event.note.number] -
-        startingTick
-    );
-
-    const freq = Tone.Frequency(event.note.number, 'midi').toNote();
-
-    PolySynth.triggerRelease(freq, Tone.now()),
-      //remove the note from the currently playing notes
-      delete notesCurrentlyPlaying[event.note.number];
-  };
-  useEffect(() => {}, [recordingState]);
+  const midiLoop = useRef<Tone.Loop>(new Tone.Loop(() => {}, '1m')).current;
 
   const startPlayback = () => {
     midiLoop.start();
   };
-  const midiLoop = useMemo(
-    () =>
-      new Tone.Loop((time) => {
-        const now = Tone.now();
-        const notes = track.notes;
-        notes.forEach((note) => {
-          console.log(note.name, note.time, note.duration, note.velocity);
-          //convert the ticks to seconds
-          const time =
-            note.ticks *
-              (60 / (Tone.Transport.bpm.value * Tone.Transport.PPQ)) +
-            now;
-          const duration = Tone.Ticks(note.durationTicks).toSeconds();
 
-          PolySynth.triggerAttackRelease(
-            note.name,
-            duration,
-            time,
-            note.velocity
-          );
-          //note.midi, note.time, note.duration, note.name
-        });
-      }, '1m'),
-    []
-  );
+  useEffect(() => {
+    midiLoop.callback = (time) => {
+      const notes = track.notes;
+      console.log('yo', notes);
+      notes.forEach((note) => {
+        console.log(note.name, note.time, note.duration, note.velocity);
+        //convert the ticks to seconds
+        const duration = Tone.Ticks(note.durationTicks).toSeconds();
+
+        PolySynth.triggerAttackRelease(
+          note.name,
+          duration,
+          `+${note.ticks}i`,
+          note.velocity
+        );
+        //note.midi, note.time, note.duration, note.name
+      });
+    };
+  }, [track]);
 
   const clearMidi = () => {
-    midi.tracks = [];
-    setTrackProp(midi.addTrack());
+    trackRef.current = midi.addTrack();
+    setTrack(trackRef.current);
+    midiLoop.stop();
   };
 
   //the track also has a channel and instrument
   //track.instrument.name
+  const handleRecord = () => {
+    if (Tone.Transport.state !== 'started') {
+      Tone.Transport.start();
+    }
+
+    let start = getCurrentBar() + 1;
+    let end = start + 1;
+
+    Tone.Transport.scheduleOnce(() => {
+      startingTick.current = Tone.Transport.ticks;
+      setRecordingState(midiInstrumentState.recording);
+      recordingStateRef.current = midiInstrumentState.recording;
+    }, `${start}:0:0`);
+
+    Tone.Transport.scheduleOnce(() => {
+      setRecordingState(midiInstrumentState.playback);
+      recordingStateRef.current = midiInstrumentState.playback;
+      startPlayback();
+      console.log('started playback');
+      // const midiBlob = exportMidiToBlob(midi);
+      // downloadFile(`my-midi-file.mid`, midiBlob);
+    }, `${end}:0:0`);
+  };
 
   return (
     <>
@@ -182,35 +202,12 @@ export const MidiComm = () => {
         start
       </button>
 
-      <button onClick={() => console.log(track)}> print</button>
-      <MidiAnimation midi={midi} durationTicks={midi.durationTicks}>
+      <MidiAnimation track={track} durationTicks={midi.durationTicks}>
         <AButton
           sx={{
             p: 0.6,
           }}
-          onClick={() => {
-            if (Tone.Transport.state !== 'started') {
-              Tone.Transport.start();
-            }
-
-            let start = getCurrentBar() + 1;
-            let end = start + 1;
-
-            Tone.Transport.scheduleOnce(() => {
-              startingTick = Tone.Transport.ticks;
-              setRecordingState(midiInstrumentState.recording);
-              recordingStateRef.current = midiInstrumentState.recording;
-            }, `${start}:0:0`);
-
-            Tone.Transport.scheduleOnce(() => {
-              setRecordingState(midiInstrumentState.playback);
-              recordingStateRef.current = midiInstrumentState.playback;
-              startPlayback();
-              console.log('wtf');
-              const midiBlob = exportMidiToBlob(midi);
-              downloadFile(`my-midi-file.mid`, midiBlob);
-            }, `${end}:0:0`);
-          }}
+          onClick={handleRecord}
         >
           <Icon>
             <FiberManualRecord

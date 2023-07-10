@@ -13,20 +13,17 @@ import { AButton } from '../../theme';
 import { Stack } from '@mui/system';
 
 interface MidiAnimationProps extends SketchProps {
-  midi: Midi;
+  track: Track;
   durationTicks: number;
   gridOn?: boolean;
   children?: React.ReactNode;
 }
-
-//midi grid for midi sequence
 
 const drawBackground = (
   p: P5CanvasInstance<MidiAnimationProps>,
   gridOn: boolean
 ) => {
   let spacing = p.width / 16;
-
   p.background(pallette.background);
   if (gridOn) {
     for (let i = 0; i < 16; i++) {
@@ -34,9 +31,9 @@ const drawBackground = (
       p.stroke(100);
 
       if (i % 4 === 0) {
-        p.strokeWeight(0.1);
+        p.strokeWeight(0.4);
       } else {
-        p.strokeWeight(0.1);
+        p.strokeWeight(0.2);
       }
       p.line(i * spacing + 0.5, 0, i * spacing + 0.5, p.height);
       p.pop();
@@ -47,15 +44,15 @@ const drawBackground = (
 const drawNotes = (
   p: P5CanvasInstance<MidiAnimationProps>,
   track: Track,
-  durationTicks: number,
+  totalTicks: number,
   pg: p5.Graphics
 ) => {
   track.notes.forEach((note) => {
-    const startPos = p.map(note.ticks, 0, durationTicks, 0, p.width);
+    const startPos = p.map(note.ticks, 0, totalTicks, 0, p.width);
     const endPos = p.map(
       note.ticks + note.durationTicks,
       0,
-      durationTicks,
+      totalTicks,
       0,
       p.width
     );
@@ -70,11 +67,12 @@ const sketch = (p: P5CanvasInstance<MidiAnimationProps>) => {
   let gridOn = false;
   let resetLine = false;
   let numTicks = Tone.Transport.PPQ * 4;
-  let midi: Midi | null = null;
+  let track: Track | null = null;
   let pg: p5.Graphics;
   let pgLine: p5.Graphics;
   let linePos: number;
   let timeToCoverWidth: number;
+
   p.setup = () => {
     p.createCanvas(400, 400);
     pg = p.createGraphics(p.width, p.height);
@@ -82,18 +80,20 @@ const sketch = (p: P5CanvasInstance<MidiAnimationProps>) => {
     pgLine.frameRate(30);
     drawBackground(p, gridOn);
   };
+
   p.updateWithProps = (props) => {
-    if (props.midi !== undefined) {
-      midi = props.midi;
+    if (props.track !== undefined) {
+      track = props.track;
+      console.log(track);
+      //@ts-ignore
+      pg?.clear();
       timeToCoverWidth = Tone.Ticks(numTicks).toSeconds();
-      console.log(midi.durationTicks, 'midi.durationTicks');
     }
     if (props.gridOn !== undefined) {
       gridOn = props.gridOn;
     }
-
-    //draw a grid for every 4th tick
   };
+
   p.draw = () => {
     if (getCurrentBeat() === 0 && !resetLine) {
       linePos = 0;
@@ -103,12 +103,11 @@ const sketch = (p: P5CanvasInstance<MidiAnimationProps>) => {
     //@ts-ignore
     pgLine.clear();
     drawBackground(p, gridOn);
-    if (midi) drawNotes(p, midi.tracks[0], numTicks, pg);
-
+    if (track) drawNotes(p, track, numTicks, pg);
     p.image(pg, 0, 0);
     let increment = p.width / (timeToCoverWidth * p.frameRate());
     linePos += increment;
-    if (midi) {
+    if (track) {
       pgLine.stroke(pallette.line);
       pgLine.strokeWeight(1);
       pgLine.line(linePos, 0, linePos, p.height);
@@ -119,8 +118,9 @@ const sketch = (p: P5CanvasInstance<MidiAnimationProps>) => {
     }
   };
 };
+
 export const MidiAnimation = ({
-  midi,
+  track,
   durationTicks,
   children,
 }: MidiAnimationProps) => {
@@ -136,7 +136,7 @@ export const MidiAnimation = ({
       >
         <ReactP5Wrapper
           sketch={sketch}
-          midi={midi}
+          track={track}
           duratioTicks={durationTicks}
           gridOn={gridOn}
         />
@@ -148,7 +148,6 @@ export const MidiAnimation = ({
             ml: 'auto',
             width: 'fit-content',
             fontSize: 10,
-
             backgroundColor: pallette.button,
             '&:hover': {
               boxShadow: `inset 100rem 0 0 0 ${darken(pallette.button, 0.1)}`,
