@@ -26,7 +26,7 @@ import { ReactFlowProvider } from 'reactflow';
 import { FixedLengthArray, GlobalOutputsContext } from './GlobalOutputsContext';
 import { useMemo } from 'react';
 import { MIDI } from './PLAYGROUND/MIDI/midi';
-import { MidiComm } from './PLAYGROUND/MIDI/MidiComm';
+import { MidiInput } from './PLAYGROUND/MIDI/MidiInput';
 
 export const App = () => {
   return (
@@ -51,7 +51,7 @@ export const App = () => {
       <Route path="reactFlowTest" element={<ReactFlowWrapperTest />} />
       {/* make midi rout */}
       <Route path="midi" element={<MIDI />} />
-      <Route path="midiWrite" element={<MidiComm />} />
+      <Route path="midiWrite" element={<MidiInput />} />
       <Route
         path="flow"
         element={

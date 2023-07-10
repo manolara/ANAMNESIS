@@ -9,6 +9,8 @@ import { MidiAnimation } from './MidiAnimation';
 import { AButton } from '../../theme';
 import { Icon } from '@mui/material';
 import { FiberManualRecord } from '@mui/icons-material';
+import { InstrumentDataProps } from '../../pages/Flow';
+import { InstrumentProps } from '../../types/componentProps';
 
 //
 // import Buffer
@@ -34,8 +36,6 @@ function downloadFile(fileName: string, fileContent: Blob) {
   window.URL.revokeObjectURL(url);
 }
 
-const PolySynth = new Tone.PolySynth().toDestination();
-
 const notesCurrentlyPlaying: { [key: number]: number } = {};
 
 const setDevicesByName = () => {
@@ -52,13 +52,19 @@ const midiInstrumentState = {
 
 type ImidiInstrumentState = keyof typeof midiInstrumentState;
 
-export const MidiComm = () => {
+export const MidiInput = ({ soundSource }: InstrumentProps) => {
   const [recordingState, setRecordingState] = useState<ImidiInstrumentState>(
     midiInstrumentState.idle
   );
   const startingTick = useRef<number>(0);
   // const midiData = fs.readFileSync('test.mid');
   // fs.writeFileSync('output.mid', Buffer.from(midi.toArray()));
+  const soundEngine = useMemo(() => soundSource, [soundSource]);
+  useEffect(() => {
+    if (!soundEngine) {
+      soundEngine = new Tone.PolySynth().toDestination();
+    }
+  });
   const midi = useMemo(() => new Midi(), []);
   const [track, setTrack] = useState<Track>(midi.addTrack());
   const trackRef = useRef<Track>(track);
@@ -77,7 +83,7 @@ export const MidiComm = () => {
       notesCurrentlyPlaying[event.note.number] = relativeTick;
     }
     console.log('trigger Ticks', Tone.Transport.ticks);
-    PolySynth.triggerAttack(note, Tone.now(), event.velocity);
+    soundEngine.triggerAttack(note, Tone.now(), event.velocity);
   };
 
   const onNoteOff = (event: InputEventNoteoff) => {
@@ -102,7 +108,7 @@ export const MidiComm = () => {
 
     const freq = Tone.Frequency(event.note.number, 'midi').toNote();
 
-    PolySynth.triggerRelease(freq, Tone.now()),
+    soundEngine.triggerRelease(freq, Tone.now()),
       //remove the note from the currently playing notes
       delete notesCurrentlyPlaying[event.note.number];
   };
@@ -147,7 +153,7 @@ export const MidiComm = () => {
         //convert the ticks to seconds
         const duration = Tone.Ticks(note.durationTicks).toSeconds();
 
-        PolySynth.triggerAttackRelease(
+        soundEngine.triggerAttackRelease(
           note.name,
           duration,
           `+${note.ticks}i`,
