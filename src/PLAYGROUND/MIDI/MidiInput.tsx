@@ -9,7 +9,6 @@ import { MidiAnimation } from './MidiAnimation';
 import { AButton } from '../../theme';
 import { Icon } from '@mui/material';
 import { FiberManualRecord } from '@mui/icons-material';
-import { InstrumentDataProps } from '../../pages/Flow';
 import { InstrumentProps } from '../../types/componentProps';
 
 //
@@ -59,12 +58,8 @@ export const MidiInput = ({ soundSource }: InstrumentProps) => {
   const startingTick = useRef<number>(0);
   // const midiData = fs.readFileSync('test.mid');
   // fs.writeFileSync('output.mid', Buffer.from(midi.toArray()));
-  const soundEngine = useMemo(() => soundSource, [soundSource]);
-  useEffect(() => {
-    if (!soundEngine) {
-      soundEngine = new Tone.PolySynth().toDestination();
-    }
-  });
+  const defaultSynth = useRef(new Tone.PolySynth().toDestination()).current;
+  const soundEngine = soundSource ?? defaultSynth;
   const midi = useMemo(() => new Midi(), []);
   const [track, setTrack] = useState<Track>(midi.addTrack());
   const trackRef = useRef<Track>(track);
@@ -72,6 +67,10 @@ export const MidiInput = ({ soundSource }: InstrumentProps) => {
   const recordingStateRef = useRef<ImidiInstrumentState>(
     midiInstrumentState.idle
   );
+  useEffect(() => {
+    console.log(soundEngine, 'yo');
+    soundEngine.triggerAttackRelease('C3', '8n');
+  }, [soundEngine]);
 
   const onNoteOn = (event: InputEventNoteon) => {
     const note = Tone.Frequency(event.note.number, 'midi').toNote();

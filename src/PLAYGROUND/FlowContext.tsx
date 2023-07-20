@@ -15,10 +15,9 @@ import { Synthesizer } from '../Instruments/Synthesizer';
 import { MonoSynth } from '../Instruments/MonoSynth';
 import { DoodlerPage } from '../pages/DoodlerPage';
 import { APiano } from '../Instruments/APiano';
-import { SoundSourceNode } from '../Nodes/SoundSourceNode';
 
 ///object to hold all the components
-
+/// TODO:!!!!!!! make file with all the available nodes mapped in an object so that we can access them succinctly both here AND in defaultNodes.ts would not be a bad idea to use the add fx
 const components = {
   Instrument: {
     Doodler: DoodlerPage,

@@ -37,7 +37,7 @@ import { PauseButton } from '../playbackCtrl/PauseButton';
 import { GlobalOutputsContext } from '../GlobalOutputsContext';
 
 export interface InstrumentDataProps {
-  label: 'Doodler' | 'Theremin';
+  label: 'Doodler' | 'Theremin' | 'MidiInput';
   component: ({ soundSource }: InstrumentProps) => JSX.Element;
   soundSource?: Tone.PolySynth | undefined;
 }

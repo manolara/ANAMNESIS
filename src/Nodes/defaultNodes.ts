@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Reverb } from '../FX/Reverb';
 import { DoodlerPage } from '../pages/DoodlerPage';
 import { ANode } from '../pages/Flow';
+import { MidiInput } from '../PLAYGROUND/MIDI/MidiInput';
 
 export const initialNodes: ANode[] = [
   {
@@ -41,6 +42,17 @@ export const initialNodes: ANode[] = [
     },
     dragHandle: '.custom-drag-handle',
     position: { x: 650, y: 250 },
+  },
+  {
+    id: uuidv4(),
+    type: 'instrument',
+    data: {
+      label: 'MidiInput',
+      component: MidiInput,
+      soundSource: undefined,
+    },
+    dragHandle: '.custom-drag-handle',
+    position: { x: 400, y: 500 },
   },
   {
     id: 'master-node-id',
