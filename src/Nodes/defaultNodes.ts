@@ -43,17 +43,17 @@ export const initialNodes: ANode[] = [
     dragHandle: '.custom-drag-handle',
     position: { x: 650, y: 250 },
   },
-  {
-    id: uuidv4(),
-    type: 'instrument',
-    data: {
-      label: 'MidiInput',
-      component: MidiInput,
-      soundSource: undefined,
-    },
-    dragHandle: '.custom-drag-handle',
-    position: { x: 400, y: 500 },
-  },
+  // {
+  //   id: uuidv4(),
+  //   type: 'instrument',
+  //   data: {
+  //     label: 'MidiInput',
+  //     component: MidiInput,
+  //     soundSource: undefined,
+  //   },
+  //   dragHandle: '.custom-drag-handle',
+  //   position: { x: 400, y: 500 },
+  // },
   {
     id: 'master-node-id',
     type: 'master',
