@@ -11,5 +11,5 @@ run `npm i`
 and `npm run dev`.
 
 
-https://github.com/manolara/ANAMNESIS/assets/103147851/1f474d70-4428-4a36-8a96-71a3da462cba
+
 
